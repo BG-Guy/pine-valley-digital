@@ -1,0 +1,184 @@
+@import "tailwindcss";
+
+/*
+ * Color theme shared with the BG portfolio site (portfolio-2025):
+ * purple/green duo on a warm off-white paper, dark ink for contrast.
+ */
+@theme {
+  --font-display: "Bricolage Grotesque", "Arial Black", sans-serif;
+  --font-body: "Work Sans", system-ui, sans-serif;
+
+  --color-ink: #333333;
+  --color-paper: #fef9e7;
+  --color-paper-dim: #f5edd0;
+  --color-accent: #6c3baa;
+  --color-accent-2: #3baa99;
+  --color-accent-ink: #ffffff;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* Preloader */
+#preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: var(--color-ink);
+  color: var(--color-paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#preloader .pre-word {
+  overflow: hidden;
+}
+
+#preloader .pre-word span {
+  display: inline-block;
+  transform: translateY(110%);
+}
+
+/* Marquee */
+.marquee-track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+}
+
+/* Nav link underline */
+.nav-link {
+  position: relative;
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.35s ease;
+}
+
+.nav-link:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* Reveal targets (GSAP sets the animated-from state via JS) */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+}
+
+.no-js .reveal {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* CTA button — bordered pill that fills on hover (ported from the
+   portfolio's CtaBtn component: a sliding color panel behind the label) */
+.btn-cta {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.btn-cta .btn-cta-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: var(--color-accent-2);
+  transform: translateY(100%);
+  transition: transform 0.25s ease-out;
+}
+
+.btn-cta:hover .btn-cta-bg {
+  transform: translateY(0);
+}
+
+.btn-cta .btn-cta-label {
+  position: relative;
+  z-index: 1;
+  transition: color 0.2s ease-out;
+}
+
+.btn-cta:hover .btn-cta-label {
+  color: #fff;
+}
+
+/* Project / work cards — offset color shadow behind a bordered panel that
+   fills with the accent color on hover (ported from the portfolio's
+   ServiceCard component) */
+.project-card .project-card-shadow {
+  position: absolute;
+  inset: 0;
+  border-radius: 1rem;
+  background: var(--color-accent-2);
+  transform: translate(0.5rem, 0.5rem);
+  transition: transform 0.3s ease;
+}
+
+.project-card:hover .project-card-shadow {
+  transform: translate(0.75rem, 0.75rem);
+}
+
+.project-card .project-card-face {
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+.project-card:hover .project-card-face {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+/* Footer headline — duotone layered text (ported from the portfolio's
+   Footer heading, purple over a green echo layer) */
+.duotone-heading {
+  position: relative;
+  display: inline-block;
+}
+
+.duotone-heading .duotone-back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: var(--color-accent-2);
+  transition: transform 0.2s ease-out;
+}
+
+.duotone-heading .duotone-front {
+  position: relative;
+  color: var(--color-accent);
+}
