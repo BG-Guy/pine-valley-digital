@@ -1,13 +1,10 @@
 import { defineConfig } from 'vite'
 import tailwindcss from '@tailwindcss/vite'
 
-// On GitHub Pages a project site is served from /<repo-name>/, so built asset
-// URLs need that prefix. Derived from the repo the workflow runs in, so
-// renaming or forking the repo can't silently produce a blank page. Local
-// dev and other hosts use '/'.
-const repoName = process.env.GITHUB_REPOSITORY?.split('/')[1]
-
 export default defineConfig({
-  base: process.env.GITHUB_ACTIONS && repoName ? `/${repoName}/` : '/',
+  // The site is served from the custom domain https://pinevalleydigital.com/
+  // (set in the repo's Pages settings), i.e. from the root. A '/<repo-name>/'
+  // prefix would 404 every asset there and leave a blank page.
+  base: '/',
   plugins: [tailwindcss()],
 })
