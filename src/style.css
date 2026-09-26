@@ -364,46 +364,59 @@ body {
   }
 }
 
-/* Hero background blobs — soft, blurred purple/green color wash sitting
-   behind the otherwise-empty right side of the hero (see main.ts). */
+/* Hero background blobs — soft purple/green color wash sitting behind the
+   otherwise-empty right side of the hero (see main.ts).
+   Drawn as a radial gradient, NOT `filter: blur()` — Safari is very slow
+   with large blur filters. The stops trace a gaussian-blurred disc's edge
+   (blur 3rem ≈ std dev): ~98% at r-2σ, 84% at r-σ, 50% at r, 16% at r+σ,
+   0 at r+2σ, so it looks the same as the old blurred circle. --r is the
+   solid disc's radius; --pad (2σ) is the extra room the soft edge needs. */
 .hero-blob {
+  --pad: 6rem;
   position: absolute;
   z-index: 0;
-  border-radius: 999px;
   pointer-events: none;
-  filter: blur(48px);
+  width: calc((var(--r) + var(--pad)) * 2);
+  height: calc((var(--r) + var(--pad)) * 2);
+  background: radial-gradient(
+    circle calc(var(--r) + var(--pad)),
+    rgb(var(--blob-rgb) / 1) 0,
+    rgb(var(--blob-rgb) / 0.98) calc(var(--r) - 6rem),
+    rgb(var(--blob-rgb) / 0.84) calc(var(--r) - 3rem),
+    rgb(var(--blob-rgb) / 0.5) var(--r),
+    rgb(var(--blob-rgb) / 0.16) calc(var(--r) + 3rem),
+    rgb(var(--blob-rgb) / 0) calc(var(--r) + var(--pad))
+  );
 }
 
+/* Offsets are the old blurred-circle positions shifted out by --pad so the
+   disc's centre hasn't moved. --blob-rgb mirrors --color-accent / -accent-2. */
 .hero-blob-a {
-  width: 14rem;
-  height: 14rem;
-  top: -2rem;
-  right: 2rem;
-  background: var(--color-accent);
+  --r: 7rem;
+  --blob-rgb: 108 59 170;
+  top: -8rem;
+  right: -4rem;
   opacity: 0.22;
 }
 
 .hero-blob-b {
-  width: 12rem;
-  height: 12rem;
-  right: 14%;
-  bottom: 1rem;
-  background: var(--color-accent-2);
+  --r: 6rem;
+  --blob-rgb: 59 170 153;
+  right: calc(14% - 6rem);
+  bottom: -5rem;
   opacity: 0.18;
 }
 
 @media (min-width: 640px) {
   .hero-blob-a {
-    width: 19rem;
-    height: 19rem;
-    top: -1rem;
-    right: 4rem;
+    --r: 9.5rem;
+    top: -7rem;
+    right: -2rem;
   }
   .hero-blob-b {
-    width: 16rem;
-    height: 16rem;
-    right: 16%;
-    bottom: 2rem;
+    --r: 8rem;
+    right: calc(16% - 6rem);
+    bottom: -4rem;
   }
 }
 
