@@ -2,11 +2,11 @@
    otherwise-empty right side of the hero (see hero.ts).
    Drawn as a radial gradient, NOT `filter: blur()` — Safari is very slow
    with large blur filters. The stops trace a gaussian-blurred disc's edge
-   (blur 3rem ≈ std dev): ~98% at r-2σ, 84% at r-σ, 50% at r, 16% at r+σ,
-   0 at r+2σ, so it looks the same as the old blurred circle. --r is the
-   solid disc's radius; --pad (2σ) is the extra room the soft edge needs. */
+   (blur 2.4rem ≈ std dev — 20% less than the original 3rem, for a sharper
+   edge): ~98% at r-2σ, 84% at r-σ, 50% at r, 16% at r+σ, 0 at r+2σ. --r is
+   the solid disc's radius; --pad (2σ) is the extra room the soft edge needs. */
 .hero-blob {
-  --pad: 6rem;
+  --pad: 4.8rem;
   position: absolute;
   z-index: 0;
   pointer-events: none;
@@ -16,10 +16,10 @@
   background: radial-gradient(
     circle calc(var(--r) + var(--pad)),
     rgb(var(--blob-rgb) / 1) 0,
-    rgb(var(--blob-rgb) / 0.98) calc(var(--r) - 6rem),
-    rgb(var(--blob-rgb) / 0.84) calc(var(--r) - 3rem),
+    rgb(var(--blob-rgb) / 0.98) calc(var(--r) - 4.8rem),
+    rgb(var(--blob-rgb) / 0.84) calc(var(--r) - 2.4rem),
     rgb(var(--blob-rgb) / 0.5) var(--r),
-    rgb(var(--blob-rgb) / 0.16) calc(var(--r) + 3rem),
+    rgb(var(--blob-rgb) / 0.16) calc(var(--r) + 2.4rem),
     rgb(var(--blob-rgb) / 0) calc(var(--r) + var(--pad))
   );
 }
