@@ -1,0 +1,146 @@
+/* Lab hero — a CSS-only stand-in for a WebGL fluid-simulation background
+   (see lab.ts for the full rationale). Same graduated radial-gradient
+   technique as the home hero's blobs (sections/hero/hero.css): explicit
+   color stops that trace a gaussian falloff, NOT `filter: blur()` — Safari
+   is very slow with large blur filters, and this page exists specifically
+   to demonstrate the light-weight alternative. */
+.lab-hero {
+  isolation: isolate; /* keep the blend-mode blobs from affecting the navbar behind them */
+}
+
+.lab-blob-field {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.lab-blob {
+  --pad: 7rem;
+  position: absolute;
+  width: calc((var(--r) + var(--pad)) * 2);
+  height: calc((var(--r) + var(--pad)) * 2);
+  border-radius: 50%;
+  /* Multiply over the warm paper backdrop (and over each other where they
+     overlap) is what gives the "mixing paint" look the reference shader's
+     color-mixing loop was going for, for the cost of one compositing mode —
+     no simulation required. */
+  mix-blend-mode: multiply;
+  will-change: transform;
+  background: radial-gradient(
+    circle calc(var(--r) + var(--pad)),
+    rgb(var(--blob-rgb) / 0.9) 0,
+    rgb(var(--blob-rgb) / 0.86) calc(var(--r) - 6rem),
+    rgb(var(--blob-rgb) / 0.7) calc(var(--r) - 3rem),
+    rgb(var(--blob-rgb) / 0.4) var(--r),
+    rgb(var(--blob-rgb) / 0.12) calc(var(--r) + 3rem),
+    rgb(var(--blob-rgb) / 0) calc(var(--r) + var(--pad))
+  );
+}
+
+/* Each blob loops through its own wide, slow ellipse. Durations and delays
+   are all different so the four never fall into a visible sync — the same
+   "organic, not mechanical" goal the reference achieved via simulation. */
+.lab-blob-a {
+  --r: 9rem;
+  --blob-rgb: 108 59 170; /* --color-accent */
+  top: -10%;
+  left: -8%;
+  animation: lab-drift-a 26s ease-in-out infinite;
+}
+
+.lab-blob-b {
+  --r: 8rem;
+  --blob-rgb: 59 170 153; /* --color-accent-2 */
+  top: 10%;
+  right: -10%;
+  animation: lab-drift-b 32s ease-in-out infinite;
+  animation-delay: -6s;
+}
+
+.lab-blob-c {
+  --r: 7rem;
+  --blob-rgb: 217 164 65; /* the warm gold used for the process steps */
+  bottom: -12%;
+  left: 20%;
+  animation: lab-drift-c 22s ease-in-out infinite;
+  animation-delay: -11s;
+}
+
+.lab-blob-d {
+  --r: 6.5rem;
+  --blob-rgb: 108 59 170;
+  bottom: 5%;
+  right: 15%;
+  opacity: 0.7;
+  animation: lab-drift-d 29s ease-in-out infinite;
+  animation-delay: -18s;
+}
+
+@keyframes lab-drift-a {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(6vw, 8vh, 0) scale(1.12); }
+}
+
+@keyframes lab-drift-b {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(-7vw, 6vh, 0) scale(0.92); }
+}
+
+@keyframes lab-drift-c {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(4vw, -7vh, 0) scale(1.08); }
+}
+
+@keyframes lab-drift-d {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(-5vw, -5vh, 0) scale(1.15); }
+}
+
+/* Static grain, decoded once and tiled — not a per-frame filter, so it
+   costs nothing after the page paints. A tiny inline SVG feTurbulence
+   pattern, same trick the reference shader used for grain, done as a
+   texture instead of a per-pixel computation. */
+.lab-grain {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Gradient word — same technique as a shifting gradient-text hero word
+   (background-clip: text + animated background-position), themed to the
+   site's purple/green duo instead of the reference's blue/violet. */
+.lab-gradient-text {
+  display: inline-block;
+  background: linear-gradient(90deg, var(--color-accent) 0%, var(--color-accent-2) 50%, var(--color-accent) 100%);
+  background-size: 200% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: lab-gradient-shift 4s ease-in-out infinite alternate;
+}
+
+@keyframes lab-gradient-shift {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
+.lab-code {
+  font-family: ui-monospace, monospace;
+  font-size: 0.9em;
+  background: var(--color-paper-dim);
+  border-radius: 0.25rem;
+  padding: 0.1em 0.35em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lab-blob,
+  .lab-gradient-text {
+    animation: none;
+  }
+}

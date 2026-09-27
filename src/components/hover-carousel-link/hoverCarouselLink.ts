@@ -87,3 +87,16 @@ export function initHoverCarouselLink(
     }
   })
 }
+
+// Applies the hover-carousel effect to every `.nav-link` and `.hero-cta` on
+// the page (nav/footer links and, where present, the hero's "See our work"
+// link). Shared by every page's entry script so the wiring lives in one
+// place instead of being repeated per page.
+export function initSiteHoverCarouselLinks() {
+  document.querySelectorAll<HTMLElement>('.nav-link').forEach((link) => {
+    initHoverCarouselLink(link, { color: 'var(--color-accent)' })
+  })
+  document.querySelectorAll<HTMLElement>('.hero-cta').forEach((link) => {
+    initHoverCarouselLink(link, { color: 'var(--color-accent-2)', gap: '0.5rem' })
+  })
+}

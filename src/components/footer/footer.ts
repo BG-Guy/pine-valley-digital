@@ -13,9 +13,10 @@ export const renderFooter = () => `
       <div class="mx-auto max-w-7xl flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-ink/50">
         <span class="inline-flex items-center gap-2">${logoMark('w-5 h-5 shrink-0')}&copy; ${new Date().getFullYear()} Pine Valley Digital.</span>
         <div class="flex items-center gap-6">
-          <a href="#services" class="nav-link">Services</a>
-          <a href="#work" class="nav-link">Work</a>
-          <a href="#contact" class="nav-link">Contact</a>
+          <a href="/#services" class="nav-link">Services</a>
+          <a href="/#work" class="nav-link">Work</a>
+          <a href="/#contact" class="nav-link">Contact</a>
+          <a href="/lab.html" class="nav-link">Lab</a>
         </div>
       </div>
     </div>

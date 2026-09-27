@@ -7,23 +7,29 @@ import { renderCtaButton } from '../cta-button/ctaButton'
 import { initHoverTeaserMenu } from '../hover-teaser-menu/hoverTeaserMenu'
 
 // Markup: the bar (logo, desktop links, CTA, hamburger) and the collapsed
-// mobile drawer that the teaser menu is built into.
+// mobile drawer that the teaser menu is built into. Links are root-prefixed
+// (`/#services`) so they resolve correctly from any page, not just the home
+// page — same-path + hash is a same-document scroll, different-path is a
+// normal navigation back to the home page's section. Starts hidden
+// (opacity-0): every page's own preloader curtain fades it in as it opens
+// (see components/preloader).
 export const renderNavbar = () => `
   <header id="site-nav" class="navbar-shell fixed top-0 inset-x-0 z-40 opacity-0">
     <div id="navbar-bar" class="navbar-bar border-[3px] border-[var(--color-ink)] bg-[var(--color-paper)]">
       <div class="mx-auto max-w-7xl px-6 sm:px-10 py-5 flex items-center justify-between">
-        <a href="#top" class="flex items-center gap-2">
+        <a href="/#top" class="flex items-center gap-2">
           ${logoMark('w-7 h-7 shrink-0')}
           ${logoWordmark('text-base sm:text-lg')}
         </a>
         <nav class="hidden md:flex items-center gap-8 text-sm font-medium">
-          <a href="#services" class="nav-link">Services</a>
-          <a href="#work" class="nav-link">Work</a>
-          <a href="#process" class="nav-link">Process</a>
-          <a href="#contact" class="nav-link">Contact</a>
+          <a href="/#services" class="nav-link">Services</a>
+          <a href="/#work" class="nav-link">Work</a>
+          <a href="/#process" class="nav-link">Process</a>
+          <a href="/#contact" class="nav-link">Contact</a>
+          <a href="/lab.html" class="nav-link">Lab</a>
         </nav>
         <div class="flex items-center gap-3">
-          ${renderCtaButton({ href: '#contact', label: 'Start a project', className: 'hidden sm:inline-flex text-sm font-semibold' })}
+          ${renderCtaButton({ href: '/#contact', label: 'Start a project', className: 'hidden sm:inline-flex text-sm font-semibold' })}
           <button id="menu-toggle" type="button" aria-label="Toggle menu" aria-expanded="false" class="md:hidden cursor-pointer flex items-center justify-center w-10 h-10 border border-[var(--color-ink)] rounded-full">
             <span class="hamburger">
               <span class="bar"></span>
@@ -47,10 +53,11 @@ export function initNavbar() {
 
   // The mobile drawer's links, each with its own color teaser panel.
   initHoverTeaserMenu(document.getElementById('mobile-menu-teaser')!, [
-    { id: 'services', label: 'Services', href: '#services', color: 'var(--color-accent)' },
-    { id: 'work', label: 'Work', href: '#work', color: 'var(--color-accent-2)' },
-    { id: 'process', label: 'Process', href: '#process', color: '#d9a441' },
-    { id: 'contact', label: 'Contact', href: '#contact', color: 'var(--color-ink)' },
+    { id: 'services', label: 'Services', href: '/#services', color: 'var(--color-accent)' },
+    { id: 'work', label: 'Work', href: '/#work', color: 'var(--color-accent-2)' },
+    { id: 'process', label: 'Process', href: '/#process', color: '#d9a441' },
+    { id: 'contact', label: 'Contact', href: '/#contact', color: 'var(--color-ink)' },
+    { id: 'lab', label: 'Lab', href: '/lab.html', color: 'var(--color-accent-2)' },
   ])
 }
 

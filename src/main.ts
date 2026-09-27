@@ -11,7 +11,7 @@ import { renderPreloader } from './components/preloader/preloader'
 import { renderNavbar, initNavbar } from './components/navbar/navbar'
 import { renderMarquee, initMarquee } from './components/marquee/marquee'
 import { renderFooter, initFooter } from './components/footer/footer'
-import { initHoverCarouselLink } from './components/hover-carousel-link/hoverCarouselLink'
+import { initSiteHoverCarouselLinks } from './components/hover-carousel-link/hoverCarouselLink'
 import { renderHero, initHero } from './sections/hero/hero'
 import { renderServices } from './sections/services/services'
 import { renderWork } from './sections/work/work'
@@ -19,13 +19,14 @@ import { renderProcess } from './sections/process/process'
 import { renderContact, initContact } from './sections/contact/contact'
 import { initPageLoad } from './animations/pageLoad'
 import { initScrollReveals } from './animations/scrollReveals'
+import { initPageTransitionLinks } from './animations/pageTransitions'
 
 gsap.registerPlugin(ScrollTrigger)
 
 // Build the page. Everything inside #page-shell scrolls over the reveal
 // footer, which sits outside it.
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-  ${renderPreloader()}
+  ${renderPreloader('Home')}
 
   <div id="page-shell">
   ${renderNavbar()}
@@ -48,17 +49,8 @@ initPageLoad()
 initScrollReveals()
 initMarquee()
 initHero()
-initHoverCarouselLinks()
+initSiteHoverCarouselLinks()
 initNavbar()
 initContact()
 initFooter()
-
-// Gives the nav/footer links and the hero CTA the hover-carousel effect.
-function initHoverCarouselLinks() {
-  document.querySelectorAll<HTMLElement>('.nav-link').forEach((link) => {
-    initHoverCarouselLink(link, { color: 'var(--color-accent)' })
-  })
-  document.querySelectorAll<HTMLElement>('.hero-cta').forEach((link) => {
-    initHoverCarouselLink(link, { color: 'var(--color-accent-2)', gap: '0.5rem' })
-  })
-}
+initPageTransitionLinks()
