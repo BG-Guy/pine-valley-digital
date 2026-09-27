@@ -1,0 +1,111 @@
+/* Navbar styles: the hamburger button, the mobile drawer's teaser-menu theme,
+   and the scroll-morphing bar shell. */
+
+/* Hamburger icon — two bars that morph into an X when the menu is open. */
+.hamburger {
+  position: relative;
+  display: block;
+  width: 18px;
+  height: 10px;
+}
+
+.hamburger .bar {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 1.5px;
+  background: var(--color-ink);
+  transition:
+    top 0.3s cubic-bezier(0.65, 0, 0.35, 1),
+    bottom 0.3s cubic-bezier(0.65, 0, 0.35, 1),
+    transform 0.3s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.hamburger .bar:first-child {
+  top: 0;
+}
+
+.hamburger .bar:last-child {
+  bottom: 0;
+}
+
+#menu-toggle.is-open .hamburger .bar:first-child {
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
+}
+
+#menu-toggle.is-open .hamburger .bar:last-child {
+  bottom: 50%;
+  transform: translateY(50%) rotate(-45deg);
+}
+
+/* Mobile drawer's hover-teaser menu (see hover-teaser-menu/) — the script
+   only builds structure/interaction, so give the links and surface our
+   own type and color here. */
+#mobile-menu-teaser.htm-menu {
+  background: var(--color-paper-dim);
+  border-radius: 1rem;
+}
+
+/* The nav column sits directly over the (usually left-half) teaser stack —
+   give it its own opaque surface so link text never renders against a
+   teaser color of the same value, and only the empty right half shows the
+   sliding color panel. Padding lives here (not on .htm-menu) so the
+   absolutely-positioned teaser layer still bleeds edge-to-edge. */
+#mobile-menu-teaser .htm-nav {
+  background: var(--color-paper-dim);
+  padding: 0.5rem 0 0.5rem 1.5rem;
+}
+
+#mobile-menu-teaser .htm-link {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--color-ink);
+  padding: 0.375rem 0;
+  transition: color 0.3s ease;
+}
+
+#mobile-menu-teaser .htm-link.is-active {
+  color: var(--color-accent);
+}
+
+/* Navbar shell — the shared Navbar's morph technique, with the 0/1 ends
+   swapped: a floating rounded pill, inset from the screen edges, at the
+   very top of the page, docking into a flush full-width bar over the
+   first 100px of scroll (see setupNavbarMorph in navbar.ts). Two layers,
+   same as the source: the outer shell scales its own top-inset and
+   horizontal padding, the inner bar (border/shadow/bg) scales its
+   border-radius — both driven by one 0-1 progress value. */
+#site-nav.navbar-shell {
+  --nav-progress: 1;
+  top: calc(12px * var(--nav-progress));
+  padding-left: calc(1rem * var(--nav-progress));
+  padding-right: calc(1rem * var(--nav-progress));
+}
+
+@media (min-width: 768px) {
+  #site-nav.navbar-shell {
+    padding-left: calc(2rem * var(--nav-progress));
+    padding-right: calc(2rem * var(--nav-progress));
+  }
+}
+
+@media (min-width: 1024px) {
+  #site-nav.navbar-shell {
+    padding-left: calc(2.5rem * var(--nav-progress));
+    padding-right: calc(2.5rem * var(--nav-progress));
+  }
+}
+
+@media (min-width: 1280px) {
+  #site-nav.navbar-shell {
+    padding-left: calc(3rem * var(--nav-progress));
+    padding-right: calc(3rem * var(--nav-progress));
+  }
+}
+
+.navbar-bar {
+  box-shadow: 0 6px 0 0 var(--color-ink);
+  border-radius: calc(999px * var(--nav-progress));
+}

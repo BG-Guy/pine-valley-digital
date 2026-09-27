@@ -1,0 +1,95 @@
+/* Hover carousel link (see hoverCarouselLink.ts): the label is duplicated in
+   a two-row track that slides up on hover, and a dot below stretches into
+   an underline. */
+.hc-link {
+  position: relative;
+  display: inline-flex;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* Window showing one copy of the label at a time. */
+.hc-viewport {
+  overflow: hidden;
+  display: inline-block;
+  height: 1.25em;
+  line-height: 1.25em;
+}
+
+/* Holds the two label copies; sliding it reveals the second one. */
+.hc-track {
+  display: flex;
+  height: 200%;
+  transition: transform 0.4s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.hc-track--y {
+  flex-direction: column;
+}
+
+.hc-track--x {
+  flex-direction: row;
+  width: 200%;
+  height: 100%;
+}
+
+.hc-copy {
+  display: flex;
+  flex: 1 0 50%;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Dot underline, two phases each way:
+     hover  — a 6px dot rises from beneath the link and fades in (150ms),
+              then stretches into a full-width bar (200ms).
+     leave  — the bar contracts back into the dot (200ms), then the dot sinks
+              and fades out (150ms).
+   Done as transitions with delays (not cancel-and-restart animations) so an
+   interrupted hover retargets from wherever the dot currently is instead of
+   snapping to a start pose. Every moving property, including transform, is in
+   the transition list; the dot is centred with `left`, not translateX. */
+.hc-underline {
+  position: absolute;
+  left: calc(50% - 3px);
+  bottom: -6px;
+  width: 6px;
+  height: 6px;
+  border-radius: 3px;
+  opacity: 0;
+  transform: translateY(6px);
+  pointer-events: none;
+  /* leaving: contract first, then sink */
+  transition:
+    width 0.2s ease-in-out,
+    height 0.2s ease-in-out,
+    left 0.2s ease-in-out,
+    border-radius 0.2s ease-in-out,
+    opacity 0.15s ease-out 0.2s,
+    transform 0.15s ease-out 0.2s;
+}
+
+.hc-underline.is-active {
+  left: 0;
+  width: 100%;
+  height: 2px;
+  border-radius: 0;
+  opacity: 1;
+  transform: translateY(0);
+  /* entering: rise first, then stretch */
+  transition:
+    opacity 0.15s ease-out,
+    transform 0.15s ease-out,
+    width 0.2s ease-in-out 0.15s,
+    height 0.2s ease-in-out 0.15s,
+    left 0.2s ease-in-out 0.15s,
+    border-radius 0.2s ease-in-out 0.15s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hc-track,
+  .hc-underline,
+  .hc-underline.is-active {
+    transition: none;
+  }
+}

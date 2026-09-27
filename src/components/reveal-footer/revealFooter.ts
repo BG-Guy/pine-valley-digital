@@ -3,30 +3,12 @@
 // matching the footer's height reserves the scroll room needed for the
 // shell to scroll fully out of the way, "revealing" the footer beneath.
 
-const STYLE_ID = 'reveal-footer-styles'
+import './revealFooter.css'
 
-function ensureStyles() {
-  if (document.getElementById(STYLE_ID)) return
-
-  const style = document.createElement('style')
-  style.id = STYLE_ID
-  style.textContent = `
-    .rf-shell {
-      position: relative;
-      z-index: 1;
-      background: inherit;
-    }
-    .rf-footer {
-      position: fixed;
-      inset: auto 0 0 0;
-      z-index: 0;
-    }
-  `
-  document.head.appendChild(style)
-}
-
+// Pins `footer` to the viewport bottom behind `shell` and adds a spacer after
+// the shell so there's scroll room to uncover it. Returns the spacer (the
+// footer's scroll-morph is measured against it).
 export function initRevealFooter(shell: HTMLElement, footer: HTMLElement) {
-  ensureStyles()
   shell.classList.add('rf-shell')
   footer.classList.add('rf-footer')
 

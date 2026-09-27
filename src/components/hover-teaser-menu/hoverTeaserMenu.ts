@@ -2,53 +2,9 @@
 // slides out to the right half of the container on hover (or, on touch,
 // on a second tap of the same link — the first tap only "primes" it).
 
-const STYLE_ID = 'hover-teaser-menu-styles'
+import './hoverTeaserMenu.css'
 
-function ensureStyles() {
-  if (document.getElementById(STYLE_ID)) return
-
-  const style = document.createElement('style')
-  style.id = STYLE_ID
-  style.textContent = `
-    .htm-menu { position: relative; overflow: hidden; }
-    .htm-teaser-layer { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
-
-    .htm-teaser {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 50%;
-      height: 100%;
-      transform: translateX(0%);
-      transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1);
-    }
-    .htm-teaser.is-active { transform: translateX(100%); }
-
-    .htm-nav {
-      position: relative;
-      z-index: 10;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 1rem;
-      width: 50%;
-      height: 100%;
-    }
-    .htm-link { position: relative; display: flex; align-items: center; gap: 0.5rem; }
-    .htm-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 999px;
-      background: currentColor;
-      opacity: 0;
-      transform: translateX(0);
-      transition: opacity 0.3s ease, transform 0.3s ease;
-    }
-    .htm-link.is-active .htm-dot { opacity: 0.6; transform: translateX(10px); }
-  `
-  document.head.appendChild(style)
-}
-
+// One menu entry: `color` is the teaser panel that slides out behind it.
 export interface HoverTeaserLink {
   id: string
   label: string
@@ -56,8 +12,9 @@ export interface HoverTeaserLink {
   color: string
 }
 
+// Builds the menu (teaser panels + link column) inside `container` and wires
+// the hover / two-tap-on-touch behavior.
 export function initHoverTeaserMenu(container: HTMLElement, links: HoverTeaserLink[]) {
-  ensureStyles()
   container.classList.add('htm-menu')
 
   container.innerHTML = `

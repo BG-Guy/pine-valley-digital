@@ -1,0 +1,26 @@
+/* Project / work cards — offset color shadow behind a bordered panel that
+   fills with the accent color on hover (ported from the portfolio's
+   ServiceCard component) */
+.project-card .project-card-shadow {
+  position: absolute;
+  inset: 0;
+  border-radius: 1rem;
+  background: var(--color-accent-2);
+  transform: translate(0.5rem, 0.5rem);
+  transition: transform 0.3s ease;
+}
+
+.project-card:hover .project-card-shadow {
+  transform: translate(0.75rem, 0.75rem);
+}
+
+.project-card .project-card-face {
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+.project-card:hover .project-card-face {
+  background: var(--color-accent);
+  color: #fff;
+}

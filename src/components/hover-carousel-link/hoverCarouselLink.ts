@@ -1,6 +1,7 @@
 // Hover "carousel" link: the label is duplicated in a two-row track that
 // slides up on hover (the copy rolls into view), with a dot that stretches
-// into an underline. Styles live in style.css under `.hc-*`.
+// into an underline. Styles live in hoverCarouselLink.css.
+import './hoverCarouselLink.css'
 
 interface HoverCarouselOptions {
   direction?: 'x' | 'y'
@@ -13,6 +14,8 @@ interface HoverCarouselOptions {
   primeOnTouch?: boolean
 }
 
+// Turns `link` into a hover carousel link (rewrites its inner HTML into the
+// duplicated-label track plus the underline dot).
 export function initHoverCarouselLink(
   link: HTMLElement,
   { direction = 'y', color = 'currentColor', gap = '0', primeOnTouch = false }: HoverCarouselOptions = {}

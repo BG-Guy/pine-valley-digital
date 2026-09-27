@@ -1,0 +1,84 @@
+/* Global styles — the Tailwind import, design tokens, and base page rules
+   only. Anything specific to one component or section lives in that
+   folder's own .css file, next to the code that renders it. */
+@import "tailwindcss";
+
+/*
+ * Color theme shared with the BG portfolio site (portfolio-2025):
+ * purple/green duo on a warm off-white paper, dark ink for contrast.
+ *
+ * Site theme, ported from portfolio-2025's Navbar.tsx — apply this to new
+ * components going forward:
+ *   - Thick 3px ink border + a HARD offset box-shadow (no blur, e.g.
+ *     `0 6px 0 0 var(--color-ink)`) on cards/bars that should read as
+ *     "physical, lifted" objects — not a soft drop shadow.
+ *   - Warm off-white surfaces (--color-paper / --color-paper-dim), never
+ *     pure white, with ink for borders/shadows/text.
+ *   - Scroll-driven morphs (a bar/card whose shape changes as you scroll
+ *     through it) are expressed as ONE progress value (0-1) written to a
+ *     CSS custom property, consumed via calc() at each breakpoint's own
+ *     spacing step — e.g. `margin-left: calc(2rem * var(--progress))`.
+ *     Keeps the morph declarative in CSS; only the 0-1 driver is JS.
+ */
+@theme {
+  --font-display: "Bricolage Grotesque", "Arial Black", sans-serif;
+  --font-body: "Work Sans", system-ui, sans-serif;
+  --font-logo: "Fraunces", Georgia, serif;
+
+  --color-ink: #333333;
+  --color-paper: #fef9e7;
+  --color-paper-dim: #f5edd0;
+  --color-accent: #6c3baa;
+  --color-accent-2: #3baa99;
+  --color-accent-ink: #ffffff;
+}
+
+/* Smooth in-page anchor scrolling for the nav links. */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Base page look: paper background, ink text, body font. */
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+}
+
+/* The Vite mount point sits between body and the reveal-footer's
+   #page-shell — give it an explicit background so .rf-shell's
+   `background: inherit` (see reveal-footer/revealFooter.css) resolves to
+   the actual page color instead of transparent. */
+#app {
+  background: inherit;
+}
+
+/* Purple text selection. */
+::selection {
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* Reveal targets (GSAP sets the animated-from state via JS — see
+   animations/scrollReveals.ts). */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+}
+
+.no-js .reveal {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}

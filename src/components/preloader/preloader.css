@@ -1,0 +1,11 @@
+/* Preloader — background is painted by the curveTransition panel (see
+   curveTransition.ts), not by CSS, so it can animate in with a curved edge. */
+#preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  color: var(--color-paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

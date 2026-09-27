@@ -1,0 +1,65 @@
+/* Hover teaser menu — structure and motion only; the site-specific look
+   (colors, type, padding) is layered on top in navbar/navbar.css. */
+.htm-menu {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Holds the color panels behind the links. */
+.htm-teaser-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+/* A color panel, parked behind the link column until its link is active,
+   then slides into the right half. */
+.htm-teaser {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  transform: translateX(0%);
+  transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.htm-teaser.is-active {
+  transform: translateX(100%);
+}
+
+/* The link column, stacked over the teaser layer. */
+.htm-nav {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1rem;
+  width: 50%;
+  height: 100%;
+}
+
+.htm-link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Small dot that fades in and nudges right beside the active link. */
+.htm-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: currentColor;
+  opacity: 0;
+  transform: translateX(0);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.htm-link.is-active .htm-dot {
+  opacity: 0.6;
+  transform: translateX(10px);
+}

@@ -17,6 +17,27 @@ shared with [portfolio-2025](https://github.com/bg-guy/portfolio-2025), which
 also hosts this content as a page (`/web-agency`) alongside the personal
 portfolio.
 
+## Project structure
+
+Code is grouped by feature, and each piece's CSS sits next to the code that
+renders it. Every file opens with a comment saying what it is.
+
+```
+src/
+  main.ts          entry: renders the page, then boots animations/widgets
+  global.css       design tokens + base styles only
+  components/      reusable pieces, one folder each (code + its own .css)
+    navbar/  footer/  marquee/  preloader/  logo/  cta-button/
+    hover-carousel-link/  hover-teaser-menu/  reveal-footer/
+  sections/        one folder per page section
+    hero/  services/  work/  process/  contact/
+  animations/      page-wide motion: pageLoad.ts, scrollReveals.ts
+```
+
+- **Add or edit a service:** the `services` array in `src/sections/services/services.ts`.
+- **Change what the banner lists:** `marqueeItems` in `src/components/marquee/marquee.ts`.
+- **Add a section:** make `src/sections/<name>/<name>.ts` (+ `.css` if it needs one), export a `render…` function, and add it to the template in `main.ts`.
+
 ## Development
 
 ```bash

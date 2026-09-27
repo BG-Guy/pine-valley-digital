@@ -1,0 +1,21 @@
+/* Contact headline — duotone layered text (ported from the portfolio's
+   Footer heading, purple over a green echo layer) */
+.duotone-heading {
+  position: relative;
+  display: inline-block;
+}
+
+/* Green echo layer, offset by JS on mouse move (see initContact). */
+.duotone-heading .duotone-back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: var(--color-accent-2);
+  transition: transform 0.2s ease-out;
+}
+
+/* Purple text in normal flow, on top of the echo. */
+.duotone-heading .duotone-front {
+  position: relative;
+  color: var(--color-accent);
+}
