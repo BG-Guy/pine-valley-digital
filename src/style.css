@@ -77,27 +77,85 @@ body {
   will-change: transform;
 }
 
-/* Nav link underline */
-.nav-link {
+/* Hover carousel link (see src/hoverCarouselLink.ts): the label is
+   duplicated in a two-row track that slides up on hover, and a dot below
+   stretches into an underline. */
+.hc-link {
   position: relative;
+  display: inline-flex;
+  cursor: pointer;
+  white-space: nowrap;
 }
 
-.nav-link::after {
-  content: "";
+.hc-viewport {
+  overflow: hidden;
+  display: inline-block;
+  height: 1.25em;
+  line-height: 1.25em;
+}
+
+.hc-track {
+  display: flex;
+  height: 200%;
+  transition: transform 0.4s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.hc-track--y {
+  flex-direction: column;
+}
+
+.hc-track--x {
+  flex-direction: row;
+  width: 200%;
+  height: 100%;
+}
+
+.hc-copy {
+  display: flex;
+  flex: 1 0 50%;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Centered with `left` (not translateX) so every moving property is in the
+   transition list — an untransitioned transform snaps instantly and made
+   the bar jump sideways when it collapsed back to the dot. */
+.hc-underline {
   position: absolute;
-  left: 0;
-  bottom: -2px;
-  width: 100%;
-  height: 1px;
-  background: currentColor;
-  transform: scaleX(0);
-  transform-origin: right;
-  transition: transform 0.35s ease;
+  left: calc(50% - 2px);
+  bottom: -6px;
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+  opacity: 0;
+  transition:
+    width 0.25s cubic-bezier(0.6, 0.05, 0.15, 0.95),
+    left 0.25s cubic-bezier(0.6, 0.05, 0.15, 0.95),
+    height 0.25s ease,
+    border-radius 0.25s ease,
+    opacity 0.25s ease;
 }
 
-.nav-link:hover::after {
-  transform: scaleX(1);
-  transform-origin: left;
+.hc-underline.is-active {
+  left: 0;
+  width: 100%;
+  height: 2px;
+  border-radius: 0;
+  opacity: 1;
+}
+
+/* Pine icon in the marquee banner. */
+.marquee-pine {
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hc-track,
+  .hc-underline {
+    transition: none;
+  }
 }
 
 /* Hamburger icon — two bars that morph into an X when the menu is open. */
@@ -376,6 +434,7 @@ body {
   position: absolute;
   z-index: 0;
   pointer-events: none;
+  will-change: transform; /* animated by setupHeroBlobs — keep on its own layer */
   width: calc((var(--r) + var(--pad)) * 2);
   height: calc((var(--r) + var(--pad)) * 2);
   background: radial-gradient(

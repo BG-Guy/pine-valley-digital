@@ -4,6 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { curveTransition } from './transition'
 import { initRevealFooter } from './revealFooter'
 import { initHoverTeaserMenu } from './hoverTeaserMenu'
+import { initHoverCarouselLink } from './hoverCarouselLink'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -143,7 +144,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
             Pine Valley Digital designs and builds lean, high-performance websites for
             studios, founders, and small teams who need to move fast without looking cheap.
           </p>
-          <a href="#work" class="shrink-0 inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-wide">
+          <a href="#work" class="hero-cta shrink-0 inline-flex items-center text-sm font-semibold uppercase tracking-wide">
             See our work
             <span aria-hidden="true">&darr;</span>
           </a>
@@ -158,7 +159,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
             marqueeItems
               .map(
                 (item) =>
-                  `<span class="flex items-center gap-6 pr-6"><span>${item}</span><span aria-hidden="true" class="text-[var(--color-accent)]">&#10022;</span></span>`
+                  `<span class="flex items-center gap-6 pr-6"><span>${item}</span>${logoMark('marquee-pine')}</span>`
               )
               .join('')
           )
@@ -335,6 +336,7 @@ async function initAnimations() {
     if (heroEyebrow) gsap.set(heroEyebrow, { y: 0 })
     setupScrollReveals()
     setupMarquee()
+    setupHoverCarouselLinks()
     return
   }
 
@@ -352,6 +354,8 @@ async function initAnimations() {
 
   setupScrollReveals()
   setupMarquee()
+  setupHeroBlobs()
+  setupHoverCarouselLinks()
 
   if (preloader) {
     // Total load sequence: 1200ms hold + 300ms fade + 1000ms curtain = 2.5s.
@@ -491,10 +495,71 @@ function setupDuotoneHeading() {
 function setupMarquee() {
   const track = document.querySelector<HTMLElement>('.marquee-track')
   if (!track) return
-  gsap.to(track, {
+  const loop = gsap.to(track, {
     xPercent: -50,
     duration: 22,
     ease: 'none',
     repeat: -1,
+  })
+
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+  // Speed up with scroll velocity. Measured per frame from scrollY (rather
+  // than ScrollTrigger's velocity, which only updates on scroll events) so
+  // the boost also eases back down smoothly once scrolling stops.
+  const BOOST_PER_PX = 0.375 // extra timeScale per px scrolled per 60fps frame
+  const MAX_BOOST = 14
+  let lastY = window.scrollY
+  let boost = 0
+  gsap.ticker.add(() => {
+    const y = window.scrollY
+    const pxPerFrame = Math.abs(y - lastY) / gsap.ticker.deltaRatio()
+    lastY = y
+    const target = Math.min(pxPerFrame * BOOST_PER_PX, MAX_BOOST)
+    // Rise quickly, fall back slowly.
+    boost += (target - boost) * (target > boost ? 0.2 : 0.06)
+    loop.timeScale(1 + boost)
+  })
+}
+
+// The two hero blobs glide to each other's spot and back, forever. Only
+// `transform` is animated (composited, no repaint); the travel distance is
+// measured from layout so it holds at every breakpoint, and rebuilt on
+// resize (ScrollTrigger's 'refresh') with the loop position preserved.
+function setupHeroBlobs() {
+  const a = document.querySelector<HTMLElement>('.hero-blob-a')
+  const b = document.querySelector<HTMLElement>('.hero-blob-b')
+  if (!a || !b) return
+
+  // offsetLeft/Top ignore transforms, so this is the resting centre.
+  const center = (el: HTMLElement) => ({
+    x: el.offsetLeft + el.offsetWidth / 2,
+    y: el.offsetTop + el.offsetHeight / 2,
+  })
+  const loop = { duration: 7.7, ease: 'sine.inOut', repeat: -1, yoyo: true, repeatDelay: 1 }
+
+  let tweens: gsap.core.Tween[] = []
+  const build = () => {
+    const time = tweens[0]?.totalTime() ?? 0
+    tweens.forEach((t) => t.kill())
+    gsap.set([a, b], { x: 0, y: 0 })
+    const ca = center(a)
+    const cb = center(b)
+    const dx = cb.x - ca.x
+    const dy = cb.y - ca.y
+    tweens = [gsap.to(a, { x: dx, y: dy, ...loop }), gsap.to(b, { x: -dx, y: -dy, ...loop })]
+    tweens.forEach((t) => t.totalTime(time))
+  }
+  build()
+  ScrollTrigger.addEventListener('refresh', build)
+}
+
+// Wire the hover carousel effect onto the nav/footer links and the hero CTA.
+function setupHoverCarouselLinks() {
+  document.querySelectorAll<HTMLElement>('.nav-link').forEach((link) => {
+    initHoverCarouselLink(link, { color: 'var(--color-accent)' })
+  })
+  document.querySelectorAll<HTMLElement>('.hero-cta').forEach((link) => {
+    initHoverCarouselLink(link, { color: 'var(--color-accent-2)', gap: '0.5rem' })
   })
 }
