@@ -1,0 +1,59 @@
+/* Service landing page (see serviceLandingPage.ts) — the pieces that need
+   real CSS beyond Tailwind utilities: the diagnostic checklist's custom
+   checkbox and the closing form's inputs. Both reuse the site's thick-border,
+   hard-edge visual language (see global.css's theme note). */
+
+/* Custom checkbox: a plain square that fills with the accent color and
+   shows a check mark when ticked — matches the bordered, no-soft-shadow
+   language used elsewhere (navbar, CTA button) instead of the OS default. */
+.svc-check-input {
+  appearance: none;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--color-paper);
+  border-radius: 4px;
+  cursor: pointer;
+  position: relative;
+}
+
+.svc-check-input:checked {
+  background: var(--color-accent-2);
+  border-color: var(--color-accent-2);
+}
+
+.svc-check-input:checked::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 1px;
+  width: 5px;
+  height: 10px;
+  border: solid var(--color-ink);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+/* Closing form fields — same thick-border card language as the rest of the
+   site, on the light (paper) background this section sits on. */
+.svc-input {
+  width: 100%;
+  border: 2px solid var(--color-ink);
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  resize: vertical;
+  transition: box-shadow 0.2s ease;
+}
+
+.svc-input::placeholder {
+  color: rgb(51 51 51 / 0.4);
+}
+
+.svc-input:focus {
+  outline: none;
+  box-shadow: 3px 3px 0 0 var(--color-ink);
+}

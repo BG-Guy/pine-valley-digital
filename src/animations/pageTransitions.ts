@@ -9,13 +9,17 @@
 import { gsap } from 'gsap'
 import { curveTransition } from '../components/preloader/curveTransition'
 import { revealPreloaderText, hidePreloaderText, markPageTransition } from '../components/preloader/preloader'
+import { servicesLandingData } from '../pages/services/servicesLandingData'
 
-// The name shown on the curtain while navigating TO that page. Add an entry
-// here whenever a new top-level page is added to the site.
+// The name shown on the curtain while navigating TO that page. The 14
+// service pages are added automatically from servicesLandingData.ts (their
+// single source of truth) — add an entry here only for a genuinely new
+// top-level page (not a service).
 const PAGE_TITLES: Record<string, string> = {
   '/': 'Home',
   '/index.html': 'Home',
   '/lab.html': 'Lab',
+  ...Object.fromEntries(servicesLandingData.map((s) => [`/services/${s.slug}.html`, s.navTitle])),
 }
 
 // '/' and '/index.html' serve the same page — treat them as one path so a

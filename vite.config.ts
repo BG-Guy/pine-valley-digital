@@ -1,6 +1,20 @@
+import { readdirSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { defineConfig } from 'vite'
 import tailwindcss from '@tailwindcss/vite'
+
+// Multi-page site: every top-level .html file, plus every services/*.html
+// file, is its own build entry. Scanned at build time instead of listed by
+// hand — the services/ folder holds 14+ near-identical pages (see
+// src/pages/services/), so a manual list here would be one more place to
+// forget to update when a service is added.
+const root = import.meta.dirname
+
+const serviceEntries = Object.fromEntries(
+  readdirSync(resolve(root, 'services'))
+    .filter((f) => f.endsWith('.html'))
+    .map((f) => [`services/${f.replace('.html', '')}`, resolve(root, 'services', f)])
+)
 
 export default defineConfig({
   // The site is served from the custom domain https://pinevalleydigital.com/
@@ -9,12 +23,11 @@ export default defineConfig({
   base: '/',
   plugins: [tailwindcss()],
   build: {
-    // Multi-page site: every top-level .html file is its own build entry.
-    // Add a line here when adding a new page (e.g. lab.html).
     rollupOptions: {
       input: {
-        main: resolve(import.meta.dirname, 'index.html'),
-        lab: resolve(import.meta.dirname, 'lab.html'),
+        main: resolve(root, 'index.html'),
+        lab: resolve(root, 'lab.html'),
+        ...serviceEntries,
       },
     },
   },
