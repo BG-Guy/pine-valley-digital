@@ -1,8 +1,7 @@
 // Footer: the "reveal" footer — fixed to the viewport bottom behind the page,
-// uncovered as you scroll to the end, morphing from a narrow rounded card to
-// a full-bleed bar. Styles live in footer.css.
+// uncovered as you scroll to the end. Full-width from the start. Styles live
+// in footer.css.
 import './footer.css'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { logoMark } from '../logo/logo'
 import { initRevealFooter } from '../reveal-footer/revealFooter'
 
@@ -23,34 +22,8 @@ export const renderFooter = () => `
   </footer>
 `
 
-// Pins the footer behind the page shell and drives its scroll morph. Call
-// after the markup is in the DOM.
+// Pins the footer behind the page shell so scrolling reveals it. Call after
+// the markup is in the DOM.
 export function initFooter() {
-  const { spacer } = initRevealFooter(document.getElementById('page-shell')!, document.getElementById('site-footer')!)
-  setupFooterMorph(spacer)
-}
-
-// Writes the footer's 0-1 reveal progress into a CSS custom property
-// (consumed in footer.css).
-function setupFooterMorph(spacer: HTMLElement) {
-  const shell = document.querySelector<HTMLElement>('#footer-shell')
-  if (!shell) return
-
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    shell.style.setProperty('--footer-progress', '1')
-    return
-  }
-
-  // progress 0 exactly when the reveal window starts (spacer's top hits the
-  // viewport bottom — the same moment the footer starts peeking up from
-  // behind the shell); progress 1 at max scroll, fully revealed.
-  ScrollTrigger.create({
-    trigger: spacer,
-    start: 'top bottom',
-    end: 'bottom bottom',
-    scrub: true,
-    onUpdate: (self) => {
-      shell.style.setProperty('--footer-progress', String(self.progress))
-    },
-  })
+  initRevealFooter(document.getElementById('page-shell')!, document.getElementById('site-footer')!)
 }
