@@ -27,6 +27,13 @@
   }
 }
 
+/* The cards' outline, in the site's own style (as on the navbar): a thick
+   ink border, and a hard ink drop shadow straight below. */
+.svc {
+  --svc-border: 3px;
+  --svc-drop: 6px;
+}
+
 /* The section is one screen tall, so it can sit exactly in the viewport:
    services.ts glides the page to it as you scroll in, and touch screens
    snap to it (below). Its content is centred in the space under the fixed
@@ -56,19 +63,21 @@
    are --svc-wc wide whether or not a card is open, so the row is always
    wider than this window and scrolls sideways (services.ts reads these
    same values for that). The cards get the height the screen has left
-   after the navbar, heading, controls and padding (--svc-around), within
-   a sensible range. overflow: clip rather than hidden, so focusing an
-   off-screen card can't scroll the row out of place. */
+   after the navbar, heading, controls, padding and their own drop shadow
+   (--svc-around), within a sensible range. The bottom padding keeps that
+   shadow inside the clip. overflow: clip rather than hidden, so focusing
+   an off-screen card can't scroll the row out of place. */
 .svc-viewport {
   --svc-p: 1;
   --svc-wc: 3.5rem;
   --svc-gap: 0.5rem;
-  --svc-around: calc(var(--svc-nav) + 11.75rem);
+  --svc-around: calc(var(--svc-nav) + 11.75rem + var(--svc-drop));
   --svc-h: clamp(22rem, 100svh - var(--svc-around), 30rem);
   --svc-step: calc(var(--svc-wc) + var(--svc-gap));
   --svc-we: calc(100cqw - var(--svc-p) * var(--svc-step));
   container-type: inline-size;
   overflow: clip;
+  padding-bottom: var(--svc-drop);
   border-radius: 1.5rem;
   touch-action: pan-y;
 }
@@ -78,7 +87,7 @@
     --svc-p: 2;
     --svc-wc: 5rem;
     --svc-gap: 0.625rem;
-    --svc-around: calc(var(--svc-nav) + 12.25rem);
+    --svc-around: calc(var(--svc-nav) + 12.25rem + var(--svc-drop));
   }
 }
 
@@ -122,15 +131,19 @@
   width: var(--svc-we);
 }
 
-/* The rounded, clipped part of the card. The corner link's notch is kept
-   outside this clip on purpose — see .svc-socket. */
+/* The rounded, clipped part of the card, with the ink border and drop
+   shadow. The background stops inside the border, so no card colour
+   fringes its outer edge. The corner link's notch is kept outside this
+   clip on purpose — see .svc-socket. */
 .svc-clip {
   position: absolute;
   inset: 0;
+  border: var(--svc-border) solid var(--color-ink);
   border-radius: 1.5rem;
   overflow: clip;
   isolation: isolate;
-  background: var(--art-b);
+  background: var(--art-b) padding-box;
+  box-shadow: 0 var(--svc-drop) 0 0 var(--color-ink);
 }
 
 /* Art themes (cycled in services.ts). Darkest at the top-left, where the
@@ -292,17 +305,18 @@
   }
 }
 
-/* The open card's content: always laid out at the open width (so it never
-   reflows mid-spring) and pinned to the card's left edge. It fades and lifts
-   in once the card is opening, and drops out fast when it closes. Also a
-   size container, so it can drop the teasers when narrow or short. */
+/* The open card's content: always laid out at the open card's inner width
+   (so it never reflows mid-spring) and pinned to its left edge. It fades
+   and lifts in once the card is opening, and drops out fast when it
+   closes. Also a size container, so it can drop the teasers when narrow
+   or short. */
 .svc-body {
   container: svc-body / size;
   position: absolute;
   inset-block: 0;
   left: 0;
   z-index: 2;
-  width: var(--svc-we);
+  width: calc(var(--svc-we) - 2 * var(--svc-border));
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -480,26 +494,47 @@
 
 /* The corner link, sat in a notch cut into the card's bottom-right corner
    (the reference's dark arrow button). The notch is a page-coloured square
-   with a rounded inner corner; the two pseudo-elements are the concave
-   fillets where it meets the card's right and bottom edges. It rides the
-   card's right edge as it grows, and pops in once the card is open.
+   with a rounded inner corner; the two pseudo-elements are the fillets
+   where it meets the card's right and bottom edges, rounded like the
+   card's own corners. The card's ink border runs on round the notch: the
+   socket's top and left border, then an ink ring in each fillet, all on
+   the card's side of the edge like the card's own border. The socket also
+   reaches down over the card's drop shadow, so the shadow stops at the
+   notch, and the bottom fillet draws the shadow's end following its curve.
+   It rides the card's right edge as it grows, and pops in once the card
+   is open.
 
    It sits outside .svc-clip and overhangs the card by 1px on the right and
    bottom, and the fillets overlap it by 1px: wherever two painted edges
    share a fractional-pixel line, anti-aliasing lets a sliver of the card's
    colour bleed through as a faint line, so every shared edge is covered
-   by a solid pixel instead. */
+   by a solid pixel instead. The fillets are centred exactly on their
+   corners' centres (and 1px oversized toward the edge), so their rings
+   meet the card's border without a step, and their curves are smoothed
+   over one device pixel (--aa is half of one), as crisp as the border's
+   straight edges. */
 .svc-socket {
   --socket: 4.25rem;
   --socket-pad: 0.45rem;
+  --fillet: 1.5rem; /* the card's corner radius */
+  --aa: 0.5px;
+  --ring: radial-gradient(
+    circle at 0 0,
+    transparent calc(var(--fillet) - var(--svc-border) - var(--aa)),
+    var(--color-ink) calc(var(--fillet) - var(--svc-border) + var(--aa)),
+    var(--color-ink) calc(var(--fillet) - var(--aa)),
+    var(--color-paper) calc(var(--fillet) + var(--aa))
+  );
   position: absolute;
   right: -1px;
-  bottom: -1px;
+  bottom: calc(-1px - var(--svc-drop));
   z-index: 3;
-  width: calc(var(--socket) + 1px);
-  height: calc(var(--socket) + 1px);
-  padding: var(--socket-pad) 1px 1px var(--socket-pad);
-  border-top-left-radius: 1.6rem;
+  width: calc(var(--socket) + 1px + var(--svc-border));
+  height: calc(var(--socket) + 1px + var(--svc-drop) + var(--svc-border));
+  padding: var(--socket-pad) 1px calc(1px + var(--svc-drop)) var(--socket-pad);
+  border-top: var(--svc-border) solid var(--color-ink);
+  border-left: var(--svc-border) solid var(--color-ink);
+  border-top-left-radius: calc(1.6rem + var(--svc-border));
   background: var(--color-paper);
   opacity: 0;
   transform: scale(0.6);
@@ -513,21 +548,41 @@
 .svc-socket::after {
   content: "";
   position: absolute;
-  background: radial-gradient(circle at 0 0, transparent 1.5rem, var(--color-paper) calc(1.5rem + 0.5px));
+  width: calc(var(--fillet) + 1px);
 }
 
 .svc-socket::before {
   right: 0;
   bottom: calc(100% - 1px);
-  width: 1.5rem;
-  height: calc(1.5rem + 1px);
+  height: calc(var(--fillet) + 1px);
+  background: var(--ring);
 }
 
+/* The bottom fillet also reaches down over the drop shadow and draws its
+   end: ink inside the fillet's curve moved one shadow-depth down, so the
+   shadow wraps the curve as it does round the card's other corners. On
+   top, ink inside the curve itself (the ring); the mask then cuts the
+   card's side of the curve back out. */
 .svc-socket::after {
   right: calc(100% - 1px);
   bottom: 0;
-  width: calc(1.5rem + 1px);
-  height: 1.5rem;
+  height: calc(var(--fillet) + var(--svc-drop) + 1px);
+  background:
+    radial-gradient(
+      circle at 0 0,
+      var(--color-ink) calc(var(--fillet) - var(--aa)),
+      transparent calc(var(--fillet) + var(--aa))
+    ),
+    radial-gradient(
+      circle at 0 var(--svc-drop),
+      var(--color-ink) calc(var(--fillet) - var(--aa)),
+      var(--color-paper) calc(var(--fillet) + var(--aa))
+    );
+  mask: radial-gradient(
+    circle at 0 0,
+    transparent calc(var(--fillet) - var(--svc-border) - var(--aa)),
+    #000 calc(var(--fillet) - var(--svc-border) + var(--aa))
+  );
 }
 
 .svc-card.is-active .svc-socket {
@@ -536,6 +591,12 @@
   transition:
     opacity 0.3s ease 0.3s,
     transform 0.55s var(--svc-ease) 0.25s;
+}
+
+@media (min-resolution: 2dppx) {
+  .svc-socket {
+    --aa: 0.25px;
+  }
 }
 
 @media (min-width: 640px) {
