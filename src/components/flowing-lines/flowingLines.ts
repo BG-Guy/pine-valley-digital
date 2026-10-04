@@ -3,8 +3,9 @@
 // light — redrawn on a <canvas> every frame. Ported from a provided snippet
 // with its algorithm and defaults intact; this version is typed and hands
 // back start/stop, so the caller can pause it while nothing is showing it
-// instead of letting it run forever. The canvas sizes itself to its parent,
-// which must be positioned and have a real size.
+// instead of letting it run forever, and configure, to swap in a different
+// look on the same canvas. The canvas sizes itself to its parent, which
+// must be positioned and have a real size.
 
 type RGB = [number, number, number]
 
@@ -102,12 +103,15 @@ interface Line {
 export interface FlowingLines {
   start(): void
   stop(): void
+  // Replaces the settings (overrides on top of the defaults) and rebuilds
+  // the lines; the animation carries on with the new look.
+  configure(overrides: Partial<FlowingLinesConfig>): void
 }
 
 export function createFlowingLines(canvas: HTMLCanvasElement, overrides: Partial<FlowingLinesConfig> = {}): FlowingLines {
   const ctx = canvas.getContext('2d')
   const parent = canvas.parentElement
-  if (!ctx || !parent) return { start() {}, stop() {} }
+  if (!ctx || !parent) return { start() {}, stop() {}, configure() {} }
 
   const dpr = Math.min(window.devicePixelRatio || 1, 2)
   const CONFIG: FlowingLinesConfig = { ...DEFAULTS, ...overrides }
@@ -360,7 +364,7 @@ export function createFlowingLines(canvas: HTMLCanvasElement, overrides: Partial
     if (line.highlight) drawHighlight(c, line, points, t, w, h)
   }
 
-  const lines = buildLines()
+  let lines = buildLines()
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
   let animStart: number | null = null
   let rafId = 0
@@ -407,6 +411,16 @@ export function createFlowingLines(canvas: HTMLCanvasElement, overrides: Partial
       running = false
       cancelAnimationFrame(rafId)
       rafId = 0
+    },
+    configure(next) {
+      Object.assign(CONFIG, DEFAULTS, next)
+      lines = buildLines()
+      // Redraw straight away (with reduced motion there's no loop to pick
+      // the change up).
+      if (running) {
+        cancelAnimationFrame(rafId)
+        rafId = requestAnimationFrame(draw)
+      }
     },
   }
 }

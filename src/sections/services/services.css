@@ -27,18 +27,44 @@
   }
 }
 
+/* The section is one screen tall, so it can sit exactly in the viewport:
+   services.ts glides the page to it as you scroll in, and touch screens
+   snap to it (below). Its content is centred in the space under the fixed
+   navbar (--svc-nav tall). */
+.svc-section {
+  --svc-nav: 5.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100svh;
+  padding-top: calc(var(--svc-nav) + 1.25rem);
+  padding-bottom: 1.5rem;
+  scroll-snap-align: start;
+}
+
+/* On touch screens the page itself snaps to the section when a scroll ends
+   near it. (Wheel and trackpad scrolling is handled in services.ts.) */
+@media (hover: none) and (pointer: coarse) {
+  html {
+    scroll-snap-type: y proximity;
+  }
+}
+
 /* The window onto the row. --svc-p pills sit beside the open card, and the
    open card gets whatever width is left (100cqw = this element's width), so
    with a card open in its slot the cards on screen fill it exactly. Pills
    are --svc-wc wide whether or not a card is open, so the row is always
    wider than this window and scrolls sideways (services.ts reads these
-   same values for that). overflow: clip rather than hidden, so focusing an
+   same values for that). The cards get the height the screen has left
+   after the navbar, heading, controls and padding (--svc-around), within
+   a sensible range. overflow: clip rather than hidden, so focusing an
    off-screen card can't scroll the row out of place. */
 .svc-viewport {
   --svc-p: 1;
   --svc-wc: 3.5rem;
   --svc-gap: 0.5rem;
-  --svc-h: 30rem;
+  --svc-around: calc(var(--svc-nav) + 11.75rem);
+  --svc-h: clamp(22rem, 100svh - var(--svc-around), 30rem);
   --svc-step: calc(var(--svc-wc) + var(--svc-gap));
   --svc-we: calc(100cqw - var(--svc-p) * var(--svc-step));
   container-type: inline-size;
@@ -52,6 +78,7 @@
     --svc-p: 2;
     --svc-wc: 5rem;
     --svc-gap: 0.625rem;
+    --svc-around: calc(var(--svc-nav) + 12.25rem);
   }
 }
 
@@ -60,7 +87,7 @@
     --svc-p: 3;
     --svc-wc: 7rem;
     --svc-gap: 0.75rem;
-    --svc-h: 32rem;
+    --svc-h: clamp(22rem, 100svh - var(--svc-around), 32rem);
   }
 }
 
@@ -268,9 +295,9 @@
 /* The open card's content: always laid out at the open width (so it never
    reflows mid-spring) and pinned to the card's left edge. It fades and lifts
    in once the card is opening, and drops out fast when it closes. Also a
-   size container, so it can drop the teasers / pine mark when narrow. */
+   size container, so it can drop the teasers when narrow or short. */
 .svc-body {
-  container: svc-body / inline-size;
+  container: svc-body / size;
   position: absolute;
   inset-block: 0;
   left: 0;
@@ -445,32 +472,8 @@
   }
 }
 
-/* A large, faint pine mark filling the open card's empty right side, sat
-   below the close button. */
-.svc-mark {
-  position: absolute;
-  top: 5rem;
-  right: 2.5rem;
-  width: 10rem;
-  height: 10rem;
-  color: var(--color-paper);
-  opacity: 0.16;
-  pointer-events: none;
-}
-
-.svc-mark path[stroke] {
-  stroke: currentColor;
-  stroke-opacity: 1;
-}
-
-@container svc-body (max-width: 26rem) {
+@container svc-body (max-width: 26rem) or (max-height: 26rem) {
   .svc-teasers {
-    display: none;
-  }
-}
-
-@container svc-body (max-width: 40rem) {
-  .svc-mark {
     display: none;
   }
 }

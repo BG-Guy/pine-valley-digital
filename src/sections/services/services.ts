@@ -3,17 +3,17 @@
 // its details, the rest are pills with a vertical title. Opening a card
 // widens it while the previous one narrows and the row glides, so the cards
 // grow and move into their new positions together. Clicking the open card
-// closes it back into a pill. The row is wider than the screen, so it
-// scrolls sideways: the mouse wheel / trackpad moves it (bouncing at the
-// ends), and on touch screens it drags and flings. The open card's
-// background lines move (components/flowing-lines). The list itself lives
-// in pages/services/servicesLandingData.ts, shared with the 14 service
-// landing pages — edit services there, not here. Styles live in
-// services.css.
+// closes it back into a pill. The section is one screen tall: scrolling
+// into it glides the page until it fills the screen, then the mouse wheel /
+// trackpad moves the row sideways (bouncing at the ends) until a fresh
+// scroll takes the page on; on touch screens the row drags and flings. The
+// open card's background lines move (components/flowing-lines), a little
+// differently on each card. The list itself lives in
+// pages/services/servicesLandingData.ts, shared with the 14 service landing
+// pages — edit services there, not here. Styles live in services.css.
 import './services.css'
 import { servicesLandingData as services, type ServiceLandingData } from '../../pages/services/servicesLandingData'
-import { logoMark } from '../../components/logo/logo'
-import { createFlowingLines } from '../../components/flowing-lines/flowingLines'
+import { createFlowingLines, type FlowingLinesConfig } from '../../components/flowing-lines/flowingLines'
 
 // Card art themes, cycled so neighbouring cards never share one.
 const THEMES = ['purple', 'green', 'gold', 'ink']
@@ -59,7 +59,6 @@ const renderCard = (s: ServiceLandingData, i: number) => {
                 <ul class="svc-teasers">
                   ${s.teasers.map((t) => `<li>${t}</li>`).join('')}
                 </ul>
-                ${logoMark('svc-mark')}
                 <button type="button" class="svc-close" aria-label="Close ${s.navTitle}">${closeIcon}</button>
               </div>
             </div>
@@ -71,9 +70,10 @@ const renderCard = (s: ServiceLandingData, i: number) => {
 
 // Markup: heading with the service count, the card row, then the controls
 // (counter, page dots, prev/next) and a screen-reader announcement line.
+// The section is sized to one screen in services.css (.svc-section).
 export const renderServices = () => `
-    <section id="services" class="px-6 sm:px-10 py-24 sm:py-32">
-      <div class="mx-auto max-w-7xl">
+    <section id="services" class="svc-section px-6 sm:px-10">
+      <div class="mx-auto w-full max-w-7xl">
         <div class="reveal flex items-end justify-between gap-6 mb-10">
           <h2 class="font-display font-extrabold text-4xl sm:text-5xl tracking-tight">What we <span class="text-[var(--color-accent-2)]">do</span></h2>
           <span class="hidden sm:block text-sm font-semibold text-[var(--color-accent)]">(${pad(services.length)})</span>
@@ -122,15 +122,19 @@ const SCROLL_SPRING: Spring = { response: 0.38, damping: 0.68 }
 // Wheel / trackpad scroll is multiplied by this before moving the row.
 const WHEEL_SENSITIVITY = 2.5
 // How far (in raw scroll px) a wheel gesture can stretch the row past an
-// end before a vertical scroll is handed back to the page.
+// end, and how quickly (ms) that stretch eases off between wheel events.
 const MAX_OVERSCROLL = 140
+const STRETCH_RELAX = 120
+// A pause this long (ms) between wheel events ends a scroll gesture; the
+// next wheel event starts a new one.
+const GESTURE_GAP = 300
 
-// The open card's moving lines: the provided effect, recoloured from its
-// neon defaults to light tints of the site palette so it reads on all four
-// card themes, and with its angles mirrored — the snippet's comments say
-// the lines enter from down-left and exit up-right, but canvas y points
-// down, so its defaults actually ran top-left to bottom-right, straight
-// through the card's title.
+// The moving lines: the provided effect, recoloured from its neon defaults
+// to light tints of the site palette so it reads on all four card themes,
+// and with its angles mirrored — the snippet's comments say the lines enter
+// from down-left and exit up-right, but canvas y points down, so its
+// defaults actually ran top-left to bottom-right, straight through the
+// card's title.
 const FLOW_LINES = {
   entryAngles: [152, 111] as [number, number],
   exitAngles: [352, 302] as [number, number],
@@ -142,6 +146,42 @@ const FLOW_LINES = {
     [255, 222, 150],
   ] as [number, number, number][],
   accentColor: [196, 140, 255] as [number, number, number],
+}
+
+// Card `i`'s own version of the lines: the bundle's tilt, spread and pinch
+// point, its ripple, pace and number of lines, and which colour leads, all
+// nudged by an amount fixed per card — so no two cards' lines move quite
+// alike, and a card looks the same every time it opens.
+function linesFor(i: number): Partial<FlowingLinesConfig> {
+  // A repeatable pseudo-random value between min and max, for this card and
+  // the given setting.
+  const pick = (setting: number, min: number, max: number) => {
+    const x = Math.sin((i + 1) * 12.9898 + setting * 78.233) * 43758.5453
+    return min + (x - Math.floor(x)) * (max - min)
+  }
+  const tilt = pick(1, -14, 14)
+  const spread = pick(2, 0.75, 1.3)
+  const fan = ([from, to]: [number, number]): [number, number] => {
+    const mid = (from + to) / 2 + tilt
+    const half = ((to - from) / 2) * spread
+    return [mid - half, mid + half]
+  }
+  const lead = i % FLOW_LINES.palette.length
+  return {
+    ...FLOW_LINES,
+    entryAngles: fan(FLOW_LINES.entryAngles),
+    exitAngles: fan(FLOW_LINES.exitAngles),
+    pinch: { x: pick(3, 0.56, 0.76), y: pick(4, 0.36, 0.58) },
+    lineCount: Math.round(pick(5, 22, 34)),
+    bunch: pick(6, 14, 32),
+    curveAmount: pick(7, 10, 34),
+    waveAmp: pick(8, 22, 42),
+    waveFreq: pick(9, 1.8, 3.2),
+    waveSpeed: pick(10, 0.35, 0.8),
+    breathPeriod: pick(11, 7, 12),
+    highlightPeriod: pick(12, 4, 6.5),
+    palette: [...FLOW_LINES.palette.slice(lead), ...FLOW_LINES.palette.slice(0, lead)],
+  }
 }
 
 // Converts a CSS length read from a custom property ("7rem", "44px") to px.
@@ -188,9 +228,10 @@ function advance(s: SpringValue, dt: number) {
 
 // Wires up the row: the motion engine, opening pills, closing the open card
 // (click, close button, Escape), page dots, prev/next, arrow/Home/End keys,
-// wheel and touch scrolling, the moving lines, and re-layout on resize.
-// Call after the markup is in the DOM.
+// gliding the section into place, wheel and touch scrolling, the moving
+// lines, and re-layout on resize. Call after the markup is in the DOM.
 export function initServices() {
+  const section = document.getElementById('services')
   const root = document.getElementById('svc')
   const viewport = document.getElementById('svc-viewport')
   const track = document.getElementById('svc-track')
@@ -198,7 +239,7 @@ export function initServices() {
   const live = document.getElementById('svc-live')
   const prevBtn = document.getElementById('svc-prev')
   const nextBtn = document.getElementById('svc-next')
-  if (!root || !viewport || !track || !counter || !live || !prevBtn || !nextBtn) return
+  if (!section || !root || !viewport || !track || !counter || !live || !prevBtn || !nextBtn) return
 
   const cards = Array.from(track.querySelectorAll<HTMLElement>('.svc-card'))
   const dots = Array.from(root.querySelectorAll<HTMLButtonElement>('.svc-dot'))
@@ -314,15 +355,16 @@ export function initServices() {
   }
 
   // ── Moving lines ──────────────────────────────────────────────────────
-  // One canvas, moved into whichever card is open, drawing only while a
-  // card is open and the row is on screen.
+  // One canvas, moved into whichever card is open and switched to that
+  // card's version of the lines, drawing only while a card is open and the
+  // row is on screen.
   const flow = document.createElement('div')
   flow.className = 'svc-flow'
   flow.setAttribute('aria-hidden', 'true')
   const canvas = document.createElement('canvas')
   flow.append(canvas)
   cards[0].querySelector('.svc-art')!.after(flow)
-  const lines = createFlowingLines(canvas, FLOW_LINES)
+  const lines = createFlowingLines(canvas, linesFor(0))
   let inView = false
 
   function updateLines() {
@@ -330,11 +372,13 @@ export function initServices() {
     else lines.stop()
   }
 
-  // Moves the lines into a card that's about to open. It arrives closed
-  // (so faded out); reading a layout value commits that, so the opening
-  // then fades the lines in instead of popping them.
-  function mountLines(card: HTMLElement) {
-    card.querySelector('.svc-art')!.after(flow)
+  // Moves the lines into card `index`, which is about to open, in its own
+  // version. The card arrives closed (so the lines are faded out); reading
+  // a layout value commits that, so the opening then fades the lines in
+  // instead of popping them.
+  function showLinesIn(index: number) {
+    cards[index].querySelector('.svc-art')!.after(flow)
+    lines.configure(linesFor(index))
     void flow.offsetWidth
   }
 
@@ -374,7 +418,7 @@ export function initServices() {
       markAnimating(cards[active])
       setOpen(cards[active], false)
     }
-    mountLines(cards[next])
+    showLinesIn(next)
     markAnimating(cards[next])
     setOpen(cards[next], true)
     active = next
@@ -443,45 +487,104 @@ export function initServices() {
   })
 
   // ── Wheel / trackpad ──────────────────────────────────────────────────
-  // Scrolling over the row moves it sideways (vertical wheel or horizontal
-  // trackpad swipe), amplified by WHEEL_SENSITIVITY. Past either end the row
-  // stretches like a rubber band; once stretched to MAX_OVERSCROLL, a
-  // vertical scroll goes back to scrolling the page, so the row never traps
-  // it. When the scrolling stops, a stretched row springs back.
-  let wheelRaw: number | null = null
+  // Wheel scrolling is handled a gesture at a time — a run of wheel events
+  // with no pause (a spin of the wheel, or a trackpad swipe and its
+  // momentum) — and who handles a gesture is decided once, at its first
+  // event. Browsers treat nested scrolling the same way: once a gesture's
+  // first event has been let through to the page, the rest can't be held
+  // back.
+  //   - With the section in place, a gesture moves the row sideways (by
+  //     WHEEL_SENSITIVITY × the scroll). Past either end the row stretches
+  //     like a rubber band and springs back, and the rest of the gesture is
+  //     used up there: the page only moves with the next one.
+  //   - With the section partly on screen, a gesture toward it glides the
+  //     page until the section fills the screen, and that's all it does.
+  //   - Anything else scrolls the page as usual.
+  // A sideways swipe over the section always moves the row (so it can't
+  // trigger the browser's back/forward swipe); pinch-zoom is left alone.
+  type WheelOwner = 'row' | 'glide' | 'page'
+  let owner: WheelOwner = 'page'
+  let lastWheelTime = -Infinity
+  let trickle = false // the last event barely moved: a swipe's momentum dying out
+  let wheelRaw = 0 // where the wheel is steering the row, before the rubber band
+  let lastSteerTime = 0
   let wheelTimer = 0
-  viewport.addEventListener(
+
+  // Smoothly scrolls the page until the section fills the screen.
+  function glideIn(top: number) {
+    if (Math.abs(top) < 1) return
+    window.scrollTo({ top: window.scrollY + top, behavior: reduceMotion ? 'instant' : 'smooth' })
+  }
+
+  // Who handles the gesture that `e` starts.
+  function ownerFor(e: WheelEvent): WheelOwner {
+    if (e.ctrlKey) return 'page'
+    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return section!.contains(e.target as Node) ? 'row' : 'page'
+    const down = e.deltaY > 0
+    const { top, bottom } = section!.getBoundingClientRect()
+    const screen = window.innerHeight
+    // Too little of the section on screen to pull it in.
+    if (top > screen * 0.8 || bottom < screen * 0.2) return 'page'
+    const min = minX()
+    const from = clamp(row.target, min, 0)
+    const rowCanMove = down ? from > min + 0.5 : from < -0.5
+    if (Math.abs(top) < screen * 0.15 && rowCanMove) {
+      glideIn(top) // tidies the section into place while the row moves
+      return 'row'
+    }
+    if (down ? top > 1 : top < -1) {
+      glideIn(top)
+      return 'glide'
+    }
+    return 'page'
+  }
+
+  // Moves the row with one wheel event of a gesture it owns. In range the
+  // row follows the wheel; past an end it stretches with diminishing
+  // returns, and the stretch keeps easing off between events, so a
+  // trackpad's fading momentum lets it settle back rather than holding it
+  // out. Once the wheel stops, a stretched row springs back.
+  function steer(e: WheelEvent) {
+    const horizontal = Math.abs(e.deltaX) > Math.abs(e.deltaY)
+    const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? viewport!.clientWidth : 1
+    const delta = -(horizontal ? e.deltaX : e.deltaY) * unit * WHEEL_SENSITIVITY
+    const min = minX()
+    const end = clamp(wheelRaw, min, 0)
+    wheelRaw = end + (wheelRaw - end) * Math.exp(-(e.timeStamp - lastSteerTime) / STRETCH_RELAX)
+    lastSteerTime = e.timeStamp
+    wheelRaw = clamp(wheelRaw + delta, min - MAX_OVERSCROLL, MAX_OVERSCROLL)
+    const inRange = clamp(wheelRaw, min, 0)
+    const past = wheelRaw - inRange
+    moveRow(past ? inRange + rubber(past, viewport!.clientWidth) : wheelRaw, SCROLL_SPRING)
+
+    clearTimeout(wheelTimer)
+    wheelTimer = window.setTimeout(() => {
+      const lowest = minX()
+      wheelRaw = clamp(wheelRaw, lowest, 0)
+      if (row.target > 0 || row.target < lowest) moveRow(clamp(row.target, lowest, 0), SCROLL_SPRING)
+    }, 140)
+  }
+
+  // Listens page-wide: a gesture that starts anywhere can be the one that
+  // brings the section in.
+  window.addEventListener(
     'wheel',
     (e) => {
-      const horizontal = Math.abs(e.deltaX) > Math.abs(e.deltaY)
-      const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? viewport.clientWidth : 1
-      const delta = -(horizontal ? e.deltaX : e.deltaY) * unit * WHEEL_SENSITIVITY
-      if (!delta) return
-
-      const min = minX()
-      if (wheelRaw === null) wheelRaw = row.target
-      const pastNow = wheelRaw > 0 ? wheelRaw : wheelRaw < min ? wheelRaw - min : 0
-      const pushingFurther = pastNow !== 0 && Math.sign(delta) === Math.sign(pastNow)
-
-      if (pushingFurther && Math.abs(pastNow) >= MAX_OVERSCROLL - 0.5) {
-        // Fully stretched: let a vertical scroll carry on down/up the page.
-        // Still swallow a horizontal one, which would otherwise trigger the
-        // browser's back/forward swipe.
-        if (horizontal) e.preventDefault()
-      } else {
-        e.preventDefault()
-        wheelRaw = clamp(wheelRaw + delta, min - MAX_OVERSCROLL, MAX_OVERSCROLL)
-        const past = wheelRaw > 0 ? wheelRaw : wheelRaw < min ? wheelRaw - min : 0
-        const shown = past === 0 ? wheelRaw : (past > 0 ? 0 : min) + rubber(past, viewport.clientWidth)
-        moveRow(shown, SCROLL_SPRING)
+      const size = Math.max(Math.abs(e.deltaX), Math.abs(e.deltaY))
+      // A new gesture: the first scroll after a pause, or a fresh push after
+      // a trackpad's momentum had died down to a trickle.
+      const fresh = e.timeStamp - lastWheelTime > GESTURE_GAP || (trickle && size >= 6)
+      trickle = size <= 2 || (trickle && !fresh)
+      lastWheelTime = e.timeStamp
+      if (fresh) {
+        // An event that can't be cancelled is already the page's.
+        owner = e.cancelable ? ownerFor(e) : 'page'
+        wheelRaw = clamp(row.target, minX(), 0)
+        lastSteerTime = e.timeStamp
       }
-
-      clearTimeout(wheelTimer)
-      wheelTimer = window.setTimeout(() => {
-        wheelRaw = null
-        const lowest = minX()
-        if (row.target > 0 || row.target < lowest) moveRow(clamp(row.target, lowest, 0), SCROLL_SPRING)
-      }, 140)
+      if (owner === 'page') return
+      if (e.cancelable) e.preventDefault()
+      if (owner === 'row') steer(e)
     },
     { passive: false }
   )
