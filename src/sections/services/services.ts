@@ -1,15 +1,19 @@
 // Services section ("What we do"): an iOS-style expanding card row. Every
 // service is a card in one horizontal row — the open card is wide and shows
-// its details, the rest are narrow pills with a vertical title. Opening a
-// card widens it while the previous one narrows and the row slides, all on
-// one shared spring curve (see services.css), so the cards grow and move
-// into their new positions together. Clicking the open card closes it,
-// leaving every card a pill (the "overview"). The list itself lives in
-// pages/services/servicesLandingData.ts, shared with the 14 service landing
-// pages — edit services there, not here. Styles live in services.css.
+// its details, the rest are pills with a vertical title. Opening a card
+// widens it while the previous one narrows and the row glides, so the cards
+// grow and move into their new positions together. Clicking the open card
+// closes it back into a pill. The row is wider than the screen, so it
+// scrolls sideways: the mouse wheel / trackpad moves it (bouncing at the
+// ends), and on touch screens it drags and flings. The open card's
+// background lines move (components/flowing-lines). The list itself lives
+// in pages/services/servicesLandingData.ts, shared with the 14 service
+// landing pages — edit services there, not here. Styles live in
+// services.css.
 import './services.css'
 import { servicesLandingData as services, type ServiceLandingData } from '../../pages/services/servicesLandingData'
 import { logoMark } from '../../components/logo/logo'
+import { createFlowingLines } from '../../components/flowing-lines/flowingLines'
 
 // Card art themes, cycled so neighbouring cards never share one.
 const THEMES = ['purple', 'green', 'gold', 'ink']
@@ -67,7 +71,6 @@ const renderCard = (s: ServiceLandingData, i: number) => {
 
 // Markup: heading with the service count, the card row, then the controls
 // (counter, page dots, prev/next) and a screen-reader announcement line.
-// --svc-n (the card count) feeds the overview's equal-width pill maths.
 export const renderServices = () => `
     <section id="services" class="px-6 sm:px-10 py-24 sm:py-32">
       <div class="mx-auto max-w-7xl">
@@ -77,8 +80,8 @@ export const renderServices = () => `
         </div>
 
         <div id="svc" class="svc reveal">
-          <div id="svc-viewport" class="svc-viewport" style="--svc-n: ${services.length}">
-            <ol id="svc-track" class="svc-track" style="--svc-shift: 0" aria-label="Services">
+          <div id="svc-viewport" class="svc-viewport">
+            <ol id="svc-track" class="svc-track" aria-label="Services">
               ${services.map(renderCard).join('')}
             </ol>
           </div>
@@ -104,17 +107,89 @@ export const renderServices = () => `
     </section>
 `
 
-// Converts a CSS length read from a custom property ("2.75rem", "44px")
-// to pixels.
+// Spring settings. LAYOUT is SwiftUI's default spring (~1% overshoot — the
+// same curve services.css samples into --svc-ease): the card widths and the
+// row's glide when a card opens or closes. SCROLL is quicker and bouncier
+// (~5% overshoot), for following the wheel / a fling and springing back from
+// a stretched end.
+interface Spring {
+  response: number
+  damping: number
+}
+const LAYOUT_SPRING: Spring = { response: 0.55, damping: 0.825 }
+const SCROLL_SPRING: Spring = { response: 0.38, damping: 0.68 }
+
+// Wheel / trackpad scroll is multiplied by this before moving the row.
+const WHEEL_SENSITIVITY = 2.5
+// How far (in raw scroll px) a wheel gesture can stretch the row past an
+// end before a vertical scroll is handed back to the page.
+const MAX_OVERSCROLL = 140
+
+// The open card's moving lines: the provided effect, recoloured from its
+// neon defaults to light tints of the site palette so it reads on all four
+// card themes, and with its angles mirrored — the snippet's comments say
+// the lines enter from down-left and exit up-right, but canvas y points
+// down, so its defaults actually ran top-left to bottom-right, straight
+// through the card's title.
+const FLOW_LINES = {
+  entryAngles: [152, 111] as [number, number],
+  exitAngles: [352, 302] as [number, number],
+  palette: [
+    [254, 249, 231],
+    [190, 236, 226],
+    [120, 210, 196],
+    [205, 170, 255],
+    [255, 222, 150],
+  ] as [number, number, number][],
+  accentColor: [196, 140, 255] as [number, number, number],
+}
+
+// Converts a CSS length read from a custom property ("7rem", "44px") to px.
 const toPx = (value: string) => {
   const v = value.trim()
   if (v.endsWith('rem')) return parseFloat(v) * parseFloat(getComputedStyle(document.documentElement).fontSize)
   return parseFloat(v) || 0
 }
 
-// Wires up the row: opening pills, closing the open card (click, close
-// button, Escape), page dots, prev/next, arrow/Home/End keys, touch
-// swipes, and re-layout on resize. Call after the markup is in the DOM.
+const clamp = (n: number, min: number, max: number) => Math.min(Math.max(n, min), max)
+
+// iOS-style rubber band: the further past the end, the less it gives.
+const rubber = (past: number, size: number) => Math.sign(past) * (1 - 1 / ((Math.abs(past) * 0.55) / size + 1)) * size
+
+// A value animated by a damped spring: x heads for `target` each frame,
+// carrying its velocity through any change of target (so an interrupted
+// motion keeps its momentum instead of restarting).
+interface SpringValue {
+  x: number
+  v: number
+  target: number
+  how: Spring
+}
+
+// Advances one spring by dt seconds; returns whether it's still moving. Small
+// fixed sub-steps keep the integration stable at any frame rate.
+function advance(s: SpringValue, dt: number) {
+  if (s.x === s.target && s.v === 0) return false
+  const omega = (2 * Math.PI) / s.how.response
+  const stiffness = omega * omega
+  const friction = 2 * s.how.damping * omega
+  for (let left = dt; left > 0; left -= 1 / 240) {
+    const h = Math.min(left, 1 / 240)
+    s.v += (-stiffness * (s.x - s.target) - friction * s.v) * h
+    s.x += s.v * h
+  }
+  if (Math.abs(s.x - s.target) < 0.1 && Math.abs(s.v) < 1) {
+    s.x = s.target
+    s.v = 0
+    return false
+  }
+  return true
+}
+
+// Wires up the row: the motion engine, opening pills, closing the open card
+// (click, close button, Escape), page dots, prev/next, arrow/Home/End keys,
+// wheel and touch scrolling, the moving lines, and re-layout on resize.
+// Call after the markup is in the DOM.
 export function initServices() {
   const root = document.getElementById('svc')
   const viewport = document.getElementById('svc-viewport')
@@ -129,61 +204,148 @@ export function initServices() {
   const dots = Array.from(root.querySelectorAll<HTMLButtonElement>('.svc-dot'))
   const triggerOf = (i: number) => cards[i].querySelector<HTMLButtonElement>('.svc-trigger')!
   const count = cards.length
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
   let active = 0 // the current service (open, or last open while closed)
-  let open = true // false = overview: every card is a pill
-  let overviewShift = 0
+  let open = true // false = every card is a pill
 
-  // How many pills sit beside the open card at this breakpoint. Set in
-  // services.css (--svc-p) and read here, so CSS and JS can't disagree.
-  const pillsInView = () => parseInt(getComputedStyle(viewport).getPropertyValue('--svc-p'), 10) || 1
-
-  // Which card the row starts at: one pill of context before the open card
-  // (when more than one pill fits), clamped so the row never slides past
-  // its first or last card — so the open card sits left at the start and
-  // right at the end, like the reference.
-  const shiftFor = (index: number) => {
-    const pills = pillsInView()
-    const leadIn = pills > 1 ? 1 : 0
-    return Math.min(Math.max(index - leadIn, 0), Math.max(count - 1 - pills, 0))
-  }
-
-  // In the overview every pill shares the row equally (desktop, tablet), or
-  // keeps a minimum width and overflows (phones). This is how many
-  // pill-steps the row can slide before its last card meets the right edge
-  // — mirrors --svc-wo in services.css.
-  function maxOverviewShift() {
+  // ── Geometry ──────────────────────────────────────────────────────────
+  // The row's final layout, worked out from the same custom properties
+  // services.css sizes it with.
+  function metrics() {
+    const css = getComputedStyle(viewport!)
     const width = viewport!.clientWidth
     const gap = parseFloat(getComputedStyle(track!).columnGap) || 0
-    const minPill = toPx(getComputedStyle(viewport!).getPropertyValue('--svc-wo-min'))
-    const pill = Math.max(minPill, (width - (count - 1) * gap) / count)
-    const overflow = count * pill + (count - 1) * gap - width
-    return overflow > 0.5 ? Math.ceil(overflow / (pill + gap)) : 0
+    const pill = toPx(css.getPropertyValue('--svc-wc'))
+    const pills = parseInt(css.getPropertyValue('--svc-p'), 10) || 1
+    const openWidth = width - pills * (pill + gap)
+    return { width, gap, pill, pills, openWidth, step: pill + gap }
+  }
+  type Metrics = ReturnType<typeof metrics>
+
+  // How far the row can slide: x runs from 0 (first card flush left) down
+  // to minX (last card flush right).
+  function minX(m: Metrics = metrics()) {
+    const content = open ? (count - 1) * m.step + m.openWidth : count * m.pill + (count - 1) * m.gap
+    return Math.min(0, m.width - content)
   }
 
-  // Open layout: slide the row to the open card, and keep only the
-  // on-screen pills in the tab order (off-screen ones stay reachable via
-  // arrows, keys, dots).
-  function layout() {
-    const shift = shiftFor(active)
-    const last = shift + pillsInView()
-    track!.style.setProperty('--svc-shift', String(shift))
-    cards.forEach((_, i) => {
-      triggerOf(i).tabIndex = i >= shift && i <= last ? 0 : -1
+  // Where the row sits with card `index` open: one pill of context before
+  // it (when more than one pill fits beside it), within the row's ends.
+  function slotFor(index: number, m: Metrics = metrics()) {
+    const leadIn = m.pills > 1 ? 1 : 0
+    return clamp(-(index - leadIn) * m.step, minX(m), 0)
+  }
+
+  // ── Motion engine ─────────────────────────────────────────────────────
+  // Everything that moves is a spring advanced in one loop on one clock:
+  // the row's position (`row`, its translateX) and every card's width. So
+  // when a card opens, its growth, the closing card's shrink and the row's
+  // glide share a start frame and a curve, and stay in step even when
+  // interrupted. Wheel input moves the row's target; a touch drag moves the
+  // row directly.
+  const row: SpringValue = { x: 0, v: 0, target: 0, how: LAYOUT_SPRING }
+  const widths: SpringValue[] = cards.map(() => ({ x: 0, v: 0, target: 0, how: LAYOUT_SPRING }))
+  let frame = 0
+  let lastTime = 0
+
+  // Sets every card's target width for the current open/closed state.
+  function aimWidths(m: Metrics = metrics()) {
+    widths.forEach((w, i) => {
+      w.target = open && i === active ? m.openWidth : m.pill
     })
   }
 
-  // Overview layout: every pill is tabbable; on phones (where the row
-  // overflows) slide so the given card is in view, with two before it.
-  function layoutOverview(shift = active - 2) {
-    overviewShift = Math.min(Math.max(shift, 0), maxOverviewShift())
-    track!.style.setProperty('--svc-shift', String(overviewShift))
-    cards.forEach((_, i) => {
-      triggerOf(i).tabIndex = 0
-    })
+  function renderRow() {
+    track!.style.transform = `translate3d(${row.x}px, 0, 0)`
   }
 
-  // Opens or closes one card: swaps which half (pill trigger vs. body and
-  // corner link) is inert.
+  function tick(now: number) {
+    // The first frame after starting moves nothing (dt 0), and everything
+    // that starts together is advanced together from then on.
+    const dt = lastTime ? Math.min(0.064, (now - lastTime) / 1000) : 0
+    lastTime = now
+    let moving = advance(row, dt)
+    widths.forEach((w, i) => {
+      const before = w.x
+      if (advance(w, dt)) moving = true
+      if (w.x !== before) cards[i].style.width = `${w.x}px`
+    })
+    renderRow()
+    frame = moving ? requestAnimationFrame(tick) : 0
+  }
+
+  function kick() {
+    if (frame) return
+    lastTime = 0
+    frame = requestAnimationFrame(tick)
+  }
+
+  // Jumps everything to its target with no motion (first paint, resizing,
+  // reduced motion).
+  function snap() {
+    cancelAnimationFrame(frame)
+    frame = 0
+    row.x = row.target
+    row.v = 0
+    widths.forEach((w, i) => {
+      w.x = w.target
+      w.v = 0
+      cards[i].style.width = `${w.x}px`
+    })
+    renderRow()
+  }
+
+  function moveRow(next: number, how: Spring) {
+    row.target = next
+    row.how = how
+    if (reduceMotion) snap()
+    else kick()
+  }
+
+  // Slides the row just far enough to show card `i` (keyboard focus).
+  function ensureVisible(i: number) {
+    const m = metrics()
+    const left = i * m.step + (open && i > active ? m.openWidth - m.pill : 0)
+    const right = left + (open && i === active ? m.openWidth : m.pill)
+    let next = row.target
+    if (left + next < 0) next = -left
+    else if (right + next > m.width) next = m.width - right
+    moveRow(clamp(next, minX(m), 0), LAYOUT_SPRING)
+  }
+
+  // ── Moving lines ──────────────────────────────────────────────────────
+  // One canvas, moved into whichever card is open, drawing only while a
+  // card is open and the row is on screen.
+  const flow = document.createElement('div')
+  flow.className = 'svc-flow'
+  flow.setAttribute('aria-hidden', 'true')
+  const canvas = document.createElement('canvas')
+  flow.append(canvas)
+  cards[0].querySelector('.svc-art')!.after(flow)
+  const lines = createFlowingLines(canvas, FLOW_LINES)
+  let inView = false
+
+  function updateLines() {
+    if (open && inView) lines.start()
+    else lines.stop()
+  }
+
+  // Moves the lines into a card that's about to open. It arrives closed
+  // (so faded out); reading a layout value commits that, so the opening
+  // then fades the lines in instead of popping them.
+  function mountLines(card: HTMLElement) {
+    card.querySelector('.svc-art')!.after(flow)
+    void flow.offsetWidth
+  }
+
+  new IntersectionObserver(([entry]) => {
+    inView = entry.isIntersecting
+    updateLines()
+  }).observe(viewport)
+
+  // ── Open / close ──────────────────────────────────────────────────────
+  // Swaps which half of a card (pill trigger vs. body and corner link) is
+  // inert.
   function setOpen(card: HTMLElement, isOpen: boolean) {
     card.classList.toggle('is-active', isOpen)
     const trigger = card.querySelector('.svc-trigger')!
@@ -203,35 +365,36 @@ export function initServices() {
   }
 
   // Opens card `index` (wrapping at either end), from either state.
-  // Everything that moves — the widths and the row's slide — changes in
-  // this one frame, so the CSS transitions all start together on the same
-  // curve.
   function activate(index: number) {
-    const target = (index + count) % count
-    if (open && target === active) return
+    const next = (index + count) % count
+    if (open && next === active) return
     const focusWasInRow = track!.contains(document.activeElement)
 
     if (open) {
       markAnimating(cards[active])
       setOpen(cards[active], false)
     }
-    markAnimating(cards[target])
-    setOpen(cards[target], true)
-    active = target
+    mountLines(cards[next])
+    markAnimating(cards[next])
+    setOpen(cards[next], true)
+    active = next
     open = true
-    root!.classList.remove('is-overview')
-    layout()
+    const m = metrics()
+    aimWidths(m)
+    moveRow(slotFor(next, m), LAYOUT_SPRING)
+    updateLines()
 
-    dots.forEach((dot, i) => dot.setAttribute('aria-current', String(i === target)))
-    counter!.textContent = `${pad(target + 1)} / ${pad(count)}`
-    live!.textContent = `${services[target].navTitle}, ${target + 1} of ${count}`
+    dots.forEach((dot, i) => dot.setAttribute('aria-current', String(i === next)))
+    counter!.textContent = `${pad(next + 1)} / ${pad(count)}`
+    live!.textContent = `${services[next].navTitle}, ${next + 1} of ${count}`
 
     // Focus inside the row was on a card that just changed state — move it
     // to the open card's heading rather than leaving it on an inert element.
-    if (focusWasInRow) cards[target].querySelector<HTMLElement>('.svc-body-title')!.focus({ preventScroll: true })
+    if (focusWasInRow) cards[next].querySelector<HTMLElement>('.svc-body-title')!.focus({ preventScroll: true })
   }
 
-  // Closes the open card back into a pill, leaving every card a pill.
+  // Closes the open card back into a pill. It shrinks toward its own left
+  // edge (the row only slides if that would leave a gap at the end).
   function close() {
     if (!open) return
     const focusWasInRow = track!.contains(document.activeElement)
@@ -239,8 +402,10 @@ export function initServices() {
     markAnimating(cards[active])
     setOpen(cards[active], false)
     open = false
-    root!.classList.add('is-overview')
-    layoutOverview()
+    const m = metrics()
+    aimWidths(m)
+    moveRow(clamp(row.target, minX(m), 0), LAYOUT_SPRING)
+    updateLines()
     live!.textContent = `All ${count} services`
 
     // The close button (or heading) that had focus is now inert — hand
@@ -248,14 +413,12 @@ export function initServices() {
     if (focusWasInRow) triggerOf(active).focus({ preventScroll: true })
   }
 
+  // ── Clicks and keys ───────────────────────────────────────────────────
   cards.forEach((card, i) => {
     triggerOf(i).addEventListener('click', () => activate(i))
-    // In the overview on phones, tabbing to an off-screen pill slides it
-    // into view (the row is clipped, not scrollable, so it wouldn't
-    // otherwise appear).
-    triggerOf(i).addEventListener('focus', () => {
-      if (!open) layoutOverview(i - 2)
-    })
+    // Tabbing to a pill that's off-screen slides it into view (the row is
+    // clipped, not natively scrollable, so it wouldn't otherwise appear).
+    triggerOf(i).addEventListener('focus', () => ensureVisible(i))
     // Clicking anywhere on the open card closes it — unless the click was
     // the end of selecting some of its text.
     card.querySelector('.svc-body')!.addEventListener('click', () => {
@@ -279,56 +442,125 @@ export function initServices() {
     e.preventDefault()
   })
 
-  // Touch swipe: with a card open, a horizontal flick steps one card
-  // (stopping at the ends rather than wrapping); in the overview it slides
-  // the row a few pills. Vertical drags still scroll the page, since the
-  // viewport has touch-action: pan-y.
-  let startX = 0
-  let startY = 0
-  let tracking = false
-  let swiped = false
+  // ── Wheel / trackpad ──────────────────────────────────────────────────
+  // Scrolling over the row moves it sideways (vertical wheel or horizontal
+  // trackpad swipe), amplified by WHEEL_SENSITIVITY. Past either end the row
+  // stretches like a rubber band; once stretched to MAX_OVERSCROLL, a
+  // vertical scroll goes back to scrolling the page, so the row never traps
+  // it. When the scrolling stops, a stretched row springs back.
+  let wheelRaw: number | null = null
+  let wheelTimer = 0
+  viewport.addEventListener(
+    'wheel',
+    (e) => {
+      const horizontal = Math.abs(e.deltaX) > Math.abs(e.deltaY)
+      const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? viewport.clientWidth : 1
+      const delta = -(horizontal ? e.deltaX : e.deltaY) * unit * WHEEL_SENSITIVITY
+      if (!delta) return
+
+      const min = minX()
+      if (wheelRaw === null) wheelRaw = row.target
+      const pastNow = wheelRaw > 0 ? wheelRaw : wheelRaw < min ? wheelRaw - min : 0
+      const pushingFurther = pastNow !== 0 && Math.sign(delta) === Math.sign(pastNow)
+
+      if (pushingFurther && Math.abs(pastNow) >= MAX_OVERSCROLL - 0.5) {
+        // Fully stretched: let a vertical scroll carry on down/up the page.
+        // Still swallow a horizontal one, which would otherwise trigger the
+        // browser's back/forward swipe.
+        if (horizontal) e.preventDefault()
+      } else {
+        e.preventDefault()
+        wheelRaw = clamp(wheelRaw + delta, min - MAX_OVERSCROLL, MAX_OVERSCROLL)
+        const past = wheelRaw > 0 ? wheelRaw : wheelRaw < min ? wheelRaw - min : 0
+        const shown = past === 0 ? wheelRaw : (past > 0 ? 0 : min) + rubber(past, viewport.clientWidth)
+        moveRow(shown, SCROLL_SPRING)
+      }
+
+      clearTimeout(wheelTimer)
+      wheelTimer = window.setTimeout(() => {
+        wheelRaw = null
+        const lowest = minX()
+        if (row.target > 0 || row.target < lowest) moveRow(clamp(row.target, lowest, 0), SCROLL_SPRING)
+      }, 140)
+    },
+    { passive: false }
+  )
+
+  // ── Touch drag ────────────────────────────────────────────────────────
+  // A horizontal drag moves the row 1:1 with the finger (rubber-banding
+  // past the ends); letting go flings it on with the finger's speed and the
+  // spring settles it, bouncing if it hits an end. Vertical drags still
+  // scroll the page, since the viewport has touch-action: pan-y.
+  let drag: 'none' | 'pending' | 'active' = 'none'
+  let dragStartX = 0
+  let dragStartY = 0
+  let dragFromX = 0
+  let dragged = false
+  let samples: { t: number; x: number }[] = []
+
   viewport.addEventListener('pointerdown', (e) => {
+    dragged = false
     if (e.pointerType === 'mouse') return
-    tracking = true
-    swiped = false
-    startX = e.clientX
-    startY = e.clientY
+    drag = 'pending'
+    dragStartX = e.clientX
+    dragStartY = e.clientY
+    samples = [{ t: e.timeStamp, x: e.clientX }]
   })
-  viewport.addEventListener('pointerup', (e) => {
-    if (!tracking) return
-    tracking = false
-    const dx = e.clientX - startX
-    const dy = e.clientY - startY
-    if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return
-    swiped = true
-    const step = dx < 0 ? 1 : -1
-    if (open) activate(Math.min(Math.max(active + step, 0), count - 1))
-    else layoutOverview(overviewShift + step * 3)
+
+  viewport.addEventListener('pointermove', (e) => {
+    if (drag === 'none') return
+    const dx = e.clientX - dragStartX
+    if (drag === 'pending') {
+      if (Math.abs(dx) < 8 || Math.abs(dx) < Math.abs(e.clientY - dragStartY)) return
+      drag = 'active'
+      dragged = true
+      dragFromX = row.x
+      viewport.setPointerCapture(e.pointerId)
+    }
+    const min = minX()
+    const raw = dragFromX + dx
+    row.x = raw > 0 ? rubber(raw, viewport.clientWidth) : raw < min ? min + rubber(raw - min, viewport.clientWidth) : raw
+    row.target = row.x
+    row.v = 0
+    renderRow()
+    samples.push({ t: e.timeStamp, x: e.clientX })
+    while (samples.length > 2 && e.timeStamp - samples[0].t > 100) samples.shift()
   })
-  viewport.addEventListener('pointercancel', () => {
-    tracking = false
-  })
-  // Don't let the end of a swipe also count as a tap on the card under it.
+
+  function endDrag() {
+    if (drag !== 'active') {
+      drag = 'none'
+      return
+    }
+    drag = 'none'
+    const first = samples[0]
+    const last = samples[samples.length - 1]
+    const speed = last.t > first.t ? ((last.x - first.x) / (last.t - first.t)) * 1000 : 0
+    row.v = speed
+    moveRow(clamp(row.x + speed * 0.28, minX(), 0), SCROLL_SPRING)
+  }
+  viewport.addEventListener('pointerup', endDrag)
+  viewport.addEventListener('pointercancel', endDrag)
+
+  // Don't let the end of a drag also count as a tap on the card under it.
   viewport.addEventListener(
     'click',
     (e) => {
-      if (!swiped) return
-      swiped = false
+      if (!dragged) return
+      dragged = false
       e.preventDefault()
       e.stopPropagation()
     },
     true
   )
 
-  // A breakpoint change alters how many pills fit, so re-lay out — with
-  // transitions off while resizing, since every width depends on the row's
-  // width and would otherwise spring on each resize step.
-  let resizeTimer = 0
+  // ── First layout + resize ─────────────────────────────────────────────
+  // Every width depends on the row's width, so on a resize (and at the
+  // start) everything jumps straight to its place for the new size.
   new ResizeObserver(() => {
-    root.classList.add('is-resizing')
-    if (open) layout()
-    else layoutOverview(overviewShift)
-    clearTimeout(resizeTimer)
-    resizeTimer = window.setTimeout(() => root.classList.remove('is-resizing'), 150)
+    const m = metrics()
+    aimWidths(m)
+    row.target = open ? slotFor(active, m) : clamp(row.target, minX(m), 0)
+    snap()
   }).observe(viewport)
 }

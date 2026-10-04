@@ -28,13 +28,14 @@ src/
   global.css       design tokens + base styles only
   components/      reusable pieces, one folder each (code + its own .css)
     navbar/  footer/  marquee/  preloader/  logo/  cta-button/
-    hover-carousel-link/  hover-teaser-menu/  reveal-footer/
+    hover-carousel-link/  hover-teaser-menu/  reveal-footer/  flowing-lines/
   sections/        one folder per page section
     hero/  services/  work/  process/  contact/
-  animations/      page-wide motion: pageLoad.ts, scrollReveals.ts
+  pages/           the other pages: lab/, services/ (the 14 service landing pages)
+  animations/      page-wide motion: page load, page transitions, scroll reveals
 ```
 
-- **Add or edit a service:** the `services` array in `src/sections/services/services.ts`.
+- **Add or edit a service:** `servicesLandingData` in `src/pages/services/servicesLandingData.ts` (feeds both the "What we do" row and the landing pages).
 - **Change what the banner lists:** `marqueeItems` in `src/components/marquee/marquee.ts`.
 - **Add a section:** make `src/sections/<name>/<name>.ts` (+ `.css` if it needs one), export a `render…` function, and add it to the template in `main.ts`.
 

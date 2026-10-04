@@ -1,13 +1,13 @@
 /* Services row ("What we do" — see services.ts). One row of cards: the open
-   card is wide, the others are narrow pills. Every size and the row's slide
-   come from the custom properties below, so the layout math lives here and
-   services.ts only decides which card is open. */
+   card is wide, the others are narrow pills. Every size comes from the
+   custom properties below; services.ts reads the same values and springs
+   the card widths and the row's slide between them. */
 
-/* Shared motion: an iOS-style spring (SwiftUI's default — 0.55s response,
-   0.825 damping, about 1% overshoot) sampled into linear(). The open card's
-   width, the closing card's width and the row's slide all use it, start in
-   the same frame, and so move as one. Browsers without linear() fall back
-   to the closest plain curve. */
+/* Shared motion for the CSS side (the body lifting in, the corner link
+   popping, the page dots): the same iOS-style spring services.ts moves the
+   cards with (SwiftUI's default — 0.55s response, 0.825 damping, about 1%
+   overshoot), sampled into linear(). Browsers without linear() fall back to
+   the closest plain curve. */
 .svc {
   --svc-ease: cubic-bezier(0.32, 0.72, 0, 1);
   --svc-dur: 0.65s;
@@ -29,9 +29,11 @@
 
 /* The window onto the row. --svc-p pills sit beside the open card, and the
    open card gets whatever width is left (100cqw = this element's width), so
-   the cards on screen always fill it exactly. overflow: clip rather than
-   hidden, so focusing an off-screen card can't scroll the row out of
-   place. */
+   with a card open in its slot the cards on screen fill it exactly. Pills
+   are --svc-wc wide whether or not a card is open, so the row is always
+   wider than this window and scrolls sideways (services.ts reads these
+   same values for that). overflow: clip rather than hidden, so focusing an
+   off-screen card can't scroll the row out of place. */
 .svc-viewport {
   --svc-p: 1;
   --svc-wc: 3.5rem;
@@ -39,13 +41,6 @@
   --svc-h: 30rem;
   --svc-step: calc(var(--svc-wc) + var(--svc-gap));
   --svc-we: calc(100cqw - var(--svc-p) * var(--svc-step));
-  /* Overview (no card open): the --svc-n pills share the row equally, but
-     never narrower than --svc-wo-min — on phones that minimum wins, so the
-     row overflows and slides instead (services.ts mirrors this maths). */
-  --svc-wo-min: 2.75rem;
-  --svc-wo: max(var(--svc-wo-min), calc((100cqw - (var(--svc-n) - 1) * var(--svc-gap)) / var(--svc-n)));
-  --svc-step-o: calc(var(--svc-wo) + var(--svc-gap));
-  --svc-total-o: calc(var(--svc-n) * var(--svc-wo) + (var(--svc-n) - 1) * var(--svc-gap));
   container-type: inline-size;
   overflow: clip;
   border-radius: 1.5rem;
@@ -57,7 +52,6 @@
     --svc-p: 2;
     --svc-wc: 5rem;
     --svc-gap: 0.625rem;
-    --svc-wo-min: 1.875rem;
   }
 }
 
@@ -67,35 +61,24 @@
     --svc-wc: 7rem;
     --svc-gap: 0.75rem;
     --svc-h: 32rem;
-    --svc-wo-min: 3rem;
   }
 }
 
-/* The row itself; slides by whole pill-steps (--svc-shift, set by JS). */
+/* The row itself. Its translateX is set every frame by the scroll engine
+   in services.ts (a spring), not by a CSS transition. */
 .svc-track {
   display: flex;
   gap: var(--svc-gap);
   margin: 0;
   padding: 0;
   list-style: none;
-  transform: translate3d(calc(var(--svc-shift, 0) * var(--svc-step) * -1), 0, 0);
-  transition: transform var(--svc-dur) var(--svc-ease);
   will-change: transform;
 }
 
-/* Overview: slide by overview pill-steps, but never past the point where
-   the last card meets the right edge, and not at all when the row fits
-   (desktop and tablet), where the min() goes negative and max() pins 0. */
-.svc.is-overview .svc-track {
-  transform: translate3d(
-    calc(-1 * max(0px, min(var(--svc-shift, 0) * var(--svc-step-o), var(--svc-total-o) - 100cqw))),
-    0,
-    0
-  );
-}
-
 /* A card. Only its width changes — its content is laid out at the open
-   width and clipped, so nothing reflows while it grows or shrinks. */
+   width and clipped, so nothing reflows while it grows or shrinks. These
+   widths are the starting sizes; from the first frame on, services.ts sets
+   each card's width itself (a spring, so no CSS transition here). */
 .svc-card {
   --art-a: #8a55d0;
   --art-b: #2f1559;
@@ -106,15 +89,10 @@
   width: var(--svc-wc);
   height: var(--svc-h);
   color: var(--color-paper);
-  transition: width var(--svc-dur) var(--svc-ease);
 }
 
 .svc-card.is-active {
   width: var(--svc-we);
-}
-
-.svc.is-overview .svc-card {
-  width: var(--svc-wo);
 }
 
 /* The rounded, clipped part of the card. The corner link's notch is kept
@@ -153,8 +131,8 @@
 
 /* The card's art: a fixed, open-width layer centred on the card, so a
    growing card reveals more of it instead of stretching it. Pure CSS — a
-   few soft gradients and some faint flowing lines, no images and no
-   filter: blur() (which is what made this site slow on Safari before). */
+   few soft gradients, no images and no filter: blur() (which is what made
+   this site slow on Safari before). */
 .svc-art {
   position: absolute;
   inset-block: 0;
@@ -163,13 +141,53 @@
   width: var(--svc-we);
   transform: translateX(-50%);
   background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 480' preserveAspectRatio='none'%3E%3Cg fill='none' stroke='%23fff' stroke-width='1.2'%3E%3Cpath vector-effect='non-scaling-stroke' stroke-opacity='.16' d='M-20 330C150 250 290 410 470 300S760 130 840 210'/%3E%3Cpath vector-effect='non-scaling-stroke' stroke-opacity='.13' d='M-20 362C160 282 300 442 480 332S770 162 840 242'/%3E%3Cpath vector-effect='non-scaling-stroke' stroke-opacity='.1' d='M-20 394C170 314 310 474 490 364S780 194 840 274'/%3E%3Cpath vector-effect='non-scaling-stroke' stroke-opacity='.08' d='M-20 110C130 50 270 190 430 120S710 20 840 70'/%3E%3C/g%3E%3C/svg%3E")
-      center / 100% 100% no-repeat,
     linear-gradient(105deg, transparent 32%, rgb(255 255 255 / 0.09) 44%, transparent 56%),
     radial-gradient(55% 60% at 80% 22%, var(--art-hi), transparent 70%),
     radial-gradient(65% 70% at 15% 95%, var(--art-lo), transparent 70%),
     linear-gradient(150deg, var(--art-b) 0%, var(--art-a) 100%);
   transition: transform 0.6s var(--svc-ease);
+}
+
+/* Static faint wavy lines, on the pills. On the open card they fade out for
+   the moving lines (.svc-flow) — one animated canvas, not fourteen. */
+.svc-art::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 480' preserveAspectRatio='none'%3E%3Cg fill='none' stroke='%23fff' stroke-width='1.2'%3E%3Cpath vector-effect='non-scaling-stroke' stroke-opacity='.16' d='M-20 330C150 250 290 410 470 300S760 130 840 210'/%3E%3Cpath vector-effect='non-scaling-stroke' stroke-opacity='.13' d='M-20 362C160 282 300 442 480 332S770 162 840 242'/%3E%3Cpath vector-effect='non-scaling-stroke' stroke-opacity='.1' d='M-20 394C170 314 310 474 490 364S780 194 840 274'/%3E%3Cpath vector-effect='non-scaling-stroke' stroke-opacity='.08' d='M-20 110C130 50 270 190 430 120S710 20 840 70'/%3E%3C/g%3E%3C/svg%3E")
+    center / 100% 100% no-repeat;
+  transition: opacity 0.4s ease 0.2s;
+}
+
+.svc-card.is-active .svc-art::after {
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+/* The moving lines (components/flowing-lines), a single canvas services.ts
+   moves into whichever card is open. Laid out at the open width and pinned
+   left like the body, so it's revealed — not stretched — as the card
+   grows; above the art, below the pill label and the body text. */
+.svc-flow {
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  z-index: 0;
+  width: var(--svc-we);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.svc-card.is-active .svc-flow {
+  opacity: 0.75;
+  transition: opacity 0.6s ease 0.25s;
+}
+
+.svc-flow canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .svc-card.is-animating .svc-art {
@@ -663,12 +681,6 @@
 
 .svc-arrow:active {
   transform: scale(0.92);
-}
-
-/* No springing while the window is being resized (see services.ts). */
-.svc.is-resizing .svc-track,
-.svc.is-resizing .svc-card {
-  transition: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
