@@ -3,7 +3,8 @@
 // its details, the rest are narrow pills with a vertical title. Opening a
 // card widens it while the previous one narrows and the row slides, all on
 // one shared spring curve (see services.css), so the cards grow and move
-// into their new positions together. The list itself lives in
+// into their new positions together. Clicking the open card closes it,
+// leaving every card a pill (the "overview"). The list itself lives in
 // pages/services/servicesLandingData.ts, shared with the 14 service landing
 // pages — edit services there, not here. Styles live in services.css.
 import './services.css'
@@ -21,6 +22,13 @@ const arrow = (dir: 'left' | 'right') => `
   <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"
        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     <path d="${dir === 'right' ? 'M5 12h14M13 6l6 6-6 6' : 'M19 12H5M11 6l-6 6 6 6'}" />
+  </svg>`
+
+// The open card's close icon.
+const closeIcon = `
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"
+       stroke-linecap="round" aria-hidden="true">
+    <path d="M6 6l12 12M18 6L6 18" />
   </svg>`
 
 // One card: a clipped, rounded layer (art, the pill's trigger with its
@@ -48,6 +56,7 @@ const renderCard = (s: ServiceLandingData, i: number) => {
                   ${s.teasers.map((t) => `<li>${t}</li>`).join('')}
                 </ul>
                 ${logoMark('svc-mark')}
+                <button type="button" class="svc-close" aria-label="Close ${s.navTitle}">${closeIcon}</button>
               </div>
             </div>
             <div class="svc-socket"${open ? '' : ' inert'}>
@@ -58,6 +67,7 @@ const renderCard = (s: ServiceLandingData, i: number) => {
 
 // Markup: heading with the service count, the card row, then the controls
 // (counter, page dots, prev/next) and a screen-reader announcement line.
+// --svc-n (the card count) feeds the overview's equal-width pill maths.
 export const renderServices = () => `
     <section id="services" class="px-6 sm:px-10 py-24 sm:py-32">
       <div class="mx-auto max-w-7xl">
@@ -67,7 +77,7 @@ export const renderServices = () => `
         </div>
 
         <div id="svc" class="svc reveal">
-          <div id="svc-viewport" class="svc-viewport">
+          <div id="svc-viewport" class="svc-viewport" style="--svc-n: ${services.length}">
             <ol id="svc-track" class="svc-track" style="--svc-shift: 0" aria-label="Services">
               ${services.map(renderCard).join('')}
             </ol>
@@ -94,8 +104,17 @@ export const renderServices = () => `
     </section>
 `
 
-// Wires up the row: pill clicks, page dots, prev/next, arrow/Home/End keys,
-// touch swipes, and re-layout on resize. Call after the markup is in the DOM.
+// Converts a CSS length read from a custom property ("2.75rem", "44px")
+// to pixels.
+const toPx = (value: string) => {
+  const v = value.trim()
+  if (v.endsWith('rem')) return parseFloat(v) * parseFloat(getComputedStyle(document.documentElement).fontSize)
+  return parseFloat(v) || 0
+}
+
+// Wires up the row: opening pills, closing the open card (click, close
+// button, Escape), page dots, prev/next, arrow/Home/End keys, touch
+// swipes, and re-layout on resize. Call after the markup is in the DOM.
 export function initServices() {
   const root = document.getElementById('svc')
   const viewport = document.getElementById('svc-viewport')
@@ -108,8 +127,11 @@ export function initServices() {
 
   const cards = Array.from(track.querySelectorAll<HTMLElement>('.svc-card'))
   const dots = Array.from(root.querySelectorAll<HTMLButtonElement>('.svc-dot'))
+  const triggerOf = (i: number) => cards[i].querySelector<HTMLButtonElement>('.svc-trigger')!
   const count = cards.length
-  let active = 0
+  let active = 0 // the current service (open, or last open while closed)
+  let open = true // false = overview: every card is a pill
+  let overviewShift = 0
 
   // How many pills sit beside the open card at this breakpoint. Set in
   // services.css (--svc-p) and read here, so CSS and JS can't disagree.
@@ -125,30 +147,54 @@ export function initServices() {
     return Math.min(Math.max(index - leadIn, 0), Math.max(count - 1 - pills, 0))
   }
 
-  // Slides the row to the open card, and keeps only the on-screen pills in
-  // the tab order (off-screen ones stay reachable via arrows, keys, dots).
+  // In the overview every pill shares the row equally (desktop, tablet), or
+  // keeps a minimum width and overflows (phones). This is how many
+  // pill-steps the row can slide before its last card meets the right edge
+  // — mirrors --svc-wo in services.css.
+  function maxOverviewShift() {
+    const width = viewport!.clientWidth
+    const gap = parseFloat(getComputedStyle(track!).columnGap) || 0
+    const minPill = toPx(getComputedStyle(viewport!).getPropertyValue('--svc-wo-min'))
+    const pill = Math.max(minPill, (width - (count - 1) * gap) / count)
+    const overflow = count * pill + (count - 1) * gap - width
+    return overflow > 0.5 ? Math.ceil(overflow / (pill + gap)) : 0
+  }
+
+  // Open layout: slide the row to the open card, and keep only the
+  // on-screen pills in the tab order (off-screen ones stay reachable via
+  // arrows, keys, dots).
   function layout() {
     const shift = shiftFor(active)
     const last = shift + pillsInView()
     track!.style.setProperty('--svc-shift', String(shift))
-    cards.forEach((card, i) => {
-      card.querySelector<HTMLButtonElement>('.svc-trigger')!.tabIndex = i >= shift && i <= last ? 0 : -1
+    cards.forEach((_, i) => {
+      triggerOf(i).tabIndex = i >= shift && i <= last ? 0 : -1
+    })
+  }
+
+  // Overview layout: every pill is tabbable; on phones (where the row
+  // overflows) slide so the given card is in view, with two before it.
+  function layoutOverview(shift = active - 2) {
+    overviewShift = Math.min(Math.max(shift, 0), maxOverviewShift())
+    track!.style.setProperty('--svc-shift', String(overviewShift))
+    cards.forEach((_, i) => {
+      triggerOf(i).tabIndex = 0
     })
   }
 
   // Opens or closes one card: swaps which half (pill trigger vs. body and
   // corner link) is inert.
-  function setOpen(card: HTMLElement, open: boolean) {
-    card.classList.toggle('is-active', open)
+  function setOpen(card: HTMLElement, isOpen: boolean) {
+    card.classList.toggle('is-active', isOpen)
     const trigger = card.querySelector('.svc-trigger')!
-    trigger.toggleAttribute('inert', open)
-    trigger.setAttribute('aria-expanded', String(open))
-    card.querySelector('.svc-body')!.toggleAttribute('inert', !open)
-    card.querySelector('.svc-socket')!.toggleAttribute('inert', !open)
+    trigger.toggleAttribute('inert', isOpen)
+    trigger.setAttribute('aria-expanded', String(isOpen))
+    card.querySelector('.svc-body')!.toggleAttribute('inert', !isOpen)
+    card.querySelector('.svc-socket')!.toggleAttribute('inert', !isOpen)
   }
 
-  // Gives the two resizing cards' art its own compositor layer for the
-  // length of the spring, so it's moved rather than repainted every frame.
+  // Gives a resizing card's art its own compositor layer for the length of
+  // the spring, so it's moved rather than repainted every frame.
   const settleTimers = new WeakMap<HTMLElement, number>()
   function markAnimating(card: HTMLElement) {
     card.classList.add('is-animating')
@@ -156,19 +202,24 @@ export function initServices() {
     settleTimers.set(card, window.setTimeout(() => card.classList.remove('is-animating'), 900))
   }
 
-  // Opens card `index` (wrapping at either end). Everything that moves —
-  // both widths and the row's slide — changes in this one frame, so the
-  // CSS transitions all start together on the same curve.
+  // Opens card `index` (wrapping at either end), from either state.
+  // Everything that moves — the widths and the row's slide — changes in
+  // this one frame, so the CSS transitions all start together on the same
+  // curve.
   function activate(index: number) {
     const target = (index + count) % count
-    if (target === active) return
+    if (open && target === active) return
     const focusWasInRow = track!.contains(document.activeElement)
 
-    markAnimating(cards[active])
+    if (open) {
+      markAnimating(cards[active])
+      setOpen(cards[active], false)
+    }
     markAnimating(cards[target])
-    setOpen(cards[active], false)
     setOpen(cards[target], true)
     active = target
+    open = true
+    root!.classList.remove('is-overview')
     layout()
 
     dots.forEach((dot, i) => dot.setAttribute('aria-current', String(i === target)))
@@ -180,24 +231,57 @@ export function initServices() {
     if (focusWasInRow) cards[target].querySelector<HTMLElement>('.svc-body-title')!.focus({ preventScroll: true })
   }
 
-  cards.forEach((card, i) => card.querySelector('.svc-trigger')!.addEventListener('click', () => activate(i)))
+  // Closes the open card back into a pill, leaving every card a pill.
+  function close() {
+    if (!open) return
+    const focusWasInRow = track!.contains(document.activeElement)
+
+    markAnimating(cards[active])
+    setOpen(cards[active], false)
+    open = false
+    root!.classList.add('is-overview')
+    layoutOverview()
+    live!.textContent = `All ${count} services`
+
+    // The close button (or heading) that had focus is now inert — hand
+    // focus to the card's pill so Enter reopens it.
+    if (focusWasInRow) triggerOf(active).focus({ preventScroll: true })
+  }
+
+  cards.forEach((card, i) => {
+    triggerOf(i).addEventListener('click', () => activate(i))
+    // In the overview on phones, tabbing to an off-screen pill slides it
+    // into view (the row is clipped, not scrollable, so it wouldn't
+    // otherwise appear).
+    triggerOf(i).addEventListener('focus', () => {
+      if (!open) layoutOverview(i - 2)
+    })
+    // Clicking anywhere on the open card closes it — unless the click was
+    // the end of selecting some of its text.
+    card.querySelector('.svc-body')!.addEventListener('click', () => {
+      if (window.getSelection()?.toString()) return
+      close()
+    })
+  })
   dots.forEach((dot, i) => dot.addEventListener('click', () => activate(i)))
   prevBtn.addEventListener('click', () => activate(active - 1))
   nextBtn.addEventListener('click', () => activate(active + 1))
 
-  // Arrow keys step, Home/End jump to the ends — anywhere inside the row
-  // or its controls.
+  // Arrow keys step, Home/End jump to the ends, Escape closes the open
+  // card — anywhere inside the row or its controls.
   root.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowRight') activate(active + 1)
     else if (e.key === 'ArrowLeft') activate(active - 1)
     else if (e.key === 'Home') activate(0)
     else if (e.key === 'End') activate(count - 1)
+    else if (e.key === 'Escape' && open) close()
     else return
     e.preventDefault()
   })
 
-  // Touch swipe: a horizontal flick steps one card (stopping at the ends
-  // rather than wrapping); vertical drags still scroll the page, since the
+  // Touch swipe: with a card open, a horizontal flick steps one card
+  // (stopping at the ends rather than wrapping); in the overview it slides
+  // the row a few pills. Vertical drags still scroll the page, since the
   // viewport has touch-action: pan-y.
   let startX = 0
   let startY = 0
@@ -217,12 +301,14 @@ export function initServices() {
     const dy = e.clientY - startY
     if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return
     swiped = true
-    activate(Math.min(Math.max(active + (dx < 0 ? 1 : -1), 0), count - 1))
+    const step = dx < 0 ? 1 : -1
+    if (open) activate(Math.min(Math.max(active + step, 0), count - 1))
+    else layoutOverview(overviewShift + step * 3)
   })
   viewport.addEventListener('pointercancel', () => {
     tracking = false
   })
-  // Don't let the end of a swipe also count as a tap on the pill under it.
+  // Don't let the end of a swipe also count as a tap on the card under it.
   viewport.addEventListener(
     'click',
     (e) => {
@@ -240,7 +326,8 @@ export function initServices() {
   let resizeTimer = 0
   new ResizeObserver(() => {
     root.classList.add('is-resizing')
-    layout()
+    if (open) layout()
+    else layoutOverview(overviewShift)
     clearTimeout(resizeTimer)
     resizeTimer = window.setTimeout(() => root.classList.remove('is-resizing'), 150)
   }).observe(viewport)

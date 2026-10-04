@@ -39,6 +39,13 @@
   --svc-h: 30rem;
   --svc-step: calc(var(--svc-wc) + var(--svc-gap));
   --svc-we: calc(100cqw - var(--svc-p) * var(--svc-step));
+  /* Overview (no card open): the --svc-n pills share the row equally, but
+     never narrower than --svc-wo-min — on phones that minimum wins, so the
+     row overflows and slides instead (services.ts mirrors this maths). */
+  --svc-wo-min: 2.75rem;
+  --svc-wo: max(var(--svc-wo-min), calc((100cqw - (var(--svc-n) - 1) * var(--svc-gap)) / var(--svc-n)));
+  --svc-step-o: calc(var(--svc-wo) + var(--svc-gap));
+  --svc-total-o: calc(var(--svc-n) * var(--svc-wo) + (var(--svc-n) - 1) * var(--svc-gap));
   container-type: inline-size;
   overflow: clip;
   border-radius: 1.5rem;
@@ -50,6 +57,7 @@
     --svc-p: 2;
     --svc-wc: 5rem;
     --svc-gap: 0.625rem;
+    --svc-wo-min: 1.875rem;
   }
 }
 
@@ -59,6 +67,7 @@
     --svc-wc: 7rem;
     --svc-gap: 0.75rem;
     --svc-h: 32rem;
+    --svc-wo-min: 3rem;
   }
 }
 
@@ -72,6 +81,17 @@
   transform: translate3d(calc(var(--svc-shift, 0) * var(--svc-step) * -1), 0, 0);
   transition: transform var(--svc-dur) var(--svc-ease);
   will-change: transform;
+}
+
+/* Overview: slide by overview pill-steps, but never past the point where
+   the last card meets the right edge, and not at all when the row fits
+   (desktop and tablet), where the min() goes negative and max() pins 0. */
+.svc.is-overview .svc-track {
+  transform: translate3d(
+    calc(-1 * max(0px, min(var(--svc-shift, 0) * var(--svc-step-o), var(--svc-total-o) - 100cqw))),
+    0,
+    0
+  );
 }
 
 /* A card. Only its width changes — its content is laid out at the open
@@ -91,6 +111,10 @@
 
 .svc-card.is-active {
   width: var(--svc-we);
+}
+
+.svc.is-overview .svc-card {
+  width: var(--svc-wo);
 }
 
 /* The rounded, clipped part of the card. The corner link's notch is kept
@@ -207,6 +231,7 @@
   font-family: var(--font-display);
   font-weight: 700;
   font-size: 1rem;
+  line-height: 1.1;
   letter-spacing: -0.01em;
 }
 
@@ -246,7 +271,9 @@
     transform 0.2s ease;
 }
 
+/* Clicking anywhere on the open card closes it (services.ts). */
 .svc-card.is-active .svc-body {
+  cursor: pointer;
   opacity: 1;
   transform: none;
   pointer-events: auto;
@@ -358,10 +385,53 @@
   opacity: 0.8;
 }
 
-/* A large, faint pine mark filling the open card's empty right side. */
+/* The open card's close button (top-right). The card closes on any click
+   too, but this gives keyboard and screen-reader users a real control. */
+.svc-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid rgb(255 255 255 / 0.3);
+  border-radius: 999px;
+  background: rgb(0 0 0 / 0.18);
+  color: var(--color-paper);
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    transform 0.25s var(--svc-ease);
+}
+
+.svc-close:hover {
+  background: rgb(0 0 0 / 0.34);
+}
+
+.svc-close:active {
+  transform: scale(0.92);
+}
+
+.svc-close:focus-visible {
+  outline: 2px solid var(--color-paper);
+  outline-offset: 2px;
+}
+
+@media (min-width: 1024px) {
+  .svc-close {
+    top: 1.5rem;
+    right: 1.5rem;
+  }
+}
+
+/* A large, faint pine mark filling the open card's empty right side, sat
+   below the close button. */
 .svc-mark {
   position: absolute;
-  top: 2rem;
+  top: 5rem;
   right: 2.5rem;
   width: 10rem;
   height: 10rem;
