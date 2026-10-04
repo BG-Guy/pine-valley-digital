@@ -13,7 +13,7 @@ import { renderMarquee, initMarquee } from './components/marquee/marquee'
 import { renderFooter, initFooter } from './components/footer/footer'
 import { initSiteHoverCarouselLinks } from './components/hover-carousel-link/hoverCarouselLink'
 import { renderHero, initHero } from './sections/hero/hero'
-import { renderServices } from './sections/services/services'
+import { renderServices, initServices } from './sections/services/services'
 import { renderWork } from './sections/work/work'
 import { renderProcess } from './sections/process/process'
 import { renderContact, initContact } from './sections/contact/contact'
@@ -49,6 +49,7 @@ initPageLoad()
 initScrollReveals()
 initMarquee()
 initHero()
+initServices()
 initSiteHoverCarouselLinks()
 initNavbar()
 initContact()
