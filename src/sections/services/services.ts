@@ -1,153 +1,247 @@
-// Services section ("What we do"): a morphing feature carousel — one
-// expanded panel for the active service, a scrollable rail of the rest,
-// arrow + keyboard navigation, and a progress bar. The list itself lives in
-// pages/services/servicesLandingData.ts — the single source of truth for
-// both this section and the 14 services/*.html pages, so the two can't
-// drift out of sync. To add or edit a service, change that file, not this
-// one. Styles live in services.css.
+// Services section ("What we do"): an iOS-style expanding card row. Every
+// service is a card in one horizontal row — the open card is wide and shows
+// its details, the rest are narrow pills with a vertical title. Opening a
+// card widens it while the previous one narrows and the row slides, all on
+// one shared spring curve (see services.css), so the cards grow and move
+// into their new positions together. The list itself lives in
+// pages/services/servicesLandingData.ts, shared with the 14 service landing
+// pages — edit services there, not here. Styles live in services.css.
 import './services.css'
-import { gsap } from 'gsap'
-import { servicesLandingData as services } from '../../pages/services/servicesLandingData'
+import { servicesLandingData as services, type ServiceLandingData } from '../../pages/services/servicesLandingData'
+import { logoMark } from '../../components/logo/logo'
 
-// Cycled across services for the panel's abstract background wash —
-// mirrors the brand's purple/green/gold trio (see hero.css, lab.css).
-const PALETTE = [
-  { a: '108 59 170', b: '59 170 153' }, // accent -> accent-2
-  { a: '59 170 153', b: '217 164 65' }, // accent-2 -> gold
-  { a: '217 164 65', b: '108 59 170' }, // gold -> accent
-]
+// Card art themes, cycled so neighbouring cards never share one.
+const THEMES = ['purple', 'green', 'gold', 'ink']
 
-// Markup: heading with the service count, then the carousel shell. The
-// panel/rail/controls are filled in by initServices() once the DOM exists —
-// rendering 14 items' worth of interactive state as a template string here
-// would duplicate what the JS already has to do on every navigation.
+// Two-digit service number ("01").
+const pad = (n: number) => String(n).padStart(2, '0')
+
+// Stroke arrow used by the row's buttons and each card's corner link.
+const arrow = (dir: 'left' | 'right') => `
+  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"
+       stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="${dir === 'right' ? 'M5 12h14M13 6l6 6-6 6' : 'M19 12H5M11 6l-6 6 6 6'}" />
+  </svg>`
+
+// One card: a clipped, rounded layer (art, the pill's trigger with its
+// vertical title, the open card's body) plus the corner link, which sits
+// outside the clip (see .svc-socket in services.css). Only one half is live
+// at a time — the other is inert, so it's out of the tab order and the
+// accessibility tree.
+const renderCard = (s: ServiceLandingData, i: number) => {
+  const open = i === 0
+  return `
+          <li class="svc-card svc-theme-${THEMES[i % THEMES.length]}${open ? ' is-active' : ''}">
+            <div class="svc-clip">
+              <div class="svc-art" aria-hidden="true"></div>
+              <button type="button" class="svc-trigger" aria-expanded="${open}" aria-controls="svc-body-${i}"${open ? ' inert' : ''}>
+                <span class="svc-label-n" aria-hidden="true">${pad(i + 1)}</span>
+                <span class="svc-label-t">${s.navTitle}</span>
+              </button>
+              <div class="svc-body" id="svc-body-${i}" role="region" aria-labelledby="svc-title-${i}"${open ? '' : ' inert'}>
+                <div>
+                  <span class="svc-body-n" aria-hidden="true">${pad(i + 1)}</span>
+                  <h3 class="svc-body-title" id="svc-title-${i}" tabindex="-1">${s.navTitle}</h3>
+                  <p class="svc-body-copy">${s.shortCopy}</p>
+                </div>
+                <ul class="svc-teasers">
+                  ${s.teasers.map((t) => `<li>${t}</li>`).join('')}
+                </ul>
+                ${logoMark('svc-mark')}
+              </div>
+            </div>
+            <div class="svc-socket"${open ? '' : ' inert'}>
+              <a class="svc-go" href="/services/${s.slug}.html" aria-label="View ${s.navTitle}">${arrow('right')}</a>
+            </div>
+          </li>`
+}
+
+// Markup: heading with the service count, the card row, then the controls
+// (counter, page dots, prev/next) and a screen-reader announcement line.
 export const renderServices = () => `
     <section id="services" class="px-6 sm:px-10 py-24 sm:py-32">
       <div class="mx-auto max-w-7xl">
         <div class="reveal flex items-end justify-between gap-6 mb-10">
           <h2 class="font-display font-extrabold text-4xl sm:text-5xl tracking-tight">What we <span class="text-[var(--color-accent-2)]">do</span></h2>
-          <span class="hidden sm:block text-sm font-semibold text-[var(--color-accent)]">(${String(services.length).padStart(2, '0')})</span>
+          <span class="hidden sm:block text-sm font-semibold text-[var(--color-accent)]">(${pad(services.length)})</span>
         </div>
 
-        <div id="svc-carousel" class="svc-carousel reveal">
-          <div class="svc-bg" aria-hidden="true"></div>
-          <div class="svc-stage">
-            <a href="#" id="svc-main" class="svc-main">
-              <div>
-                <span id="svc-main-index" class="svc-main-index"></span>
-                <h3 id="svc-main-title" class="svc-main-title"></h3>
-                <p id="svc-main-copy" class="svc-main-copy"></p>
-              </div>
-              <span class="svc-main-cta hero-cta inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-wide">
-                View service <span aria-hidden="true">&rarr;</span>
-              </span>
-            </a>
-            <div id="svc-rail" class="svc-rail" role="list" aria-label="Other services"></div>
+        <div id="svc" class="svc reveal">
+          <div id="svc-viewport" class="svc-viewport">
+            <ol id="svc-track" class="svc-track" style="--svc-shift: 0" aria-label="Services">
+              ${services.map(renderCard).join('')}
+            </ol>
           </div>
+
           <div class="svc-controls">
-            <button type="button" id="svc-prev" class="svc-arrow" aria-label="Previous service">&larr;</button>
-            <div class="svc-progress"><div id="svc-progress-fill" class="svc-progress-fill"></div></div>
-            <span id="svc-counter" class="svc-counter" aria-live="polite"></span>
-            <button type="button" id="svc-next" class="svc-arrow" aria-label="Next service">&rarr;</button>
+            <span id="svc-counter" class="svc-counter">01 / ${pad(services.length)}</span>
+            <div class="svc-dots">
+              ${services
+                .map(
+                  (s, i) =>
+                    `<button type="button" class="svc-dot" tabindex="-1" aria-label="${s.navTitle}" aria-current="${i === 0}"></button>`
+                )
+                .join('')}
+            </div>
+            <div class="svc-arrows">
+              <button type="button" id="svc-prev" class="svc-arrow" aria-label="Previous service">${arrow('left')}</button>
+              <button type="button" id="svc-next" class="svc-arrow" aria-label="Next service">${arrow('right')}</button>
+            </div>
           </div>
+          <p id="svc-live" class="sr-only" aria-live="polite"></p>
         </div>
       </div>
     </section>
 `
 
-// Wires up the carousel: click-to-promote rail cards, prev/next arrows,
-// left/right arrow keys, and the abstract background. Call after the
-// markup is in the DOM.
+// Wires up the row: pill clicks, page dots, prev/next, arrow/Home/End keys,
+// touch swipes, and re-layout on resize. Call after the markup is in the DOM.
 export function initServices() {
-  const carousel = document.getElementById('svc-carousel')
-  const main = document.getElementById('svc-main') as HTMLAnchorElement | null
-  const mainIndex = document.getElementById('svc-main-index')
-  const mainTitle = document.getElementById('svc-main-title')
-  const mainCopy = document.getElementById('svc-main-copy')
-  const rail = document.getElementById('svc-rail')
+  const root = document.getElementById('svc')
+  const viewport = document.getElementById('svc-viewport')
+  const track = document.getElementById('svc-track')
+  const counter = document.getElementById('svc-counter')
+  const live = document.getElementById('svc-live')
   const prevBtn = document.getElementById('svc-prev')
   const nextBtn = document.getElementById('svc-next')
-  const progressFill = document.getElementById('svc-progress-fill')
-  const counter = document.getElementById('svc-counter')
-  if (!carousel || !main || !mainIndex || !mainTitle || !mainCopy || !rail || !prevBtn || !nextBtn || !progressFill || !counter) return
+  if (!root || !viewport || !track || !counter || !live || !prevBtn || !nextBtn) return
 
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  let activeIndex = 0
+  const cards = Array.from(track.querySelectorAll<HTMLElement>('.svc-card'))
+  const dots = Array.from(root.querySelectorAll<HTMLButtonElement>('.svc-dot'))
+  const count = cards.length
+  let active = 0
 
-  function renderMain() {
-    const s = services[activeIndex]
-    main!.href = `/services/${s.slug}.html`
-    mainIndex!.textContent = String(activeIndex + 1).padStart(2, '0')
-    mainTitle!.textContent = s.navTitle
-    mainCopy!.textContent = s.shortCopy
+  // How many pills sit beside the open card at this breakpoint. Set in
+  // services.css (--svc-p) and read here, so CSS and JS can't disagree.
+  const pillsInView = () => parseInt(getComputedStyle(viewport).getPropertyValue('--svc-p'), 10) || 1
+
+  // Which card the row starts at: one pill of context before the open card
+  // (when more than one pill fits), clamped so the row never slides past
+  // its first or last card — so the open card sits left at the start and
+  // right at the end, like the reference.
+  const shiftFor = (index: number) => {
+    const pills = pillsInView()
+    const leadIn = pills > 1 ? 1 : 0
+    return Math.min(Math.max(index - leadIn, 0), Math.max(count - 1 - pills, 0))
   }
 
-  function renderRail() {
-    rail!.innerHTML = services
-      .map(
-        (s, i) =>
-          i === activeIndex
-            ? ''
-            : `<button type="button" class="svc-card" role="listitem" data-index="${i}">
-                 <span class="svc-card-index">${String(i + 1).padStart(2, '0')}</span>
-                 <span class="svc-card-title">${s.navTitle}</span>
-               </button>`
-      )
-      .join('')
-
-    rail!.querySelectorAll<HTMLButtonElement>('.svc-card').forEach((card) => {
-      card.addEventListener('click', () => promote(Number(card.dataset.index)))
+  // Slides the row to the open card, and keeps only the on-screen pills in
+  // the tab order (off-screen ones stay reachable via arrows, keys, dots).
+  function layout() {
+    const shift = shiftFor(active)
+    const last = shift + pillsInView()
+    track!.style.setProperty('--svc-shift', String(shift))
+    cards.forEach((card, i) => {
+      card.querySelector<HTMLButtonElement>('.svc-trigger')!.tabIndex = i >= shift && i <= last ? 0 : -1
     })
-
-    if (!reduceMotion) {
-      gsap.from(rail!.children, { opacity: 0, y: 8, duration: 0.3, stagger: 0.02, ease: 'power2.out' })
-    }
   }
 
-  function updateProgress() {
-    progressFill!.style.width = `${((activeIndex + 1) / services.length) * 100}%`
-    counter!.textContent = `${String(activeIndex + 1).padStart(2, '0')} / ${String(services.length).padStart(2, '0')}`
+  // Opens or closes one card: swaps which half (pill trigger vs. body and
+  // corner link) is inert.
+  function setOpen(card: HTMLElement, open: boolean) {
+    card.classList.toggle('is-active', open)
+    const trigger = card.querySelector('.svc-trigger')!
+    trigger.toggleAttribute('inert', open)
+    trigger.setAttribute('aria-expanded', String(open))
+    card.querySelector('.svc-body')!.toggleAttribute('inert', !open)
+    card.querySelector('.svc-socket')!.toggleAttribute('inert', !open)
   }
 
-  function updateBackground() {
-    const { a, b } = PALETTE[activeIndex % PALETTE.length]
-    carousel!.style.setProperty('--svc-a', `rgb(${a})`)
-    carousel!.style.setProperty('--svc-b', `rgb(${b})`)
+  // Gives the two resizing cards' art its own compositor layer for the
+  // length of the spring, so it's moved rather than repainted every frame.
+  const settleTimers = new WeakMap<HTMLElement, number>()
+  function markAnimating(card: HTMLElement) {
+    card.classList.add('is-animating')
+    clearTimeout(settleTimers.get(card))
+    settleTimers.set(card, window.setTimeout(() => card.classList.remove('is-animating'), 900))
   }
 
-  function render() {
-    renderMain()
-    renderRail()
-    updateProgress()
-    updateBackground()
+  // Opens card `index` (wrapping at either end). Everything that moves —
+  // both widths and the row's slide — changes in this one frame, so the
+  // CSS transitions all start together on the same curve.
+  function activate(index: number) {
+    const target = (index + count) % count
+    if (target === active) return
+    const focusWasInRow = track!.contains(document.activeElement)
+
+    markAnimating(cards[active])
+    markAnimating(cards[target])
+    setOpen(cards[active], false)
+    setOpen(cards[target], true)
+    active = target
+    layout()
+
+    dots.forEach((dot, i) => dot.setAttribute('aria-current', String(i === target)))
+    counter!.textContent = `${pad(target + 1)} / ${pad(count)}`
+    live!.textContent = `${services[target].navTitle}, ${target + 1} of ${count}`
+
+    // Focus inside the row was on a card that just changed state — move it
+    // to the open card's heading rather than leaving it on an inert element.
+    if (focusWasInRow) cards[target].querySelector<HTMLElement>('.svc-body-title')!.focus({ preventScroll: true })
   }
 
-  // The "morph": the main panel shrinks and fades, its content swaps while
-  // hidden, then it springs back in — a cheap stand-in for a full FLIP
-  // animation that reads the same way without tracking DOM positions.
-  function promote(index: number) {
-    if (index === activeIndex || index < 0 || index >= services.length) return
-    activeIndex = index
+  cards.forEach((card, i) => card.querySelector('.svc-trigger')!.addEventListener('click', () => activate(i)))
+  dots.forEach((dot, i) => dot.addEventListener('click', () => activate(i)))
+  prevBtn.addEventListener('click', () => activate(active - 1))
+  nextBtn.addEventListener('click', () => activate(active + 1))
 
-    if (reduceMotion) {
-      render()
-      return
-    }
-
-    gsap
-      .timeline()
-      .to(main, { opacity: 0, scale: 0.96, duration: 0.16, ease: 'power2.in' })
-      .call(render)
-      .to(main, { opacity: 1, scale: 1, duration: 0.55, ease: 'back.out(1.6)' })
-  }
-
-  prevBtn.addEventListener('click', () => promote((activeIndex - 1 + services.length) % services.length))
-  nextBtn.addEventListener('click', () => promote((activeIndex + 1) % services.length))
-
-  carousel.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowLeft') promote((activeIndex - 1 + services.length) % services.length)
-    if (e.key === 'ArrowRight') promote((activeIndex + 1) % services.length)
+  // Arrow keys step, Home/End jump to the ends — anywhere inside the row
+  // or its controls.
+  root.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight') activate(active + 1)
+    else if (e.key === 'ArrowLeft') activate(active - 1)
+    else if (e.key === 'Home') activate(0)
+    else if (e.key === 'End') activate(count - 1)
+    else return
+    e.preventDefault()
   })
 
-  render()
+  // Touch swipe: a horizontal flick steps one card (stopping at the ends
+  // rather than wrapping); vertical drags still scroll the page, since the
+  // viewport has touch-action: pan-y.
+  let startX = 0
+  let startY = 0
+  let tracking = false
+  let swiped = false
+  viewport.addEventListener('pointerdown', (e) => {
+    if (e.pointerType === 'mouse') return
+    tracking = true
+    swiped = false
+    startX = e.clientX
+    startY = e.clientY
+  })
+  viewport.addEventListener('pointerup', (e) => {
+    if (!tracking) return
+    tracking = false
+    const dx = e.clientX - startX
+    const dy = e.clientY - startY
+    if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return
+    swiped = true
+    activate(Math.min(Math.max(active + (dx < 0 ? 1 : -1), 0), count - 1))
+  })
+  viewport.addEventListener('pointercancel', () => {
+    tracking = false
+  })
+  // Don't let the end of a swipe also count as a tap on the pill under it.
+  viewport.addEventListener(
+    'click',
+    (e) => {
+      if (!swiped) return
+      swiped = false
+      e.preventDefault()
+      e.stopPropagation()
+    },
+    true
+  )
+
+  // A breakpoint change alters how many pills fit, so re-lay out — with
+  // transitions off while resizing, since every width depends on the row's
+  // width and would otherwise spring on each resize step.
+  let resizeTimer = 0
+  new ResizeObserver(() => {
+    root.classList.add('is-resizing')
+    layout()
+    clearTimeout(resizeTimer)
+    resizeTimer = window.setTimeout(() => root.classList.remove('is-resizing'), 150)
+  }).observe(viewport)
 }

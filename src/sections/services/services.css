@@ -1,202 +1,589 @@
-/* Services carousel ("What we do" — see services.ts). One expanded panel
-   for the active service + a scrollable rail of the rest, with arrow/
-   keyboard navigation and a progress bar. Cards use the site's thick-border,
-   hard-offset-shadow language (see global.css's theme note) rather than
-   glassmorphism — soft blur is what made this site slow on Safari before
-   (see hero.css), so it's avoided here too. */
+/* Services row ("What we do" — see services.ts). One row of cards: the open
+   card is wide, the others are narrow pills. Every size and the row's slide
+   come from the custom properties below, so the layout math lives here and
+   services.ts only decides which card is open. */
 
-/* Lets --svc-a/--svc-b (the background wash colors, set from JS per active
-   service) animate smoothly between services instead of snapping. */
-@property --svc-a {
-  syntax: '<color>';
-  inherits: true;
-  initial-value: rgb(108 59 170);
-}
-@property --svc-b {
-  syntax: '<color>';
-  inherits: true;
-  initial-value: rgb(59 170 153);
+/* Shared motion: an iOS-style spring (SwiftUI's default — 0.55s response,
+   0.825 damping, about 1% overshoot) sampled into linear(). The open card's
+   width, the closing card's width and the row's slide all use it, start in
+   the same frame, and so move as one. Browsers without linear() fall back
+   to the closest plain curve. */
+.svc {
+  --svc-ease: cubic-bezier(0.32, 0.72, 0, 1);
+  --svc-dur: 0.65s;
 }
 
-.svc-carousel {
-  --svc-a: rgb(108 59 170);
-  --svc-b: rgb(59 170 153);
-  position: relative;
-  isolation: isolate;
-  border: 3px solid var(--color-ink);
-  border-radius: 1.5rem;
-  overflow: hidden;
-  background: var(--color-paper);
-  transition: --svc-a 0.6s ease, --svc-b 0.6s ease;
-}
-
-/* Abstract wash — two soft color pools, not blurred (no filter: blur),
-   just a radial gradient fading to transparent. Shifts color with the
-   active service via the animatable custom properties above. */
-.svc-bg {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  opacity: 0.14;
-  background:
-    radial-gradient(ellipse 60% 50% at 15% 20%, var(--svc-a) 0%, transparent 70%),
-    radial-gradient(ellipse 55% 55% at 90% 85%, var(--svc-b) 0%, transparent 70%);
-}
-
-.svc-stage {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  grid-template-columns: 1fr 280px;
-  gap: 1.5rem;
-  padding: 2rem;
-  /* A real height (not min-height) so .svc-rail's overflow-y: auto has
-     something to clip against — without it, the grid row just stretches
-     to fit every card and the rail never scrolls. */
-  height: 26rem;
-}
-
-@media (max-width: 639px) {
-  .svc-stage {
-    grid-template-columns: 1fr;
-    height: auto;
-    padding: 1.5rem;
+@supports (transition-timing-function: linear(0, 1)) {
+  .svc {
+    --svc-ease: linear(
+      0, 0.0348 3.33%, 0.1189 6.67%, 0.2284 10%, 0.3465 13.33%, 0.4625 16.67%,
+      0.5696 20%, 0.6643 23.33%, 0.7451 26.67%, 0.812 30%, 0.8659 33.33%,
+      0.9082 36.67%, 0.9405 40%, 0.9646 43.33%, 0.9819 46.67%, 0.9938 50%,
+      1.0017 53.33%, 1.0065 56.67%, 1.0091 60%, 1.0101 63.33%, 1.0101 66.67%,
+      1.0094 70%, 1.0084 73.33%, 1.0072 76.67%, 1.006 80%, 1.0039 86.67%,
+      1.0022 93.33%, 1
+    );
+    --svc-dur: 0.75s;
   }
 }
 
-/* The expanded panel. */
-.svc-main {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 2rem;
-  border: 3px solid var(--color-ink);
-  border-radius: 1rem;
-  background: var(--color-paper);
-  box-shadow: 6px 6px 0 0 var(--color-ink);
-  padding: 2rem;
-  transform-origin: left center;
-}
-
-.svc-main-index {
-  display: block;
-  font-family: var(--font-display);
-  font-size: 2.5rem;
-  font-weight: 800;
-  color: rgb(51 51 51 / 0.2);
-  line-height: 1;
-}
-
-.svc-main-title {
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 2rem;
-  letter-spacing: -0.01em;
-  margin-top: 0.75rem;
+/* The window onto the row. --svc-p pills sit beside the open card, and the
+   open card gets whatever width is left (100cqw = this element's width), so
+   the cards on screen always fill it exactly. overflow: clip rather than
+   hidden, so focusing an off-screen card can't scroll the row out of
+   place. */
+.svc-viewport {
+  --svc-p: 1;
+  --svc-wc: 3.5rem;
+  --svc-gap: 0.5rem;
+  --svc-h: 30rem;
+  --svc-step: calc(var(--svc-wc) + var(--svc-gap));
+  --svc-we: calc(100cqw - var(--svc-p) * var(--svc-step));
+  container-type: inline-size;
+  overflow: clip;
+  border-radius: 1.5rem;
+  touch-action: pan-y;
 }
 
 @media (min-width: 640px) {
-  .svc-main-title {
-    font-size: 2.75rem;
+  .svc-viewport {
+    --svc-p: 2;
+    --svc-wc: 5rem;
+    --svc-gap: 0.625rem;
   }
 }
 
-.svc-main-copy {
-  margin-top: 1rem;
-  color: rgb(51 51 51 / 0.65);
-  font-size: 1.05rem;
-  max-width: 34rem;
+@media (min-width: 1024px) {
+  .svc-viewport {
+    --svc-p: 3;
+    --svc-wc: 7rem;
+    --svc-gap: 0.75rem;
+    --svc-h: 32rem;
+  }
 }
 
-/* The rail of the other services. Vertical scroll on desktop (stays inside
-   the panel's height), horizontal swipe on mobile. */
-.svc-rail {
-  height: 100%;
+/* The row itself; slides by whole pill-steps (--svc-shift, set by JS). */
+.svc-track {
   display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  overflow-y: auto;
-  padding-right: 0.25rem;
+  gap: var(--svc-gap);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  transform: translate3d(calc(var(--svc-shift, 0) * var(--svc-step) * -1), 0, 0);
+  transition: transform var(--svc-dur) var(--svc-ease);
+  will-change: transform;
 }
 
-@media (max-width: 639px) {
-  .svc-rail {
-    height: auto;
-    flex-direction: row;
-    overflow-x: auto;
-    overflow-y: visible;
-    scroll-snap-type: x proximity;
-    padding-right: 0;
-    padding-bottom: 0.25rem;
-  }
-}
-
+/* A card. Only its width changes — its content is laid out at the open
+   width and clipped, so nothing reflows while it grows or shrinks. */
 .svc-card {
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  text-align: left;
-  border: 2px solid var(--color-ink);
-  border-radius: 0.75rem;
-  background: var(--color-paper-dim);
-  padding: 0.75rem 1rem;
-  cursor: pointer;
-  scroll-snap-align: start;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  --art-a: #8a55d0;
+  --art-b: #2f1559;
+  --art-hi: rgb(205 170 255 / 0.32);
+  --art-lo: rgb(59 170 153 / 0.38);
+  position: relative;
+  flex: none;
+  width: var(--svc-wc);
+  height: var(--svc-h);
+  color: var(--color-paper);
+  transition: width var(--svc-dur) var(--svc-ease);
 }
 
-@media (max-width: 639px) {
-  .svc-card {
-    width: 9.5rem;
+.svc-card.is-active {
+  width: var(--svc-we);
+}
+
+/* The rounded, clipped part of the card. The corner link's notch is kept
+   outside this clip on purpose — see .svc-socket. */
+.svc-clip {
+  position: absolute;
+  inset: 0;
+  border-radius: 1.5rem;
+  overflow: clip;
+  isolation: isolate;
+  background: var(--art-b);
+}
+
+/* Art themes (cycled in services.ts). Darkest at the top-left, where the
+   title sits, so light text stays readable. */
+.svc-theme-green {
+  --art-a: #34a594;
+  --art-b: #0d3f38;
+  --art-hi: rgb(170 240 225 / 0.3);
+  --art-lo: rgb(108 59 170 / 0.32);
+}
+
+.svc-theme-gold {
+  --art-a: #d9a441;
+  --art-b: #5a3507;
+  --art-hi: rgb(255 226 160 / 0.32);
+  --art-lo: rgb(108 59 170 / 0.3);
+}
+
+.svc-theme-ink {
+  --art-a: #4a4a4a;
+  --art-b: #161616;
+  --art-hi: rgb(108 59 170 / 0.4);
+  --art-lo: rgb(59 170 153 / 0.32);
+}
+
+/* The card's art: a fixed, open-width layer centred on the card, so a
+   growing card reveals more of it instead of stretching it. Pure CSS — a
+   few soft gradients and some faint flowing lines, no images and no
+   filter: blur() (which is what made this site slow on Safari before). */
+.svc-art {
+  position: absolute;
+  inset-block: 0;
+  left: 50%;
+  z-index: 0;
+  width: var(--svc-we);
+  transform: translateX(-50%);
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 480' preserveAspectRatio='none'%3E%3Cg fill='none' stroke='%23fff' stroke-width='1.2'%3E%3Cpath vector-effect='non-scaling-stroke' stroke-opacity='.16' d='M-20 330C150 250 290 410 470 300S760 130 840 210'/%3E%3Cpath vector-effect='non-scaling-stroke' stroke-opacity='.13' d='M-20 362C160 282 300 442 480 332S770 162 840 242'/%3E%3Cpath vector-effect='non-scaling-stroke' stroke-opacity='.1' d='M-20 394C170 314 310 474 490 364S780 194 840 274'/%3E%3Cpath vector-effect='non-scaling-stroke' stroke-opacity='.08' d='M-20 110C130 50 270 190 430 120S710 20 840 70'/%3E%3C/g%3E%3C/svg%3E")
+      center / 100% 100% no-repeat,
+    linear-gradient(105deg, transparent 32%, rgb(255 255 255 / 0.09) 44%, transparent 56%),
+    radial-gradient(55% 60% at 80% 22%, var(--art-hi), transparent 70%),
+    radial-gradient(65% 70% at 15% 95%, var(--art-lo), transparent 70%),
+    linear-gradient(150deg, var(--art-b) 0%, var(--art-a) 100%);
+  transition: transform 0.6s var(--svc-ease);
+}
+
+.svc-card.is-animating .svc-art {
+  will-change: transform;
+}
+
+@media (hover: hover) {
+  .svc-card:not(.is-active):hover .svc-art {
+    transform: translateX(-50%) scale(1.06);
   }
 }
 
-.svc-card:hover,
-.svc-card:focus-visible {
-  transform: translateY(-2px);
-  box-shadow: 3px 3px 0 0 var(--color-ink);
+/* The pill: the whole card is the button, with the number at the top and
+   the title running bottom-to-top. It fades out as the card opens, and back
+   in once a closing card has mostly shrunk. */
+.svc-trigger {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.25rem 0;
+  border: 0;
+  border-radius: inherit;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition: opacity 0.3s ease 0.22s;
+}
+
+.svc-card.is-active .svc-trigger {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s ease;
+}
+
+.svc-trigger:focus-visible {
+  outline: 3px solid var(--color-paper);
+  outline-offset: -7px;
+}
+
+.svc-label-n {
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  opacity: 0.75;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Physical top/bottom margins, not margin-block: in vertical writing the
+   "block" axis is horizontal, so margin-block wouldn't centre it. */
+.svc-label-t {
+  margin-top: auto;
+  margin-bottom: auto;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  white-space: nowrap;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: -0.01em;
+}
+
+@media (min-width: 640px) {
+  .svc-label-t {
+    font-size: 1.25rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .svc-label-t {
+    font-size: 1.5rem;
+  }
+}
+
+/* The open card's content: always laid out at the open width (so it never
+   reflows mid-spring) and pinned to the card's left edge. It fades and lifts
+   in once the card is opening, and drops out fast when it closes. Also a
+   size container, so it can drop the teasers / pine mark when narrow. */
+.svc-body {
+  container: svc-body / inline-size;
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  z-index: 2;
+  width: var(--svc-we);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.25rem;
+  opacity: 0;
+  transform: translateY(0.75rem);
+  pointer-events: none;
+  transition:
+    opacity 0.15s ease,
+    transform 0.2s ease;
+}
+
+.svc-card.is-active .svc-body {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+  transition:
+    opacity 0.35s ease 0.18s,
+    transform 0.6s var(--svc-ease) 0.12s;
+}
+
+@media (min-width: 640px) {
+  .svc-body {
+    padding: 1.75rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .svc-body {
+    padding: 2.25rem;
+  }
+}
+
+.svc-body-n {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  opacity: 0.7;
+  font-variant-numeric: tabular-nums;
+}
+
+/* fit-content so the keyboard focus ring (focus moves here when a card
+   opens from the keyboard) hugs the title instead of spanning the card. */
+.svc-body-title {
+  width: fit-content;
+  margin-top: 0.5rem;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 2rem;
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+}
+
+.svc-body-title:focus {
   outline: none;
 }
 
-.svc-card-index {
-  font-family: var(--font-display);
-  font-size: 0.8rem;
-  color: rgb(51 51 51 / 0.4);
+.svc-body-title:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
+  border-radius: 0.25rem;
 }
 
-.svc-card-title {
-  font-family: var(--font-display);
-  font-weight: 700;
+.svc-body-copy {
+  margin-top: 0.9rem;
+  max-width: 30rem;
   font-size: 0.95rem;
+  line-height: 1.5;
+  opacity: 0.85;
 }
 
-/* Arrows + progress bar. */
-.svc-controls {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem 2rem 1.5rem;
-  border-top: 1px solid rgb(51 51 51 / 0.1);
-}
-
-@media (max-width: 639px) {
-  .svc-controls {
-    padding: 1rem 1.5rem 1.5rem;
+@media (min-width: 640px) {
+  .svc-body-title {
+    font-size: 2.5rem;
+  }
+  .svc-body-copy {
+    font-size: 1rem;
   }
 }
 
-.svc-arrow {
-  flex-shrink: 0;
-  width: 2.5rem;
-  height: 2.5rem;
+@media (min-width: 1024px) {
+  .svc-body-title {
+    font-size: 3.25rem;
+  }
+  .svc-body-copy {
+    font-size: 1.05rem;
+  }
+}
+
+/* The three teasers, in a translucent panel at the bottom-left (the
+   reference's widget panel). Kept clear of the corner link. Translucent
+   rather than frosted — backdrop-filter blur would be re-rendered every
+   frame of the spring. */
+.svc-teasers {
+  display: grid;
+  gap: 0.6rem;
+  max-width: min(24rem, calc(100% - 6rem));
+  margin: 0;
+  padding: 1rem 1.25rem;
+  list-style: none;
+  border: 1px solid rgb(255 255 255 / 0.2);
+  border-radius: 1.25rem;
+  background: rgb(0 0 0 / 0.22);
+  font-size: 0.9rem;
+  line-height: 1.35;
+}
+
+.svc-teasers li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+}
+
+.svc-teasers li::before {
+  content: "";
+  flex: none;
+  width: 0.45rem;
+  height: 0.45rem;
+  margin-top: 0.42em;
   border-radius: 999px;
-  border: 2px solid var(--color-ink);
+  background: currentColor;
+  opacity: 0.8;
+}
+
+/* A large, faint pine mark filling the open card's empty right side. */
+.svc-mark {
+  position: absolute;
+  top: 2rem;
+  right: 2.5rem;
+  width: 10rem;
+  height: 10rem;
+  color: var(--color-paper);
+  opacity: 0.16;
+  pointer-events: none;
+}
+
+.svc-mark path[stroke] {
+  stroke: currentColor;
+  stroke-opacity: 1;
+}
+
+@container svc-body (max-width: 26rem) {
+  .svc-teasers {
+    display: none;
+  }
+}
+
+@container svc-body (max-width: 40rem) {
+  .svc-mark {
+    display: none;
+  }
+}
+
+/* The corner link, sat in a notch cut into the card's bottom-right corner
+   (the reference's dark arrow button). The notch is a page-coloured square
+   with a rounded inner corner; the two pseudo-elements are the concave
+   fillets where it meets the card's right and bottom edges. It rides the
+   card's right edge as it grows, and pops in once the card is open.
+
+   It sits outside .svc-clip and overhangs the card by 1px on the right and
+   bottom, and the fillets overlap it by 1px: wherever two painted edges
+   share a fractional-pixel line, anti-aliasing lets a sliver of the card's
+   colour bleed through as a faint line, so every shared edge is covered
+   by a solid pixel instead. */
+.svc-socket {
+  --socket: 4.25rem;
+  --socket-pad: 0.45rem;
+  position: absolute;
+  right: -1px;
+  bottom: -1px;
+  z-index: 3;
+  width: calc(var(--socket) + 1px);
+  height: calc(var(--socket) + 1px);
+  padding: var(--socket-pad) 1px 1px var(--socket-pad);
+  border-top-left-radius: 1.6rem;
   background: var(--color-paper);
+  opacity: 0;
+  transform: scale(0.6);
+  transform-origin: 100% 100%;
+  transition:
+    opacity 0.12s ease,
+    transform 0.2s ease;
+}
+
+.svc-socket::before,
+.svc-socket::after {
+  content: "";
+  position: absolute;
+  background: radial-gradient(circle at 0 0, transparent 1.5rem, var(--color-paper) calc(1.5rem + 0.5px));
+}
+
+.svc-socket::before {
+  right: 0;
+  bottom: calc(100% - 1px);
+  width: 1.5rem;
+  height: calc(1.5rem + 1px);
+}
+
+.svc-socket::after {
+  right: calc(100% - 1px);
+  bottom: 0;
+  width: calc(1.5rem + 1px);
+  height: 1.5rem;
+}
+
+.svc-card.is-active .svc-socket {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.3s ease 0.3s,
+    transform 0.55s var(--svc-ease) 0.25s;
+}
+
+@media (min-width: 640px) {
+  .svc-socket {
+    --socket: 5rem;
+    --socket-pad: 0.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .svc-socket {
+    --socket: 5.5rem;
+  }
+}
+
+.svc-go {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--color-ink);
+  color: var(--color-paper);
+  transition:
+    transform 0.25s var(--svc-ease),
+    background-color 0.2s ease;
+}
+
+.svc-go svg {
+  transition: transform 0.25s var(--svc-ease);
+}
+
+.svc-go:hover {
+  background: #1f1f1f;
+}
+
+.svc-go:hover svg {
+  transform: translateX(3px);
+}
+
+.svc-go:active {
+  transform: scale(0.94);
+}
+
+.svc-go:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+/* Controls under the row: counter, iOS-style page dots (the current one
+   stretches into a pill), prev/next. */
+.svc-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+
+.svc-counter {
+  display: none;
+  min-width: 4.5rem;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  color: rgb(51 51 51 / 0.55);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (min-width: 640px) {
+  .svc-counter {
+    display: block;
+  }
+}
+
+.svc-dots {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+@media (min-width: 640px) {
+  .svc-dots {
+    gap: 0.4rem;
+  }
+}
+
+.svc-dot {
+  position: relative;
+  width: 0.5rem;
+  height: 0.5rem;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: rgb(51 51 51 / 0.2);
   cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition:
+    width var(--svc-dur) var(--svc-ease),
+    background-color 0.3s ease;
+}
+
+/* Bigger hit area than the dot itself, for touch. */
+.svc-dot::before {
+  content: "";
+  position: absolute;
+  inset: -0.6rem -0.2rem;
+}
+
+.svc-dot[aria-current="true"] {
+  width: 1.75rem;
+  background: var(--color-ink);
+}
+
+@media (hover: hover) {
+  .svc-dot:not([aria-current="true"]):hover {
+    background: rgb(51 51 51 / 0.45);
+  }
+}
+
+.svc-arrows {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.svc-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 2px solid var(--color-ink);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--color-ink);
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.25s var(--svc-ease);
 }
 
 .svc-arrow:hover {
@@ -204,35 +591,28 @@
   color: var(--color-paper);
 }
 
-.svc-progress {
-  flex: 1;
-  height: 3px;
-  border-radius: 999px;
-  background: rgb(51 51 51 / 0.12);
-  overflow: hidden;
+.svc-arrow:active {
+  transform: scale(0.92);
 }
 
-.svc-progress-fill {
-  height: 100%;
-  background: var(--color-accent);
-  width: 0%;
-  transition: width 0.4s cubic-bezier(0.65, 0, 0.35, 1);
-}
-
-.svc-counter {
-  flex-shrink: 0;
-  font-family: var(--font-display);
-  font-size: 0.85rem;
-  color: rgb(51 51 51 / 0.5);
-  font-variant-numeric: tabular-nums;
+/* No springing while the window is being resized (see services.ts). */
+.svc.is-resizing .svc-track,
+.svc.is-resizing .svc-card {
+  transition: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .svc-carousel {
-    transition: none;
+  .svc {
+    --svc-dur: 0.01ms;
   }
-  .svc-card,
-  .svc-progress-fill {
-    transition: none;
+  .svc-trigger,
+  .svc-card.is-active .svc-trigger,
+  .svc-body,
+  .svc-card.is-active .svc-body,
+  .svc-socket,
+  .svc-card.is-active .svc-socket,
+  .svc-art {
+    transition-duration: 0.01ms;
+    transition-delay: 0s;
   }
 }

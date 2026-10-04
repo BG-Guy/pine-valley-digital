@@ -5,10 +5,9 @@ import { gsap } from 'gsap'
 // Reveals every `.reveal` element on the page. Call after the markup is in
 // the DOM.
 export function initScrollReveals() {
-  // Repeating items (service rows, cards, steps) reveal together with a
+  // Repeating items (work cards, process steps) reveal together with a
   // stagger, triggered once when their section nears the viewport.
   const groups: [string, number][] = [
-    ['#services .service-row', 0.08],
     ['#work .project-card', 0.1],
     ['#process .process-step', 0.08],
   ]
@@ -30,7 +29,7 @@ export function initScrollReveals() {
   })
 
   // Everything else (headings, one-off blocks) reveals on its own.
-  gsap.utils.toArray<HTMLElement>('.reveal:not(.service-row):not(.project-card):not(.process-step)').forEach((el) => {
+  gsap.utils.toArray<HTMLElement>('.reveal:not(.project-card):not(.process-step)').forEach((el) => {
     gsap.to(el, {
       opacity: 1,
       y: 0,
