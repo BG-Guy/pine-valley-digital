@@ -12,7 +12,10 @@ import { initHoverTeaserMenu } from '../hover-teaser-menu/hoverTeaserMenu'
 // page — same-path + hash is a same-document scroll, different-path is a
 // normal navigation back to the home page's section. Starts hidden
 // (opacity-0): every page's own preloader curtain fades it in as it opens
-// (see components/preloader).
+// (see components/preloader). The CTA's show-from-sm wrapper is a separate
+// span on purpose: .btn-cta's own display rule (ctaButton.css) is unlayered
+// CSS, which beats Tailwind v4's layered `hidden` utility if both sit on the
+// same element — so the button showed (and wrapped the bar) on phones.
 export const renderNavbar = () => `
   <header id="site-nav" class="navbar-shell fixed top-0 inset-x-0 z-40 opacity-0">
     <div id="navbar-bar" class="navbar-bar border-[3px] border-[var(--color-ink)] bg-[var(--color-paper)]">
@@ -29,7 +32,7 @@ export const renderNavbar = () => `
           <a href="/lab.html" class="nav-link">Lab</a>
         </nav>
         <div class="flex items-center gap-3">
-          ${renderCtaButton({ href: '/#contact', label: 'Start a project', className: 'hidden sm:inline-flex text-sm font-semibold' })}
+          <span class="hidden sm:inline-flex">${renderCtaButton({ href: '/#contact', label: 'Start a project', className: 'text-sm font-semibold' })}</span>
           <button id="menu-toggle" type="button" aria-label="Toggle menu" aria-expanded="false" class="md:hidden cursor-pointer flex items-center justify-center w-10 h-10 border border-[var(--color-ink)] rounded-full">
             <span class="hamburger">
               <span class="bar"></span>
