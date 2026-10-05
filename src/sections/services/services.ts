@@ -14,9 +14,7 @@
 import './services.css'
 import { servicesLandingData as services, type ServiceLandingData } from '../../pages/services/servicesLandingData'
 import { createFlowingLines, type FlowingLinesConfig } from '../../components/flowing-lines/flowingLines'
-
-// Card art themes, cycled so neighbouring cards never share one.
-const THEMES = ['purple', 'green', 'gold', 'ink']
+import { CARD_THEMES } from '../../components/card-art/cardArt'
 
 // Two-digit service number ("01").
 const pad = (n: number) => String(n).padStart(2, '0')
@@ -43,9 +41,9 @@ const closeIcon = `
 const renderCard = (s: ServiceLandingData, i: number) => {
   const open = i === 0
   return `
-          <li class="svc-card svc-theme-${THEMES[i % THEMES.length]}${open ? ' is-active' : ''}">
+          <li class="svc-card card-theme-${CARD_THEMES[i % CARD_THEMES.length]}${open ? ' is-active' : ''}">
             <div class="svc-clip">
-              <div class="svc-art" aria-hidden="true"></div>
+              <div class="svc-art card-art card-lines" aria-hidden="true"></div>
               <button type="button" class="svc-trigger" aria-expanded="${open}" aria-controls="svc-body-${i}"${open ? ' inert' : ''}>
                 <span class="svc-label-n" aria-hidden="true">${pad(i + 1)}</span>
                 <span class="svc-label-t">${s.navTitle}</span>

@@ -14,7 +14,7 @@ import { renderFooter, initFooter } from './components/footer/footer'
 import { initSiteHoverCarouselLinks } from './components/hover-carousel-link/hoverCarouselLink'
 import { renderHero, initHero } from './sections/hero/hero'
 import { renderServices, initServices } from './sections/services/services'
-import { renderWork } from './sections/work/work'
+import { renderWork, initWork } from './sections/work/work'
 import { renderProcess } from './sections/process/process'
 import { renderContact, initContact } from './sections/contact/contact'
 import { initPageLoad } from './animations/pageLoad'
@@ -50,6 +50,7 @@ initScrollReveals()
 initMarquee()
 initHero()
 initServices()
+initWork()
 initSiteHoverCarouselLinks()
 initNavbar()
 initContact()

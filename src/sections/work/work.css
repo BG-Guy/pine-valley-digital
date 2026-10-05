@@ -1,26 +1,491 @@
-/* Project / work cards — offset color shadow behind a bordered panel that
-   fills with the accent color on hover (ported from the portfolio's
-   ServiceCard component) */
-.project-card .project-card-shadow {
+/* Work showcase ("Selected work" — see work.ts). Mobile first: a strip of
+   project pills above a full-width preview; from 1024px a 20 / 80 split,
+   the cards stacked on the left and the preview stage on the right. Every
+   box has a fixed size or aspect ratio, and the hero text sits in its own
+   absolutely placed layer, so switching projects never moves the page. */
+
+/* Shared motion: --pj-pop is the navbar CTA's hover pop (ctaButton.css);
+   --pj-slide is the screens' slide — a slight overshoot, then settle. */
+.pj {
+  --pj-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --pj-slide: cubic-bezier(0.34, 1.32, 0.64, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+@media (min-width: 1024px) {
+  .pj {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 4fr);
+    gap: 1.5rem;
+  }
+}
+
+/* ── Project cards ─────────────────────────────────────────────────── */
+
+/* Small screens: a sideways-scrolling strip of pills, bleeding to the
+   screen edges, and padded so a lifted pill's shadow isn't clipped.
+   Large screens: a stack filling the left column, exactly as tall as the
+   stage (size containment stops the cards adding height of their own). */
+.pj-list {
+  position: relative;
+  display: flex;
+  gap: 0.75rem;
+  margin-inline: -1.5rem;
+  padding: 0.375rem 1.5rem 0.75rem;
+  overflow-x: auto;
+  scroll-padding-inline: 1.5rem;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+}
+
+.pj-list::-webkit-scrollbar {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .pj-list {
+    margin-inline: -2.5rem;
+    padding-inline: 2.5rem;
+    scroll-padding-inline: 2.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .pj-list {
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+    contain: size;
+  }
+}
+
+/* A card: the "What we do" card art (components/card-art) behind an ink
+   border. The selected card pops up exactly like the navbar CTA on hover
+   (ctaButton.css); while pressed it sits flat. Small screens: a pill at
+   least 48px tall, with just the name. Large screens: a tile with the
+   number, name and tag. */
+.pj-card {
+  position: relative;
+  isolation: isolate;
+  flex: none;
+  display: flex;
+  align-items: center;
+  min-height: 3rem;
+  padding: 0 1.25rem;
+  overflow: clip;
+  border: 3px solid var(--color-ink);
+  border-radius: 999px;
+  background: var(--art-b) padding-box;
+  color: var(--color-paper);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  scroll-snap-align: start;
+  box-shadow: 0 0 0 0 var(--color-ink);
+  transition:
+    transform 0.35s var(--pj-pop),
+    box-shadow 0.35s var(--pj-pop);
+}
+
+.pj-card[aria-selected="true"] {
+  transform: translate(-3px, -3px);
+  box-shadow: 4px 4px 0 0 var(--color-ink);
+}
+
+.pj-card:active {
+  transform: translate(0, 0);
+  box-shadow: 0 0 0 0 var(--color-ink);
+}
+
+.pj-card:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+.pj-card-art {
   position: absolute;
   inset: 0;
-  border-radius: 1rem;
-  background: var(--color-accent-2);
-  transform: translate(0.5rem, 0.5rem);
-  transition: transform 0.3s ease;
+  z-index: -1;
+  transition: transform 0.6s ease;
 }
 
-.project-card:hover .project-card-shadow {
-  transform: translate(0.75rem, 0.75rem);
+@media (hover: hover) {
+  .pj-card:hover .pj-card-art {
+    transform: scale(1.06);
+  }
 }
 
-.project-card .project-card-face {
-  transition:
-    background-color 0.3s ease,
-    color 0.3s ease;
+.pj-card-n,
+.pj-card-tag {
+  display: none;
 }
 
-.project-card:hover .project-card-face {
+.pj-card-name {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+@media (min-width: 1024px) {
+  .pj-card {
+    flex: 1 1 0;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-end;
+    gap: 0.2rem;
+    min-height: 0;
+    padding: 0.9rem 1rem;
+    border-radius: 1.25rem;
+  }
+
+  .pj-card-n {
+    display: block;
+    margin-bottom: auto;
+    font-family: var(--font-display);
+    font-size: 0.8rem;
+    font-variant-numeric: tabular-nums;
+    opacity: 0.75;
+  }
+
+  .pj-card-name {
+    font-size: 1.15rem;
+    line-height: 1.1;
+    white-space: normal;
+  }
+
+  .pj-card-tag {
+    display: block;
+    font-size: 0.75rem;
+    opacity: 0.8;
+  }
+}
+
+/* ── Preview stage ─────────────────────────────────────────────────── */
+
+/* A fixed-shape box (its aspect ratio set per breakpoint) holding the
+   browser window and the phone. */
+.pj-stage {
+  position: relative;
+  aspect-ratio: 4 / 5;
+}
+
+@media (min-width: 640px) {
+  .pj-stage {
+    aspect-ratio: 16 / 11;
+  }
+}
+
+@media (min-width: 1024px) {
+  .pj-stage {
+    align-self: start;
+    aspect-ratio: 16 / 10;
+  }
+}
+
+/* The browser window, bordered and shadowed like the site's other cards:
+   a top bar (window lights and the address) above the screen. It fills
+   the stage on phones, and leaves room for the phone beside it on wider
+   screens. */
+.pj-browser {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: clip;
+  border: 3px solid var(--color-ink);
+  border-radius: 1.25rem;
+  background: var(--color-paper);
+  box-shadow: 0 6px 0 0 var(--color-ink);
+}
+
+@media (min-width: 640px) {
+  .pj-browser {
+    right: 14%;
+    bottom: 6%;
+  }
+}
+
+@media (min-width: 1024px) {
+  .pj-browser {
+    right: 16%;
+    bottom: 8%;
+  }
+}
+
+.pj-chrome {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  height: 2.5rem;
+  padding: 0 0.875rem;
+  border-bottom: 3px solid var(--color-ink);
+}
+
+.pj-lights {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.pj-lights i {
+  width: 0.65rem;
+  height: 0.65rem;
+  border: 2px solid var(--color-ink);
+  border-radius: 50%;
   background: var(--color-accent);
-  color: #fff;
+}
+
+.pj-lights i:nth-child(2) {
+  background: #d9a441;
+}
+
+.pj-lights i:nth-child(3) {
+  background: var(--color-accent-2);
+}
+
+.pj-address {
+  flex: 0 1 18rem;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  height: 1.6rem;
+  padding: 0 0.75rem;
+  border: 2px solid var(--color-ink);
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.pj-url {
+  display: block;
+  white-space: nowrap;
+}
+
+/* The screen: the frames in a row, slid sideways to the selected one
+   (--pj-index, set by work.ts) with a slight overshoot. The outer frames'
+   art reaches past the row's ends, so the overshoot never shows a gap. */
+.pj-screen {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: clip;
+}
+
+.pj-track {
+  display: flex;
+  height: 100%;
+  transform: translateX(calc(var(--pj-index, 0) * -100%));
+  transition: transform 0.8s var(--pj-slide);
+}
+
+.pj-frame {
+  position: relative;
+  flex: none;
+  width: 100%;
+  height: 100%;
+}
+
+.pj-art {
+  position: absolute;
+  inset: 0;
+}
+
+.pj-frame:first-child .pj-art {
+  left: -10%;
+}
+
+.pj-frame:last-child .pj-art {
+  right: -10%;
+}
+
+/* A sketch of the site's top bar: a logo dot and three links. */
+.pj-site-bar {
+  position: absolute;
+  top: 7%;
+  right: 7%;
+  left: 7%;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.pj-site-bar i {
+  width: 2.25rem;
+  height: 0.4rem;
+  border-radius: 999px;
+  background: rgb(254 249 231 / 0.35);
+}
+
+.pj-site-bar i:first-child {
+  width: 1.1rem;
+  height: 1.1rem;
+  margin-right: auto;
+  background: rgb(254 249 231 / 0.75);
+}
+
+/* Large screens: the phone reaches up beside the bar, so the links stop
+   short of it. */
+@media (min-width: 1024px) {
+  .pj-site-bar {
+    right: 18%;
+  }
+}
+
+/* The hero text, layered over the frames so it stays put while they
+   slide. Each line moves inside its own overflow-hidden mask, by
+   transform only (work.ts), and is clamped to a few lines so it always
+   fits. */
+.pj-copy {
+  position: absolute;
+  top: 22%;
+  left: 7%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 86%;
+  color: var(--color-paper);
+}
+
+@media (min-width: 640px) {
+  .pj-copy {
+    width: min(30rem, 58%);
+  }
+}
+
+.pj-mask {
+  overflow: hidden;
+}
+
+.pj-title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  padding-bottom: 0.08em;
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3.2vw, 2.75rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+.pj-description {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  font-size: clamp(0.875rem, 1.2vw, 1rem);
+  line-height: 1.5;
+  opacity: 0.85;
+}
+
+/* The phone: a paper body with an ink border and drop shadow, a screen
+   holding the same frames as the browser (sliding a beat behind it), and
+   the camera island. It overlaps the browser's right edge. Hidden on
+   phones, where the browser window is already phone-sized. */
+.pj-phone {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  display: none;
+  height: 82%;
+  aspect-ratio: 9 / 19;
+  padding: 0.4rem;
+  border: 3px solid var(--color-ink);
+  border-radius: 2rem;
+  background: var(--color-paper);
+  box-shadow: 0 6px 0 0 var(--color-ink);
+}
+
+@media (min-width: 640px) {
+  .pj-phone {
+    display: block;
+  }
+}
+
+@media (min-width: 1024px) {
+  .pj-phone {
+    height: 88%;
+  }
+}
+
+.pj-phone-screen {
+  position: relative;
+  height: 100%;
+  overflow: clip;
+  border: 2px solid var(--color-ink);
+  border-radius: 1.5rem;
+}
+
+.pj-phone .pj-track {
+  transition-delay: 0.06s;
+}
+
+.pj-island {
+  position: absolute;
+  top: 0.5rem;
+  left: 50%;
+  width: 34%;
+  height: 0.95rem;
+  border-radius: 999px;
+  background: var(--color-ink);
+  transform: translateX(-50%);
+}
+
+/* A sketch of the hero on the phone: two heading lines, two of text and
+   a button. */
+.pj-sketch {
+  position: absolute;
+  top: 20%;
+  right: 10%;
+  left: 10%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.pj-sketch i {
+  height: 0.4rem;
+  border-radius: 999px;
+  background: rgb(254 249 231 / 0.4);
+}
+
+.pj-sketch i:nth-child(1),
+.pj-sketch i:nth-child(2) {
+  height: 0.8rem;
+  background: rgb(254 249 231 / 0.85);
+}
+
+.pj-sketch i:nth-child(1) {
+  width: 90%;
+}
+
+.pj-sketch i:nth-child(2) {
+  width: 65%;
+  margin-bottom: 0.4rem;
+}
+
+.pj-sketch i:nth-child(4) {
+  width: 75%;
+}
+
+.pj-sketch i:nth-child(5) {
+  width: 55%;
+  height: 1.5rem;
+  margin-top: 0.6rem;
+  border: 2px solid var(--color-ink);
+  background: var(--color-paper);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pj-card,
+  .pj-card-art,
+  .pj-track {
+    transition-duration: 0.01ms;
+    transition-delay: 0s;
+  }
 }

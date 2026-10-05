@@ -116,10 +116,6 @@
    widths are the starting sizes; from the first frame on, services.ts sets
    each card's width itself (a spring, so no CSS transition here). */
 .svc-card {
-  --art-a: #8a55d0;
-  --art-b: #2f1559;
-  --art-hi: rgb(205 170 255 / 0.32);
-  --art-lo: rgb(59 170 153 / 0.38);
   position: relative;
   flex: none;
   width: var(--svc-wc);
@@ -146,33 +142,9 @@
   box-shadow: 0 var(--svc-drop) 0 0 var(--color-ink);
 }
 
-/* Art themes (cycled in services.ts). Darkest at the top-left, where the
-   title sits, so light text stays readable. */
-.svc-theme-green {
-  --art-a: #34a594;
-  --art-b: #0d3f38;
-  --art-hi: rgb(170 240 225 / 0.3);
-  --art-lo: rgb(108 59 170 / 0.32);
-}
-
-.svc-theme-gold {
-  --art-a: #d9a441;
-  --art-b: #5a3507;
-  --art-hi: rgb(255 226 160 / 0.32);
-  --art-lo: rgb(108 59 170 / 0.3);
-}
-
-.svc-theme-ink {
-  --art-a: #4a4a4a;
-  --art-b: #161616;
-  --art-hi: rgb(108 59 170 / 0.4);
-  --art-lo: rgb(59 170 153 / 0.32);
-}
-
-/* The card's art: a fixed, open-width layer centred on the card, so a
-   growing card reveals more of it instead of stretching it. Pure CSS — a
-   few soft gradients, no images and no filter: blur() (which is what made
-   this site slow on Safari before). */
+/* The card's art (components/card-art, themed by the card's
+   card-theme-* class): a fixed, open-width layer centred on the card, so a
+   growing card reveals more of it instead of stretching it. */
 .svc-art {
   position: absolute;
   inset-block: 0;
@@ -180,22 +152,13 @@
   z-index: 0;
   width: var(--svc-we);
   transform: translateX(-50%);
-  background:
-    linear-gradient(105deg, transparent 32%, rgb(255 255 255 / 0.09) 44%, transparent 56%),
-    radial-gradient(55% 60% at 80% 22%, var(--art-hi), transparent 70%),
-    radial-gradient(65% 70% at 15% 95%, var(--art-lo), transparent 70%),
-    linear-gradient(150deg, var(--art-b) 0%, var(--art-a) 100%);
   transition: transform 0.6s var(--svc-ease);
 }
 
-/* Static faint wavy lines, on the pills. On the open card they fade out for
-   the moving lines (.svc-flow) — one animated canvas, not fourteen. */
+/* The art's static faint wavy lines (card-lines), on the pills. On the
+   open card they fade out for the moving lines (.svc-flow) — one animated
+   canvas, not fourteen. */
 .svc-art::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 480' preserveAspectRatio='none'%3E%3Cg fill='none' stroke='%23fff' stroke-width='1.2'%3E%3Cpath vector-effect='non-scaling-stroke' stroke-opacity='.16' d='M-20 330C150 250 290 410 470 300S760 130 840 210'/%3E%3Cpath vector-effect='non-scaling-stroke' stroke-opacity='.13' d='M-20 362C160 282 300 442 480 332S770 162 840 242'/%3E%3Cpath vector-effect='non-scaling-stroke' stroke-opacity='.1' d='M-20 394C170 314 310 474 490 364S780 194 840 274'/%3E%3Cpath vector-effect='non-scaling-stroke' stroke-opacity='.08' d='M-20 110C130 50 270 190 430 120S710 20 840 70'/%3E%3C/g%3E%3C/svg%3E")
-    center / 100% 100% no-repeat;
   transition: opacity 0.4s ease 0.2s;
 }
 
