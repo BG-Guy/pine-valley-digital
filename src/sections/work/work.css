@@ -4,18 +4,40 @@
    box has a fixed size or aspect ratio, and the hero text sits in its own
    absolutely placed layer, so switching projects never moves the page. */
 
+/* The section is one screen tall: its content centred in the space under
+   the fixed navbar (--nav-h, global.css). */
+.pj-section {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100svh;
+  padding-top: calc(var(--nav-h) + 1.25rem);
+  padding-bottom: 1.5rem;
+}
+
 /* Shared motion: --pj-pop is the navbar CTA's hover pop (ctaButton.css);
-   --pj-slide is the screens' slide — a slight overshoot, then settle. */
+   --pj-slide is the screens' slide — a slight overshoot, then settle.
+   --pj-around is everything in the section above and below the stage
+   (navbar, heading, the card strip when stacked, padding, the drop
+   shadows), so the stage can cap its height to what the screen has left. */
 .pj {
   --pj-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
   --pj-slide: cubic-bezier(0.34, 1.32, 0.64, 1);
+  --pj-around: calc(var(--nav-h) + 13.5rem);
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
 }
 
+@media (min-width: 640px) {
+  .pj {
+    --pj-around: calc(var(--nav-h) + 14rem);
+  }
+}
+
 @media (min-width: 1024px) {
   .pj {
+    --pj-around: calc(var(--nav-h) + 8.625rem);
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 4fr);
     gap: 1.5rem;
@@ -167,10 +189,14 @@
 /* ── Preview stage ─────────────────────────────────────────────────── */
 
 /* A fixed-shape box (its aspect ratio set per breakpoint) holding the
-   browser window and the phone. */
+   browser window and the phone. On a short screen it's capped at the
+   height the section has left, and just gets a little wider in shape (the
+   window and phone inside are placed in percentages, so they follow), down
+   to a floor where the section grows past the screen instead. */
 .pj-stage {
   position: relative;
   aspect-ratio: 4 / 5;
+  max-height: max(16rem, 100svh - var(--pj-around));
 }
 
 @media (min-width: 640px) {
@@ -179,10 +205,15 @@
   }
 }
 
+/* Stretched across its column explicitly: a grid item with an aspect
+   ratio otherwise keeps the ratio by narrowing when its height is capped,
+   leaving a gap beside it. */
 @media (min-width: 1024px) {
   .pj-stage {
     align-self: start;
+    justify-self: stretch;
     aspect-ratio: 16 / 10;
+    max-height: max(22rem, 100svh - var(--pj-around));
   }
 }
 

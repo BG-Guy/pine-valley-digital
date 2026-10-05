@@ -37,14 +37,13 @@
 /* The section is one screen tall, so it can sit exactly in the viewport:
    services.ts glides the page to it as you scroll in, and touch screens
    snap to it (below). Its content is centred in the space under the fixed
-   navbar (--svc-nav tall). */
+   navbar (--nav-h tall, global.css). */
 .svc-section {
-  --svc-nav: 5.5rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
   min-height: 100svh;
-  padding-top: calc(var(--svc-nav) + 1.25rem);
+  padding-top: calc(var(--nav-h) + 1.25rem);
   padding-bottom: 1.5rem;
   scroll-snap-align: start;
 }
@@ -63,15 +62,15 @@
    are --svc-wc wide whether or not a card is open, so the row is always
    wider than this window and scrolls sideways (services.ts reads these
    same values for that). The cards get the height the screen has left
-   after the navbar, heading, controls, padding and their own drop shadow
-   (--svc-around), within a sensible range. The bottom padding keeps that
+   after the navbar, heading, scrollbar, controls, padding and their own
+   drop shadow (--svc-around), within a sensible range. The bottom padding keeps that
    shadow inside the clip. overflow: clip rather than hidden, so focusing
    an off-screen card can't scroll the row out of place. */
 .svc-viewport {
   --svc-p: 1;
   --svc-wc: 3.5rem;
   --svc-gap: 0.5rem;
-  --svc-around: calc(var(--svc-nav) + 11.75rem + var(--svc-drop));
+  --svc-around: calc(var(--nav-h) + 13.75rem + var(--svc-drop));
   --svc-h: clamp(22rem, 100svh - var(--svc-around), 30rem);
   --svc-step: calc(var(--svc-wc) + var(--svc-gap));
   --svc-we: calc(100cqw - var(--svc-p) * var(--svc-step));
@@ -87,7 +86,7 @@
     --svc-p: 2;
     --svc-wc: 5rem;
     --svc-gap: 0.625rem;
-    --svc-around: calc(var(--svc-nav) + 12.25rem + var(--svc-drop));
+    --svc-around: calc(var(--nav-h) + 14.25rem + var(--svc-drop));
   }
 }
 
@@ -610,14 +609,72 @@
   outline-offset: 3px;
 }
 
-/* Controls under the row: counter, iOS-style page dots (the current one
-   stretches into a pill), prev/next. */
+/* The row's scrollbar (services.ts), in the site's style: an ink-bordered
+   track, and a green thumb with an ink border and a hard shadow that pops
+   up like the navbar CTA while the bar is hovered or dragged. The whole
+   strip is the hit area: press anywhere to jump there, then drag. The
+   thumb's position and length are set from the row every frame. */
+.svc-scroll {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 1.75rem;
+  margin-top: 0.75rem;
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+}
+
+.svc-scroll-track {
+  flex: 1;
+  height: 0.75rem;
+  border: 2px solid var(--color-ink);
+  border-radius: 999px;
+  background: rgb(51 51 51 / 0.08);
+}
+
+.svc-scroll-thumb {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 3rem;
+  height: 1.25rem;
+  margin-top: -0.625rem;
+  border: 3px solid var(--color-ink);
+  border-radius: 999px;
+  background: var(--color-accent-2);
+  box-shadow: 0 3px 0 0 var(--color-ink);
+  cursor: grab;
+  transition:
+    translate 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@media (hover: hover) {
+  .svc-scroll:hover .svc-scroll-thumb {
+    translate: 0 -2px;
+    box-shadow: 0 5px 0 0 var(--color-ink);
+  }
+}
+
+.svc-scroll.is-grabbed,
+.svc-scroll.is-grabbed .svc-scroll-thumb {
+  cursor: grabbing;
+}
+
+.svc-scroll.is-grabbed .svc-scroll-thumb {
+  translate: 0 -2px;
+  box-shadow: 0 5px 0 0 var(--color-ink);
+}
+
+/* Controls under the scrollbar: counter, iOS-style page dots (the current
+   one stretches into a pill), prev/next. */
 .svc-controls {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  margin-top: 1.25rem;
+  margin-top: 0.75rem;
 }
 
 .svc-counter {
@@ -720,7 +777,8 @@
   .svc-card.is-active .svc-body,
   .svc-socket,
   .svc-card.is-active .svc-socket,
-  .svc-art {
+  .svc-art,
+  .svc-scroll-thumb {
     transition-duration: 0.01ms;
     transition-delay: 0s;
   }

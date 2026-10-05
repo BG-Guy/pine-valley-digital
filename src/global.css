@@ -33,6 +33,12 @@
   --color-accent-ink: #ffffff;
 }
 
+/* Layout: the docked navbar's height. Sections that fill the screen keep
+   their content below it. */
+:root {
+  --nav-h: 5.5rem;
+}
+
 /* Smooth in-page anchor scrolling for the nav links. */
 html {
   scroll-behavior: smooth;

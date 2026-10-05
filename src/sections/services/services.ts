@@ -66,9 +66,10 @@ const renderCard = (s: ServiceLandingData, i: number) => {
           </li>`
 }
 
-// Markup: heading with the service count, the card row, then the controls
-// (counter, page dots, prev/next) and a screen-reader announcement line.
-// The section is sized to one screen in services.css (.svc-section).
+// Markup: heading with the service count, the card row and its scrollbar,
+// then the controls (counter, page dots, prev/next) and a screen-reader
+// announcement line. The section is sized to one screen in services.css
+// (.svc-section).
 export const renderServices = () => `
     <section id="services" class="svc-section px-6 sm:px-10">
       <div class="mx-auto w-full max-w-7xl">
@@ -82,6 +83,12 @@ export const renderServices = () => `
             <ol id="svc-track" class="svc-track" aria-label="Services">
               ${services.map(renderCard).join('')}
             </ol>
+          </div>
+
+          <div id="svc-scroll" class="svc-scroll" role="scrollbar" aria-controls="svc-track" aria-orientation="horizontal"
+               aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Services row">
+            <span class="svc-scroll-track"></span>
+            <span id="svc-thumb" class="svc-scroll-thumb"></span>
           </div>
 
           <div class="svc-controls">
@@ -226,18 +233,21 @@ function advance(s: SpringValue, dt: number) {
 
 // Wires up the row: the motion engine, opening pills, closing the open card
 // (click, close button, Escape), page dots, prev/next, arrow/Home/End keys,
-// gliding the section into place, wheel and touch scrolling, the moving
-// lines, and re-layout on resize. Call after the markup is in the DOM.
+// gliding the section into place, wheel and touch scrolling, the
+// scrollbar, the moving lines, and re-layout on resize. Call after the
+// markup is in the DOM.
 export function initServices() {
   const section = document.getElementById('services')
   const root = document.getElementById('svc')
   const viewport = document.getElementById('svc-viewport')
   const track = document.getElementById('svc-track')
+  const bar = document.getElementById('svc-scroll')
+  const thumb = document.getElementById('svc-thumb')
   const counter = document.getElementById('svc-counter')
   const live = document.getElementById('svc-live')
   const prevBtn = document.getElementById('svc-prev')
   const nextBtn = document.getElementById('svc-next')
-  if (!section || !root || !viewport || !track || !counter || !live || !prevBtn || !nextBtn) return
+  if (!section || !root || !viewport || !track || !bar || !thumb || !counter || !live || !prevBtn || !nextBtn) return
 
   const cards = Array.from(track.querySelectorAll<HTMLElement>('.svc-card'))
   const dots = Array.from(root.querySelectorAll<HTMLButtonElement>('.svc-dot'))
@@ -296,6 +306,40 @@ export function initServices() {
 
   function renderRow() {
     track!.style.transform = `translate3d(${row.x}px, 0, 0)`
+    renderBar()
+  }
+
+  // ── Scrollbar ─────────────────────────────────────────────────────────
+  // A themed scrollbar under the row. The thumb's length is the share of
+  // the row on screen and its position how far along the row is, both
+  // read from the springs every frame (so it follows opening and closing
+  // too); while the row is stretched past an end the thumb squashes, as
+  // iOS's does.
+  let view = 0 // the viewport's width
+  let gapPx = 0 // the gap between cards
+  let barLength = 0 // the scrollbar's width
+  let shownValue = -1
+
+  // How far the row can scroll right now, and the thumb's unsquashed length.
+  function barGeometry() {
+    const content = widths.reduce((sum, w) => sum + w.x, 0) + (count - 1) * gapPx
+    const range = Math.max(0, content - view)
+    const length = Math.max(48, (barLength * view) / Math.max(content, view, 1))
+    return { range, length }
+  }
+
+  function renderBar() {
+    const { range, length } = barGeometry()
+    const past = row.x > 0 ? row.x : Math.max(0, -range - row.x)
+    const width = Math.max(24, length - (past * length) / Math.max(view, 1))
+    const progress = range ? clamp(-row.x / range, 0, 1) : 0
+    thumb!.style.width = `${width}px`
+    thumb!.style.transform = `translateX(${progress * (barLength - width)}px)`
+    const value = Math.round(progress * 100)
+    if (value !== shownValue) {
+      shownValue = value
+      bar!.setAttribute('aria-valuenow', String(value))
+    }
   }
 
   function tick(now: number) {
@@ -655,11 +699,57 @@ export function initServices() {
     true
   )
 
+  // ── Scrollbar dragging ────────────────────────────────────────────────
+  // The whole strip is the hit area. Pressing the thumb grabs it; pressing
+  // the track jumps the row so the thumb centres there, and holds on for a
+  // drag from that point. While dragging, the row follows the thumb 1:1
+  // (the thumb's travel spans the row's whole range).
+  let grab: { x: number; progress: number; moved: boolean } | null = null
+
+  bar.addEventListener('pointerdown', (e) => {
+    if (e.button !== 0) return
+    const { range, length } = barGeometry()
+    if (!range) return
+    e.preventDefault()
+    let progress = clamp(-row.x / range, 0, 1)
+    if (e.target !== thumb) {
+      const left = e.clientX - bar.getBoundingClientRect().left - length / 2
+      progress = clamp(left / (barLength - length), 0, 1)
+      moveRow(-progress * range, LAYOUT_SPRING)
+    }
+    grab = { x: e.clientX, progress, moved: false }
+    bar.setPointerCapture(e.pointerId)
+    bar.classList.add('is-grabbed')
+  })
+
+  bar.addEventListener('pointermove', (e) => {
+    if (!grab) return
+    const dx = e.clientX - grab.x
+    // A press that hasn't really moved yet leaves a track jump to animate.
+    if (!grab.moved && Math.abs(dx) < 3) return
+    grab.moved = true
+    const { range, length } = barGeometry()
+    const progress = clamp(grab.progress + dx / Math.max(barLength - length, 1), 0, 1)
+    row.x = row.target = -progress * range
+    row.v = 0
+    renderRow()
+  })
+
+  function letGo() {
+    grab = null
+    bar!.classList.remove('is-grabbed')
+  }
+  bar.addEventListener('pointerup', letGo)
+  bar.addEventListener('pointercancel', letGo)
+
   // ── First layout + resize ─────────────────────────────────────────────
   // Every width depends on the row's width, so on a resize (and at the
   // start) everything jumps straight to its place for the new size.
   new ResizeObserver(() => {
     const m = metrics()
+    view = m.width
+    gapPx = m.gap
+    barLength = bar.clientWidth
     aimWidths(m)
     row.target = open ? slotFor(active, m) : clamp(row.target, minX(m), 0)
     snap()

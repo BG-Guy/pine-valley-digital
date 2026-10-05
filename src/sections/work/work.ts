@@ -1,11 +1,11 @@
-// Work section ("Selected work"): the project showcase. On large screens a
-// 20 / 80 split — a stack of project cards on the left, and on the right a
-// stage with a browser window showing the selected project's homepage hero
-// and a phone beside it. Selecting a project lifts its card, slides both
-// screens over to it, and swaps the hero text. Below 1024px it stacks: the
-// cards become a sideways-scrolling strip of pills above a full-width
-// preview. To change the projects, edit the `projects` array. Styles live
-// in work.css.
+// Work section ("Selected work"): the project showcase, one screen tall. On
+// large screens a 20 / 80 split — a stack of project cards on the left, and
+// on the right a stage with a browser window showing the selected project's
+// homepage hero and a phone beside it. Selecting a project lifts its card,
+// slides both screens over to it, and swaps the hero text. Below 1024px it
+// stacks: the cards become a sideways-scrolling strip of pills above a
+// full-width preview. To change the projects, edit the `projects` array.
+// Styles live in work.css.
 import './work.css'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -80,11 +80,12 @@ const renderPhoneFrame = (_: Project, i: number) => `
                   </div>`
 
 // Markup: heading with the project count, then the cards (a tab list) and
-// the stage (their tab panel) showing the first project.
+// the stage (their tab panel) showing the first project. The section is
+// sized to one screen in work.css (.pj-section).
 export const renderWork = () => `
-    <section id="work" class="px-6 sm:px-10 py-24 sm:py-32 bg-[var(--color-paper-dim)]">
-      <div class="mx-auto max-w-7xl">
-        <div class="reveal flex items-end justify-between gap-6 mb-14">
+    <section id="work" class="pj-section px-6 sm:px-10 bg-[var(--color-paper-dim)]">
+      <div class="mx-auto w-full max-w-7xl">
+        <div class="reveal flex items-end justify-between gap-6 mb-10">
           <h2 class="font-display font-extrabold text-4xl sm:text-5xl tracking-tight">Selected <span class="text-[var(--color-accent-2)]">work</span></h2>
           <span class="hidden sm:block text-sm font-semibold text-[var(--color-accent)]">(${pad(projects.length)})</span>
         </div>
