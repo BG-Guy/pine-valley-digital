@@ -1,0 +1,19 @@
+{
+  "site_url": "https://pinevalleydigital.com",
+  "gsc_property": "sc-domain:pinevalleydigital.com",
+  "site_type": "generic",
+  "business": { "name": "Pine Valley Digital" },
+  "project_rules": "README.md",
+  "content_sources": [
+    { "path": "index.html", "what": "Homepage: title, meta description, headings, copy. Edit here first." },
+    { "path": "services/", "what": "One HTML page per service: title, meta description, headings, copy" },
+    { "path": "lab.html", "what": "Lab page" },
+    { "path": "src/sections/", "what": "Homepage section scripts and styles (only if the copy lives there)" }
+  ],
+  "protected_paths": ["dist/", "node_modules/"],
+  "build_command": "npm run build",
+  "key_pages": ["/"],
+  "timezone": "America/New_York",
+  "weekly_page_budget": 5,
+  "cooldown_days": 28
+}
