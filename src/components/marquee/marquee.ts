@@ -8,20 +8,24 @@ import { logoMark } from '../logo/logo'
 const marqueeItems = ['Web Design', 'Development', 'Brand Identity', 'SEO & Performance', 'Business Automation', 'Local SEO']
 
 // Markup: the item list rendered twice, so translating the track by -50%
-// loops seamlessly.
+// loops seamlessly. The banner sits right under the home hero and rises into
+// it in the site's framed oval edge (.oval-top in global.css — the only
+// section edge that gets one), the band itself just below the oval.
 export const renderMarquee = () => `
-    <div class="marquee-wrap border-y border-[var(--color-ink)]/10 py-4 overflow-hidden">
-      <div class="marquee-track font-display text-2xl sm:text-3xl font-semibold">
-        ${Array(2)
-          .fill(
-            marqueeItems
-              .map(
-                (item) =>
-                  `<span class="flex items-center gap-6 pr-6"><span>${item}</span>${logoMark('marquee-pine')}</span>`
-              )
-              .join('')
-          )
-          .join('')}
+    <div class="marquee-wrap oval-top bg-[var(--color-paper)]">
+      <div class="border-b border-[var(--color-ink)]/10 py-4 overflow-hidden">
+        <div class="marquee-track font-display text-2xl sm:text-3xl font-semibold">
+          ${Array(2)
+            .fill(
+              marqueeItems
+                .map(
+                  (item) =>
+                    `<span class="flex items-center gap-6 pr-6"><span>${item}</span>${logoMark('marquee-pine')}</span>`
+                )
+                .join('')
+            )
+            .join('')}
+        </div>
       </div>
     </div>
 `

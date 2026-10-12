@@ -11,7 +11,7 @@ const processSteps = [
 
 // Markup: heading, then one revealing column per step.
 export const renderProcess = () => `
-    <section id="process" class="oval-top px-6 sm:px-10 py-24 sm:py-32 bg-[var(--color-paper)]">
+    <section id="process" class="px-6 sm:px-10 py-24 sm:py-32">
       <div class="mx-auto max-w-7xl">
         <div class="reveal mb-14">
           <h2 class="font-display font-extrabold text-4xl sm:text-5xl tracking-tight">How we <span class="text-[var(--color-accent-2)]">work</span></h2>

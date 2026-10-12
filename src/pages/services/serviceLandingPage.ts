@@ -39,7 +39,9 @@ const renderHero = (d: ServiceLandingData) => `
 `
 
 // Section 2 — Market Reality & Proof: a couple of real, sourced stats (never
-// invented) and the "strategic shift" paragraph.
+// invented) and the "strategic shift" paragraph. It rises into the hero in
+// the site's framed oval edge (.oval-top in global.css) — the only section
+// edge that gets one.
 const renderProof = (d: ServiceLandingData) => `
     <section class="oval-top px-6 sm:px-10 py-20 sm:py-24 bg-[var(--color-paper-dim)]">
       <div class="mx-auto max-w-5xl">
@@ -63,7 +65,7 @@ const renderProof = (d: ServiceLandingData) => `
 // 3-4 step timeline (same alternating-border pattern as the home page's
 // process section).
 const renderOffering = (d: ServiceLandingData) => `
-    <section class="oval-top px-6 sm:px-10 py-20 sm:py-24 bg-[var(--color-paper)]">
+    <section class="px-6 sm:px-10 py-20 sm:py-24">
       <div class="mx-auto max-w-5xl">
         <div class="reveal mb-14 max-w-2xl">
           <h2 class="font-display font-extrabold text-3xl sm:text-4xl tracking-tight mb-4">What this <span class="text-[var(--color-accent-2)]">actually includes</span></h2>
@@ -89,7 +91,7 @@ const renderOffering = (d: ServiceLandingData) => `
 // self-check checklist (see setupDiagnostic), plus a reasoned, non-invented
 // line of social proof.
 const renderDiagnostic = (d: ServiceLandingData) => `
-    <section class="oval-top px-6 sm:px-10 py-20 sm:py-24 bg-[var(--color-ink)] text-[var(--color-paper)]">
+    <section class="px-6 sm:px-10 py-20 sm:py-24 bg-[var(--color-ink)] text-[var(--color-paper)]">
       <div class="mx-auto max-w-3xl">
         <h2 class="reveal font-display font-extrabold text-3xl sm:text-4xl tracking-tight mb-3">Is this <span class="text-[var(--color-accent-2)]">actually</span> a problem for you?</h2>
         <p class="reveal text-[var(--color-paper)]/60 mb-8">${d.diagnosticIntro}</p>
@@ -117,7 +119,7 @@ const renderDiagnostic = (d: ServiceLandingData) => `
 // site has no backend, so "submit" composes an email rather than posting to
 // a hidden service).
 const renderCta = (d: ServiceLandingData) => `
-    <section id="svc-cta" class="oval-top px-6 sm:px-10 py-20 sm:py-24 bg-[var(--color-paper)]">
+    <section id="svc-cta" class="px-6 sm:px-10 py-20 sm:py-24">
       <div class="mx-auto max-w-3xl">
         <div class="reveal mb-16">
           <h2 class="font-display font-extrabold text-2xl sm:text-3xl tracking-tight mb-8">Before you reach out</h2>

@@ -70,7 +70,7 @@
   --svc-p: 1;
   --svc-wc: 3.5rem;
   --svc-gap: 0.5rem;
-  --svc-around: calc(var(--nav-h) + 13.75rem + var(--svc-drop) + var(--oval-h));
+  --svc-around: calc(var(--nav-h) + 13.75rem + var(--svc-drop));
   --svc-h: clamp(22rem, 100svh - var(--svc-around), 30rem);
   --svc-step: calc(var(--svc-wc) + var(--svc-gap));
   --svc-we: calc(100cqw - var(--svc-p) * var(--svc-step));
@@ -86,7 +86,7 @@
     --svc-p: 2;
     --svc-wc: 5rem;
     --svc-gap: 0.625rem;
-    --svc-around: calc(var(--nav-h) + 14.25rem + var(--svc-drop) + var(--oval-h));
+    --svc-around: calc(var(--nav-h) + 14.25rem + var(--svc-drop));
   }
 }
 

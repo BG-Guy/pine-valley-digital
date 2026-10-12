@@ -23,7 +23,7 @@
 .pj {
   --pj-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
   --pj-slide: cubic-bezier(0.34, 1.32, 0.64, 1);
-  --pj-around: calc(var(--nav-h) + 13.5rem + var(--oval-h));
+  --pj-around: calc(var(--nav-h) + 13.5rem);
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
@@ -31,13 +31,13 @@
 
 @media (min-width: 640px) {
   .pj {
-    --pj-around: calc(var(--nav-h) + 14rem + var(--oval-h));
+    --pj-around: calc(var(--nav-h) + 14rem);
   }
 }
 
 @media (min-width: 1024px) {
   .pj {
-    --pj-around: calc(var(--nav-h) + 8.625rem + var(--oval-h));
+    --pj-around: calc(var(--nav-h) + 8.625rem);
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 4fr);
     gap: 1.5rem;

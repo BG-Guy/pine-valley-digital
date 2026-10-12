@@ -5,7 +5,7 @@ import { gsap } from 'gsap'
 
 // Markup: eyebrow, layered duotone headline, email link and reply-time note.
 export const renderContact = () => `
-    <section id="contact" class="oval-top px-6 sm:px-10 py-24 sm:py-32 bg-[var(--color-ink)] text-[var(--color-paper)]">
+    <section id="contact" class="px-6 sm:px-10 py-24 sm:py-32 bg-[var(--color-ink)] text-[var(--color-paper)]">
       <div class="mx-auto max-w-7xl">
         <p class="reveal text-sm font-semibold uppercase tracking-[0.2em] text-[var(--color-paper)]/50 mb-6">Get in touch</p>
         <h2 id="contact-heading" class="duotone-heading reveal font-display font-extrabold tracking-tight text-[10vw] leading-[0.95] sm:text-6xl sm:leading-[1.02] max-w-3xl">

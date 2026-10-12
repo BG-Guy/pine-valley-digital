@@ -91,8 +91,9 @@ body {
   }
 }
 
-/* Oval section edges: a section with .oval-top rises over the one before it
-   in a wide oval --oval-h tall, framed with the navbar's 3px ink line. Its
+/* Oval section edge, used once per page, for the edge under the hero: a
+   section with .oval-top rises over the one before it in a wide oval
+   --oval-h tall, framed with the navbar's 3px ink line. Its
    background is cut to the oval (so it needs a background of its own) and
    the frame is drawn by ::before — a strip the oval's height, bordered on
    three sides and rounded with the same ellipse, which keeps the line an

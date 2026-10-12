@@ -1,3 +1,9 @@
+/* The oval edge (.oval-top) rises over the hero above; the band starts
+   below it. */
+.marquee-wrap {
+  padding-top: var(--oval-h);
+}
+
 /* Marquee — the track is as wide as its content and animated by GSAP. */
 .marquee-track {
   display: flex;
