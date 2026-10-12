@@ -1,6 +1,7 @@
 // Scroll scenes: a few scroll-driven touches in the site's own style.
-//   - The ink frame along each oval section edge draws itself out from the
-//     oval's peak as the section rises into view.
+//   - The ink frame along the oval edge under the hero draws itself out
+//     from the oval's peak, once, as the page opens or as it comes into
+//     view.
 //   - The coloured word in each section heading gets an underline, in its
 //     own colour, swept in as the heading comes into view.
 //   - The process / journey step lines fill in their colours, one after
@@ -10,7 +11,9 @@
 // and the site looks exactly as it did, everything fully drawn. Skipped for
 // reduced motion.
 import './scrollScenes.css'
+import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { pageRevealed } from '../components/preloader/preloader'
 
 export function initScrollScenes() {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
@@ -19,21 +22,24 @@ export function initScrollScenes() {
   fillStepLines()
 }
 
-// Each .oval-top frame draws out from the peak to both sides as its section
-// rises from the bottom of the screen to just above the middle: a 0–1
-// progress written to --oval-draw (the same progress-variable pattern as
-// the navbar's morph), which the CSS turns into a widening clip.
+// The oval's ink frame draws out from the peak to both sides, once: as the
+// load curtain opens if the oval is already on screen, otherwise when it
+// comes into view (from either side — a reload can land below it). A tween
+// of the --oval-draw progress, which the CSS turns into a widening clip.
 function drawOvalFrames() {
-  document.querySelectorAll<HTMLElement>('.oval-top').forEach((section) => {
-    const set = (p: number) => section.style.setProperty('--oval-draw', p.toFixed(3))
-    set(0)
-    ScrollTrigger.create({
-      trigger: section,
-      start: 'top bottom',
-      end: 'top 45%',
-      onUpdate: (self) => set(self.progress),
-      onRefresh: (self) => set(self.progress),
-    })
+  const ovals = document.querySelectorAll<HTMLElement>('.oval-top')
+  ovals.forEach((oval) => oval.style.setProperty('--oval-draw', '0'))
+  pageRevealed.then(() => {
+    const inView = new IntersectionObserver(
+      (entries) =>
+        entries.forEach(({ target, isIntersecting }) => {
+          if (!isIntersecting) return
+          inView.unobserve(target)
+          gsap.to(target, { '--oval-draw': 1, duration: 1.4, ease: 'power3.inOut' })
+        }),
+      { rootMargin: '0px 0px -10% 0px' },
+    )
+    ovals.forEach((oval) => inView.observe(oval))
   })
 }
 
