@@ -33,10 +33,12 @@
   --color-accent-ink: #ffffff;
 }
 
-/* Layout: the docked navbar's height. Sections that fill the screen keep
-   their content below it. */
+/* Layout: the docked navbar's height (sections that fill the screen keep
+   their content below it), and how high a section's oval top edge rises
+   over the section before it (.oval-top, below). */
 :root {
   --nav-h: 5.5rem;
+  --oval-h: clamp(2.5rem, 6vw, 5.5rem);
 }
 
 /* Smooth in-page anchor scrolling for the nav links. */
@@ -87,4 +89,35 @@ body {
     opacity: 1;
     transform: none;
   }
+}
+
+/* Oval section edges: a section with .oval-top rises over the one before it
+   in a wide oval --oval-h tall, framed with the navbar's 3px ink line. Its
+   background is cut to the oval (so it needs a background of its own) and
+   the frame is drawn by ::before — a strip the oval's height, bordered on
+   three sides and rounded with the same ellipse, which keeps the line an
+   even 3px all the way round. The element before it keeps --oval-h of clear
+   space at its bottom for the oval to rise over. */
+.oval-top {
+  position: relative;
+  margin-top: calc(-1 * var(--oval-h));
+  border-top-left-radius: 50% var(--oval-h);
+  border-top-right-radius: 50% var(--oval-h);
+}
+
+.oval-top::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: var(--oval-h);
+  border: 3px solid var(--color-ink);
+  border-bottom: 0;
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  pointer-events: none;
+}
+
+:has(+ .oval-top)::after {
+  content: "";
+  display: block;
+  height: var(--oval-h);
 }

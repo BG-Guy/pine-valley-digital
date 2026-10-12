@@ -71,7 +71,7 @@ const renderCard = (s: ServiceLandingData, i: number) => {
 // announcement line. The section is sized to one screen in services.css
 // (.svc-section).
 export const renderServices = () => `
-    <section id="services" class="svc-section px-6 sm:px-10">
+    <section id="services" class="svc-section oval-top px-6 sm:px-10 bg-[var(--color-paper)]">
       <div class="mx-auto w-full max-w-7xl">
         <div class="reveal flex items-end justify-between gap-6 mb-10">
           <h2 class="font-display font-extrabold text-4xl sm:text-5xl tracking-tight">What we <span class="text-[var(--color-accent-2)]">do</span></h2>

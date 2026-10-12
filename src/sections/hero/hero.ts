@@ -1,16 +1,14 @@
 // Hero section: the headline with its glitching "fast", the intro line and
-// CTA, and the two color blobs drifting in the background. Styles live in
-// hero.css.
+// CTA, and the two colour orbs drifting in the background
+// (components/hero-orbs). Styles live in hero.css.
 import './hero.css'
-import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { renderHeroOrbs, initHeroOrbs } from '../../components/hero-orbs/heroOrbs'
 
-// Markup: background blobs, eyebrow, two-line headline (with the four glitch
+// Markup: background orbs, eyebrow, two-line headline (with the four glitch
 // slices for "fast"), intro copy, and the "See our work" link.
 export const renderHero = () => `
     <section id="hero" class="relative overflow-hidden px-6 sm:px-10 pt-40 pb-24 sm:pt-52 sm:pb-32">
-      <div class="hero-blob hero-blob-a" aria-hidden="true"></div>
-      <div class="hero-blob hero-blob-b" aria-hidden="true"></div>
+      ${renderHeroOrbs()}
       <div class="relative mx-auto max-w-7xl">
         <p class="hero-eyebrow overflow-hidden">
           <span class="block text-sm font-semibold uppercase tracking-[0.2em] text-ink/60">Web design &amp; development studio</span>
@@ -42,42 +40,9 @@ export const renderHero = () => `
 
 // Starts the hero's ambient motion. Call after the markup is in the DOM.
 export function initHero() {
-  setupHeroBlobs()
+  const hero = document.getElementById('hero')
+  if (hero) initHeroOrbs(hero)
   setupHeroGlitch()
-}
-
-// The two hero blobs glide to each other's spot and back, forever. Only
-// `transform` is animated (composited, no repaint); the travel distance is
-// measured from layout so it holds at every breakpoint, and rebuilt on
-// resize (ScrollTrigger's 'refresh') with the loop position preserved.
-function setupHeroBlobs() {
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-
-  const a = document.querySelector<HTMLElement>('.hero-blob-a')
-  const b = document.querySelector<HTMLElement>('.hero-blob-b')
-  if (!a || !b) return
-
-  // offsetLeft/Top ignore transforms, so this is the resting centre.
-  const center = (el: HTMLElement) => ({
-    x: el.offsetLeft + el.offsetWidth / 2,
-    y: el.offsetTop + el.offsetHeight / 2,
-  })
-  const loop = { duration: 7.7, ease: 'sine.inOut', repeat: -1, yoyo: true, repeatDelay: 1 }
-
-  let tweens: gsap.core.Tween[] = []
-  const build = () => {
-    const time = tweens[0]?.totalTime() ?? 0
-    tweens.forEach((t) => t.kill())
-    gsap.set([a, b], { x: 0, y: 0 })
-    const ca = center(a)
-    const cb = center(b)
-    const dx = cb.x - ca.x
-    const dy = cb.y - ca.y
-    tweens = [gsap.to(a, { x: dx, y: dy, ...loop }), gsap.to(b, { x: -dx, y: -dy, ...loop })]
-    tweens.forEach((t) => t.totalTime(time))
-  }
-  build()
-  ScrollTrigger.addEventListener('refresh', build)
 }
 
 // Fires the "fast" glitch burst on a slow interval (the CSS does the tearing;

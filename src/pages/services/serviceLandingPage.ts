@@ -4,6 +4,7 @@
 // page renders through this. Styles live in serviceLandingPage.css.
 import './serviceLandingPage.css'
 import type { ServiceLandingData } from './servicesLandingData'
+import { renderHeroOrbs, initHeroOrbs } from '../../components/hero-orbs/heroOrbs'
 
 // Shared across every service — a single, honest guarantee reads as more
 // credible than a different one invented per page.
@@ -11,9 +12,11 @@ const GUARANTEE =
   "If the first round of work isn't right, we revise it until it is — at no extra cost. If it's still not working for you, you don't pay for that stage. No multi-month lock-in, no cancellation fee."
 
 // Section 1 — Hero: outcome-first headline (one word/phrase in the accent
-// color), an objection-neutralizing subhead, and three teaser bullets.
+// color), an objection-neutralizing subhead, and three teaser bullets, over
+// the same drifting colour orbs as the home hero (components/hero-orbs).
 const renderHero = (d: ServiceLandingData) => `
     <section class="svc-hero relative overflow-hidden px-6 sm:px-10 pt-40 pb-20 sm:pt-52 sm:pb-28">
+      ${renderHeroOrbs()}
       <div class="relative mx-auto max-w-4xl">
         <p class="reveal text-sm font-semibold uppercase tracking-[0.2em] text-ink/60 mb-6">${d.eyebrow}</p>
         <h1 class="reveal font-display font-extrabold tracking-tight text-[10vw] leading-[1.02] sm:text-6xl sm:leading-[1.05]">
@@ -38,7 +41,7 @@ const renderHero = (d: ServiceLandingData) => `
 // Section 2 — Market Reality & Proof: a couple of real, sourced stats (never
 // invented) and the "strategic shift" paragraph.
 const renderProof = (d: ServiceLandingData) => `
-    <section class="px-6 sm:px-10 py-20 sm:py-24 bg-[var(--color-paper-dim)]">
+    <section class="oval-top px-6 sm:px-10 py-20 sm:py-24 bg-[var(--color-paper-dim)]">
       <div class="mx-auto max-w-5xl">
         <div class="reveal grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-6 mb-14">
           ${d.stats
@@ -60,7 +63,7 @@ const renderProof = (d: ServiceLandingData) => `
 // 3-4 step timeline (same alternating-border pattern as the home page's
 // process section).
 const renderOffering = (d: ServiceLandingData) => `
-    <section class="px-6 sm:px-10 py-20 sm:py-24">
+    <section class="oval-top px-6 sm:px-10 py-20 sm:py-24 bg-[var(--color-paper)]">
       <div class="mx-auto max-w-5xl">
         <div class="reveal mb-14 max-w-2xl">
           <h2 class="font-display font-extrabold text-3xl sm:text-4xl tracking-tight mb-4">What this <span class="text-[var(--color-accent-2)]">actually includes</span></h2>
@@ -86,7 +89,7 @@ const renderOffering = (d: ServiceLandingData) => `
 // self-check checklist (see setupDiagnostic), plus a reasoned, non-invented
 // line of social proof.
 const renderDiagnostic = (d: ServiceLandingData) => `
-    <section class="px-6 sm:px-10 py-20 sm:py-24 bg-[var(--color-ink)] text-[var(--color-paper)]">
+    <section class="oval-top px-6 sm:px-10 py-20 sm:py-24 bg-[var(--color-ink)] text-[var(--color-paper)]">
       <div class="mx-auto max-w-3xl">
         <h2 class="reveal font-display font-extrabold text-3xl sm:text-4xl tracking-tight mb-3">Is this <span class="text-[var(--color-accent-2)]">actually</span> a problem for you?</h2>
         <p class="reveal text-[var(--color-paper)]/60 mb-8">${d.diagnosticIntro}</p>
@@ -114,7 +117,7 @@ const renderDiagnostic = (d: ServiceLandingData) => `
 // site has no backend, so "submit" composes an email rather than posting to
 // a hidden service).
 const renderCta = (d: ServiceLandingData) => `
-    <section id="svc-cta" class="px-6 sm:px-10 py-20 sm:py-24">
+    <section id="svc-cta" class="oval-top px-6 sm:px-10 py-20 sm:py-24 bg-[var(--color-paper)]">
       <div class="mx-auto max-w-3xl">
         <div class="reveal mb-16">
           <h2 class="font-display font-extrabold text-2xl sm:text-3xl tracking-tight mb-8">Before you reach out</h2>
@@ -178,9 +181,11 @@ ${renderDiagnostic(d)}
 ${renderCta(d)}
 `
 
-// Wires up the diagnostic checklist and the mailto-based contact form. Call
-// after the markup is in the DOM.
+// Wires up the hero's orbs, the diagnostic checklist and the mailto-based
+// contact form. Call after the markup is in the DOM.
 export function initServiceLandingContent(d: ServiceLandingData) {
+  const hero = document.querySelector<HTMLElement>('.svc-hero')
+  if (hero) initHeroOrbs(hero)
   setupDiagnostic(d)
   setupForm(d)
 }

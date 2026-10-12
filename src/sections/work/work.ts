@@ -83,7 +83,7 @@ const renderPhoneFrame = (_: Project, i: number) => `
 // the stage (their tab panel) showing the first project. The section is
 // sized to one screen in work.css (.pj-section).
 export const renderWork = () => `
-    <section id="work" class="pj-section px-6 sm:px-10 bg-[var(--color-paper-dim)]">
+    <section id="work" class="pj-section oval-top px-6 sm:px-10 bg-[var(--color-paper-dim)]">
       <div class="mx-auto w-full max-w-7xl">
         <div class="reveal flex items-end justify-between gap-6 mb-10">
           <h2 class="font-display font-extrabold text-4xl sm:text-5xl tracking-tight">Selected <span class="text-[var(--color-accent-2)]">work</span></h2>
