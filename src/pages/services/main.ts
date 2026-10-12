@@ -29,6 +29,13 @@ if (!data) {
   throw new Error(`No service landing data for slug "${slug}"`)
 }
 
+// Self-referencing canonical, shared across all 14 services/*.html pages from
+// this one entry script rather than duplicated per file.
+const canonicalLink = document.createElement('link')
+canonicalLink.rel = 'canonical'
+canonicalLink.href = `https://pinevalleydigital.com/services/${slug}.html`
+document.head.appendChild(canonicalLink)
+
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   ${renderPreloader(data.navTitle)}
 
