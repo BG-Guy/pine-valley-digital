@@ -1,0 +1,76 @@
+{
+  "generated_at": "2026-10-12T11:50:20+00:00",
+  "site": "https://pinevalleydigital.com",
+  "property": "sc-domain:pinevalleydigital.com",
+  "windows": {
+    "last_7": [
+      "2026-10-05",
+      "2026-10-11"
+    ],
+    "prev_7": [
+      "2026-09-28",
+      "2026-10-04"
+    ],
+    "last_28": [
+      "2026-09-14",
+      "2026-10-11"
+    ],
+    "prev_28": [
+      "2026-08-17",
+      "2026-09-13"
+    ]
+  },
+  "totals": {
+    "last_7": {
+      "clicks": 0,
+      "impressions": 0,
+      "ctr": 0,
+      "position": 0
+    },
+    "prev_7": {
+      "clicks": 0,
+      "impressions": 0,
+      "ctr": 0.0,
+      "position": null
+    },
+    "last_28": {
+      "clicks": 0,
+      "impressions": 0,
+      "ctr": 0,
+      "position": 0
+    },
+    "prev_28": {
+      "clicks": 0,
+      "impressions": 0,
+      "ctr": 0.0,
+      "position": null
+    }
+  },
+  "has_search_data": false,
+  "top_queries_28d": [],
+  "top_pages_28d": [],
+  "opportunities": {
+    "striking_distance": [],
+    "low_ctr_top_positions": [],
+    "declining_pages": [],
+    "cannibalization": [],
+    "content_gaps": []
+  },
+  "tracked_changes": [],
+  "index_health": {
+    "sitemaps": [],
+    "url_inspection": [
+      {
+        "url": "https://pinevalleydigital.com/",
+        "verdict": "PASS",
+        "coverage": "Submitted and indexed",
+        "indexing": "INDEXING_ALLOWED",
+        "robots": "ALLOWED",
+        "fetch": "SUCCESSFUL",
+        "last_crawl": "2026-10-11T18:48:30Z",
+        "google_canonical": "https://pinevalleydigital.com/",
+        "user_canonical": null
+      }
+    ]
+  }
+}
