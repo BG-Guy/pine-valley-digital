@@ -19,6 +19,7 @@ import { renderProcess } from './sections/process/process'
 import { renderContact, initContact } from './sections/contact/contact'
 import { initPageLoad } from './animations/pageLoad'
 import { initScrollReveals } from './animations/scrollReveals'
+import { initScrollScenes } from './animations/scrollScenes'
 import { initPageTransitionLinks } from './animations/pageTransitions'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -47,6 +48,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 // Boot: start the load-in, then wire each piece that needs JS.
 initPageLoad()
 initScrollReveals()
+initScrollScenes()
 initMarquee()
 initHero()
 initServices()

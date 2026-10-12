@@ -12,6 +12,7 @@ import { renderNavbar, initNavbar } from '../../components/navbar/navbar'
 import { renderFooter, initFooter } from '../../components/footer/footer'
 import { initSiteHoverCarouselLinks } from '../../components/hover-carousel-link/hoverCarouselLink'
 import { initScrollReveals } from '../../animations/scrollReveals'
+import { initScrollScenes } from '../../animations/scrollScenes'
 import { initPageTransitionLinks } from '../../animations/pageTransitions'
 import { initSimplePageLoad } from '../../animations/simplePageLoad'
 import { getServiceLandingData } from './servicesLandingData'
@@ -45,6 +46,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 
 initSimplePageLoad()
 initScrollReveals()
+initScrollScenes()
 initSiteHoverCarouselLinks()
 initNavbar()
 initFooter()
