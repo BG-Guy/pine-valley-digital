@@ -27,7 +27,7 @@ src/
   global.css       design tokens + base styles only
   components/      reusable pieces, one folder each (code + its own .css)
     navbar/  footer/  marquee/  preloader/  logo/  cta-button/
-    hover-carousel-link/  hover-teaser-menu/  reveal-footer/  flowing-lines/
+    hover-carousel-link/  reveal-footer/  flowing-lines/
     card-art/  hero-orbs/
   sections/        one folder per page section
     hero/  services/  work/  process/  contact/
@@ -38,6 +38,7 @@ src/
 - **Add or edit a service:** `servicesLandingData` in `src/pages/services/servicesLandingData.ts` (feeds both the "What we do" row and the landing pages).
 - **Change what the banner lists:** `marqueeItems` in `src/components/marquee/marquee.ts`.
 - **Add or edit a project in the showcase:** the `projects` array in `src/sections/work/work.ts`.
+- **Add or edit a nav link:** `MENU_LINKS` in `src/components/navbar/mobileMenu.ts` for the mobile menu, and the desktop links in `src/components/navbar/navbar.ts` (a link to another page gets the menu's little diagonal arrow on its own, from its href).
 - **Add a section:** make `src/sections/<name>/<name>.ts` (+ `.css` if it needs one), export a `render…` function, and add it to the template in `main.ts`.
 
 ## Development

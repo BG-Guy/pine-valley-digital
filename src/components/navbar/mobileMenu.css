@@ -1,0 +1,654 @@
+/* Mobile menu (see mobileMenu.ts): the toggle key and the full-screen
+   poster sheet, below 768px only. The script moves the curtain and slides
+   the text; this file holds the look, the resting states and the small
+   toggle/press/glitch transitions. */
+
+#site-nav {
+  /* The CTA's pop (ctaButton.css): a small overshoot, for presses
+     springing back. */
+  --mm-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* An expo-out: quick to arrive, long calm settle — the toggle's ink
+     flooding in. */
+  --mm-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Page scroll lock while the sheet is open (set on <html>; the script also
+   stops wheel and touch moves — see lockPage). */
+html.mm-lock {
+  overflow: hidden;
+  scrollbar-gutter: stable;
+}
+
+/* ── Toggle ────────────────────────────────────────────────────────── */
+
+/* A 40px round key: a paper face in a 3px ink ring, sitting on its own
+   hard shadow — an ink disc 3px below (::before). Light in the bar at
+   rest; pressing pushes the face down onto the shadow, and the open menu
+   latches it there, flooded with ink. The tap area reaches 4px past the
+   face all round, to 48px (::after). */
+.mm-toggle {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mm-toggle::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--color-ink);
+  transform: translateY(3px);
+}
+
+.mm-toggle::after {
+  content: "";
+  position: absolute;
+  inset: -0.25rem;
+  border-radius: inherit;
+}
+
+/* Unlayered, like .btn-cta: Tailwind's layered md:hidden can't hide it,
+   so the desktop rule lives here. */
+@media (min-width: 768px) {
+  .mm-toggle {
+    display: none;
+  }
+}
+
+/* The face. The paper stops short of the edge, under the ring, so it
+   can't bleed a pale hairline into the ring's anti-aliasing against the
+   shadow. */
+.mm-toggle-face {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  padding: 2px;
+  border-radius: inherit;
+  background: var(--color-paper) content-box;
+  color: var(--color-ink);
+  transition: transform 0.35s var(--mm-pop);
+}
+
+/* The ring, drawn over the flood rather than as the face's border, so no
+   sliver of paper shows between the two. */
+.mm-toggle-face::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 3px solid var(--color-ink);
+  border-radius: inherit;
+}
+
+.mm-toggle.is-pressed .mm-toggle-face {
+  transform: translateY(3px);
+  transition-duration: 0.12s;
+  transition-timing-function: ease-out;
+}
+
+/* Latched: down in its shadow, a quick settle rather than the pop. */
+#menu-toggle[aria-expanded="true"] .mm-toggle-face {
+  transform: translateY(3px);
+  transition-duration: 0.15s;
+  transition-timing-function: ease-out;
+}
+
+.mm-toggle:focus-visible {
+  outline: none;
+}
+
+.mm-toggle:focus-visible .mm-toggle-face {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+/* The ink flood, and the paper copy of the bars over it, clipped to a
+   circle the flood's size. Same duration and curve on both, so the clip's
+   edge is the flood's edge on every frame: the bars are paper exactly
+   where the ink has reached, never ink on ink. It spreads from the centre
+   on open (expo-out) and drains back into it on close (a quicker
+   ease-in). */
+.mm-toggle-flood,
+.mm-toggle-lit {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  transition-duration: 0.24s;
+  transition-timing-function: cubic-bezier(0.5, 0, 0.75, 0);
+}
+
+.mm-toggle-flood {
+  background: var(--color-ink);
+  transform: scale(0);
+  transition-property: transform;
+}
+
+.mm-toggle-lit {
+  display: grid;
+  place-items: center;
+  color: var(--color-paper);
+  clip-path: circle(0% at 50% 50%);
+  transition-property: clip-path;
+}
+
+#menu-toggle[aria-expanded="true"] .mm-toggle-flood,
+#menu-toggle[aria-expanded="true"] .mm-toggle-lit {
+  transition-duration: 0.4s;
+  transition-timing-function: var(--mm-out);
+}
+
+#menu-toggle[aria-expanded="true"] .mm-toggle-flood {
+  transform: scale(1);
+}
+
+#menu-toggle[aria-expanded="true"] .mm-toggle-lit {
+  clip-path: circle(50% at 50% 50%);
+}
+
+/* Two bars, the lower one shorter and flush left; open, both reach full
+   length and cross. Same transform list in both states, so each part
+   interpolates on its own (no matrix wobble), on the site's spring
+   (global.css) — no pop, which would tip the X past square. */
+.mm-toggle-icon {
+  position: relative;
+  width: 1rem;
+  height: 0.625rem;
+}
+
+.mm-toggle-icon i {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  transition: transform 0.55s var(--ease-spring);
+}
+
+.mm-toggle-icon i:first-child {
+  top: 0;
+  transform: translate(0, 0) rotate(0) scaleX(1);
+}
+
+.mm-toggle-icon i:last-child {
+  bottom: 0;
+  transform: translate(-22%, 0) rotate(0) scaleX(0.56);
+}
+
+#menu-toggle[aria-expanded="true"] .mm-toggle-icon i:first-child {
+  transform: translate(0, 4px) rotate(45deg) scaleX(1);
+}
+
+#menu-toggle[aria-expanded="true"] .mm-toggle-icon i:last-child {
+  transform: translate(0, -4px) rotate(-45deg) scaleX(1);
+}
+
+/* ── Curtain ───────────────────────────────────────────────────────── */
+
+/* The sheet comes down as a paper curtain from behind the bar (navbar.css
+   lifts .navbar-bar above it). The curtain is the screen's height plus its
+   oval edge (--mm-curve deep) plus a little (--mm-tuck), so once down the
+   edge sits fully out of sight below the screen; its bottom corners are
+   rounded into the oval, which clips what's inside to it. The script
+   moves it (and the sheet inside, the opposite way); the starting
+   transforms here just keep it parked until then. */
+#mobile-menu {
+  --mm-curve: 3.5rem;
+  --mm-tuck: 0.5rem;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+#mobile-menu.is-active {
+  visibility: visible;
+}
+
+/* While it's up, the two moving layers stay on the compositor, so the
+   close doesn't start by re-rastering a screenful. */
+#mobile-menu.is-active .mm-curtain,
+#mobile-menu.is-active .mm-sheet {
+  will-change: transform;
+}
+
+/* Unlayered, so it wins over any utility: never shown on desktop. */
+@media (min-width: 768px) {
+  #mobile-menu {
+    display: none;
+  }
+}
+
+.mm-curtain {
+  position: absolute;
+  inset: 0 0 auto;
+  height: calc(100% + var(--mm-curve) + var(--mm-tuck));
+  overflow: hidden;
+  background: var(--color-paper-dim);
+  border-bottom-left-radius: 50% var(--mm-curve);
+  border-bottom-right-radius: 50% var(--mm-curve);
+  pointer-events: auto;
+  transform: translateY(-100%);
+}
+
+/* The curtain's leading edge: the site's framed oval (.oval-top in
+   global.css) upside down — a strip the oval's depth, bordered on three
+   sides and rounded with the same ellipse, so the line stays an even 3px
+   all the way round. It reaches 1px past the curtain's sides and bottom,
+   with a 4px border, so the curtain's own rounded clip cuts through solid
+   ink: no paper halo along the outside of the line. */
+.mm-edge {
+  position: absolute;
+  inset: auto -1px -1px;
+  height: calc(var(--mm-curve) + 1px);
+  border: 4px solid var(--color-ink);
+  border-top: 0;
+  border-radius: 0 0 50% 50% / 0 0 100% 100%;
+  pointer-events: none;
+}
+
+/* The content: exactly the screen, wherever the curtain is (the script
+   moves it against the curtain). Scrolls only if a very short screen needs
+   it. */
+.mm-sheet {
+  position: absolute;
+  inset: 0 0 auto;
+  height: calc(100% - var(--mm-curve) - var(--mm-tuck));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  transform: translateY(calc(100% + var(--mm-curve) + var(--mm-tuck)));
+}
+
+/* Faint blueprint dot grid over the open field at the top of the sheet,
+   strongest up by the toggle and gone by the time it reaches the links. */
+.mm-sheet::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, color-mix(in srgb, var(--color-ink) 24%, transparent) 1px, transparent 1.5px);
+  background-size: 18px 18px;
+  background-position: 9px 9px;
+  mask-image: radial-gradient(140% 60% at 100% 0%, #000 30%, transparent 100%);
+  pointer-events: none;
+}
+
+/* The content column: clears the bar at the top, keeps the bottom band at
+   the bottom. */
+.mm-body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding: calc(var(--nav-h) + 12px + 1.25rem) 1.5rem max(1.5rem, env(safe-area-inset-bottom));
+}
+
+@media (min-width: 640px) {
+  .mm-body {
+    padding-inline: 2.5rem;
+  }
+}
+
+/* A mask: the line inside slides up through it (the hero's reveal). */
+.mm-mask {
+  display: block;
+  overflow: hidden;
+}
+
+.mm-rise {
+  display: block;
+}
+
+/* Eyebrow: the hero's uppercase, letter-spaced label, then a hairline
+   that draws out to the edge. */
+.mm-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-ink) 60%, transparent);
+}
+
+.mm-eyebrow-line {
+  flex: 1;
+  height: 1px;
+  background: color-mix(in srgb, var(--color-ink) 25%, transparent);
+  transform-origin: left center;
+}
+
+/* ── Links ─────────────────────────────────────────────────────────── */
+
+/* The eyebrow and links hang together just above the bottom band — the
+   poster's weight sits low, in thumb reach — with the gridded field above
+   them taking whatever height is left over. */
+.mm-nav {
+  margin-top: auto;
+}
+
+.mm-list {
+  margin-top: 0.625rem;
+}
+
+/* Each link is a full-width row in big display type, scaled with the
+   screen so the stack fills it: by width (the longest word, "Services",
+   plus its index, fits the narrowest phones), or by height on a short or
+   wide one — the second term leaves room for the bar, the eyebrow and
+   the bottom band, and splits the rest between the five rows (each 1.12em
+   tall with its mask's padding). */
+.mm-link {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(2.5rem, min(20.5vw, (100svh - 23rem) / 5.6), 6rem);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--color-ink);
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+}
+
+/* Room in the mask for the descenders and for the glitch fringe to spill
+   sideways, taken back with negative margins so nothing moves. */
+.mm-link .mm-mask {
+  margin: 0 -0.2em;
+  padding: 0.04em 0.2em 0.08em;
+}
+
+.mm-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+/* The word, with two aria-hidden copies behind it: a purple top slice and
+   a green bottom slice, the hero "fast" glitch's colours. Hidden (and
+   visibility: hidden, so copy-paste and innerText only see the word once)
+   until the link is pressed, when they shift apart and the word nudges
+   right. */
+.mm-word {
+  position: relative;
+  isolation: isolate;
+  display: block;
+  white-space: nowrap;
+  transition: transform 0.45s var(--mm-pop);
+}
+
+.mm-glitch {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  visibility: hidden;
+  opacity: 0;
+  user-select: none;
+  pointer-events: none;
+  transition:
+    opacity 0.3s ease-out,
+    transform 0.45s var(--mm-pop),
+    visibility 0s linear 0.3s;
+}
+
+.mm-glitch-a {
+  color: var(--color-accent);
+  clip-path: inset(0 0 46% 0);
+}
+
+.mm-glitch-b {
+  color: var(--color-accent-2);
+  clip-path: inset(54% 0 0 0);
+}
+
+.mm-link.is-pressed .mm-word {
+  transform: translateX(0.08em);
+  transition-duration: 0.2s;
+}
+
+.mm-link.is-pressed .mm-glitch {
+  visibility: visible;
+  opacity: 1;
+  transition-duration: 0.12s, 0.2s, 0s;
+  transition-delay: 0s;
+}
+
+.mm-link.is-pressed .mm-glitch-a {
+  transform: translateX(-0.04em);
+}
+
+.mm-link.is-pressed .mm-glitch-b {
+  transform: translateX(0.04em);
+}
+
+/* A mouse (a narrow desktop window) gets the nudge on hover, without the
+   glitch — that stays the press's own. */
+@media (hover: hover) {
+  .mm-link:hover .mm-word {
+    transform: translateX(0.08em);
+  }
+
+  .mm-link:hover .mm-meta {
+    color: var(--color-accent);
+  }
+}
+
+/* Where you are: the hero's purple full stop. The plain declaration first,
+   for browsers that don't take alt text after the slash (Safari before
+   17.4 drops the whole second one). */
+.mm-link[aria-current] .mm-label::after {
+  content: ".";
+  content: "." / "";
+  color: var(--color-accent);
+}
+
+/* Index number, set small beside the word's cap height — and, on a link
+   that leaves this page, a small up-right arrow after it, drawn at the
+   digits' stroke weight. */
+.mm-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.3em;
+  margin-top: 0.75em;
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  font-variant-numeric: tabular-nums;
+  color: color-mix(in srgb, var(--color-ink) 50%, transparent);
+  transition: color 0.2s ease-out;
+}
+
+.mm-away {
+  width: 0.875em;
+  height: 0.875em;
+  flex: none;
+}
+
+.mm-link.is-pressed .mm-meta,
+.mm-link[aria-current] .mm-meta {
+  color: var(--color-accent);
+}
+
+.mm-link:focus-visible .mm-label {
+  text-decoration: underline;
+  text-decoration-color: var(--color-accent);
+  text-decoration-thickness: 3px;
+  text-underline-offset: 0.12em;
+}
+
+/* ── Bottom band ───────────────────────────────────────────────────── */
+
+/* Bleeds to the screen edges and rises into the sheet in a wide oval,
+   framed in the 3px ink line — the same edge as under the hero
+   (.oval-top in global.css), drawn the same way: the band's background is
+   cut to the ellipse, and the line is a strip the oval's height, bordered
+   on three sides and rounded with the same ellipse, so it stays an even
+   3px all the way round. Half a rem of room under the oval, so its sides
+   (which come down lowest at the screen edges) stay clear of the
+   "Say hello" row on the narrowest phones. */
+.mm-band {
+  --mm-oval: 2.5rem;
+  position: relative;
+  margin: 1.75rem -1.5rem calc(-1 * max(1.5rem, env(safe-area-inset-bottom)));
+  padding: calc(var(--mm-oval) + 0.5rem) 1.5rem max(1.5rem, env(safe-area-inset-bottom));
+  background: var(--color-paper);
+  border-top-left-radius: 50% var(--mm-oval);
+  border-top-right-radius: 50% var(--mm-oval);
+}
+
+@media (min-width: 640px) {
+  .mm-band {
+    margin-inline: -2.5rem;
+    padding-inline: 2.5rem;
+  }
+}
+
+.mm-band-edge {
+  position: absolute;
+  inset: 0 0 auto;
+  height: var(--mm-oval);
+  border: 3px solid var(--color-ink);
+  border-bottom: 0;
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  pointer-events: none;
+}
+
+.mm-contact {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.25rem 1rem;
+  margin: 0 0 1.125rem;
+  font-size: 0.8125rem;
+}
+
+.mm-contact-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-ink) 60%, transparent);
+}
+
+.mm-email {
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: var(--color-accent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.3em;
+}
+
+.mm-email:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* The CTA (components/cta-button), full width and lifted on a hard
+   shadow; it presses flat into it, and its arrow leans on in the
+   direction it points. */
+#mobile-menu .mm-cta {
+  display: flex;
+  width: 100%;
+  background: var(--color-paper);
+  box-shadow: 0 5px 0 0 var(--color-ink);
+  font-family: var(--font-display);
+  font-size: 1.0625rem;
+  font-weight: 700;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#mobile-menu .mm-cta .btn-cta-clip {
+  flex: 1;
+  justify-content: center;
+  padding: 0.875rem 1.5rem;
+}
+
+#mobile-menu .mm-cta .btn-cta-label {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* The CTA's own hover lift is a diagonal one; here it lifts straight up
+   off its shadow — and only for a mouse, so a tap doesn't leave it
+   hovering. */
+#mobile-menu .mm-cta:hover {
+  transform: none;
+  box-shadow: 0 5px 0 0 var(--color-ink);
+}
+
+@media (hover: hover) {
+  #mobile-menu .mm-cta:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 0 0 var(--color-ink);
+  }
+}
+
+#mobile-menu .mm-cta.is-pressed {
+  transform: translateY(5px);
+  box-shadow: 0 0 0 0 var(--color-ink);
+  transition-duration: 0.12s;
+}
+
+#mobile-menu .mm-cta:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 4px;
+}
+
+.mm-cta-arrow {
+  width: 1.125em;
+  height: 1.125em;
+  margin-left: 0.375rem;
+  transition: transform 0.35s var(--mm-pop);
+}
+
+#mobile-menu .mm-cta.is-pressed .mm-cta-arrow {
+  transform: translateX(3px);
+  transition-duration: 0.12s;
+}
+
+@media (hover: hover) {
+  #mobile-menu .mm-cta:hover .mm-cta-arrow {
+    transform: translateX(3px);
+  }
+}
+
+/* ── Reduced motion ────────────────────────────────────────────────── */
+
+/* No movement: the toggle changes state at once, presses and hovers
+   don't travel; the glitch copies still appear on a press, offset in
+   place rather than sliding apart. (The sheet itself just fades — see
+   mobileMenu.ts.) Important, to beat the toggle's open-state timings,
+   which sit on the higher-specificity #menu-toggle rules. */
+@media (prefers-reduced-motion: reduce) {
+  .mm-toggle-face,
+  .mm-toggle-flood,
+  .mm-toggle-lit,
+  .mm-toggle-icon i,
+  .mm-word,
+  .mm-glitch,
+  .mm-cta-arrow,
+  #mobile-menu .mm-cta {
+    transition: none !important;
+  }
+
+  .mm-toggle.is-pressed .mm-toggle-face,
+  .mm-link.is-pressed .mm-word,
+  .mm-link:hover .mm-word,
+  #mobile-menu .mm-cta:hover,
+  #mobile-menu .mm-cta.is-pressed,
+  #mobile-menu .mm-cta:hover .mm-cta-arrow,
+  #mobile-menu .mm-cta.is-pressed .mm-cta-arrow {
+    transform: none;
+  }
+}
