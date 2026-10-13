@@ -4,25 +4,18 @@
    the card widths and the row's slide between them. */
 
 /* Shared motion for the CSS side (the body lifting in, the corner link
-   popping, the page dots): the same iOS-style spring services.ts moves the
-   cards with (SwiftUI's default — 0.55s response, 0.825 damping, about 1%
-   overshoot), sampled into linear(). Browsers without linear() fall back to
-   the closest plain curve. */
+   popping, the page dots): the site's iOS-style spring (--ease-spring in
+   global.css — the same spring services.ts moves the cards with, sampled
+   into linear(), with a plain-curve fallback). The card widths' duration
+   follows which of the two curves the browser got: the fallback settles
+   sooner. */
 .svc {
-  --svc-ease: cubic-bezier(0.32, 0.72, 0, 1);
+  --svc-ease: var(--ease-spring);
   --svc-dur: 0.65s;
 }
 
 @supports (transition-timing-function: linear(0, 1)) {
   .svc {
-    --svc-ease: linear(
-      0, 0.0348 3.33%, 0.1189 6.67%, 0.2284 10%, 0.3465 13.33%, 0.4625 16.67%,
-      0.5696 20%, 0.6643 23.33%, 0.7451 26.67%, 0.812 30%, 0.8659 33.33%,
-      0.9082 36.67%, 0.9405 40%, 0.9646 43.33%, 0.9819 46.67%, 0.9938 50%,
-      1.0017 53.33%, 1.0065 56.67%, 1.0091 60%, 1.0101 63.33%, 1.0101 66.67%,
-      1.0094 70%, 1.0084 73.33%, 1.0072 76.67%, 1.006 80%, 1.0039 86.67%,
-      1.0022 93.33%, 1
-    );
     --svc-dur: 0.75s;
   }
 }

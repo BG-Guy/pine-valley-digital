@@ -113,10 +113,10 @@ export const renderServices = () => `
 `
 
 // Spring settings. LAYOUT is SwiftUI's default spring (~1% overshoot — the
-// same curve services.css samples into --svc-ease): the card widths and the
-// row's glide when a card opens or closes. SCROLL is quicker and bouncier
-// (~5% overshoot), for following the wheel / a fling and springing back from
-// a stretched end.
+// same curve global.css samples into --ease-spring for CSS transitions):
+// the card widths and the row's glide when a card opens or closes. SCROLL
+// is quicker and bouncier (~5% overshoot), for following the wheel / a
+// fling and springing back from a stretched end.
 interface Spring {
   response: number
   damping: number
