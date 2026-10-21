@@ -61,12 +61,6 @@ export function markPageTransition() {
   sessionStorage.setItem(TRANSITION_FLAG, '1')
 }
 
-// Resolves as the curtain starts opening (just before onReveal fires, below),
-// so an entrance elsewhere can wait until the page is visible. It never
-// resolves on a load that skips playPreloader() (reduced motion).
-let markRevealed: () => void = () => {}
-export const pageRevealed = new Promise<void>((resolve) => (markRevealed = resolve))
-
 // Plays the load sequence. On a normal load: 1200ms hold (wordmark/title
 // slide up during it) + 300ms fade + 1000ms curtain, 2.5s total. Arriving
 // via a cross-page transition instead: the text is shown already landed
@@ -84,7 +78,6 @@ export async function playPreloader(onReveal: () => void) {
   gsap.set(preWord, { autoAlpha: 1, scale: 1 })
 
   if (!preloader) {
-    markRevealed()
     onReveal()
     return
   }
@@ -104,7 +97,6 @@ export async function playPreloader(onReveal: () => void) {
   await new Promise<void>((resolve) => {
     gsap.to(preWord, { autoAlpha: 0, duration: 0.3, onComplete: resolve })
   })
-  markRevealed()
   onReveal()
   await curtain.reveal() // single motion: curtain opens, revealing the hero
   curtain.destroy()

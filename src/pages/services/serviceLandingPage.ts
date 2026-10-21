@@ -5,6 +5,7 @@
 import './serviceLandingPage.css'
 import type { ServiceLandingData } from './servicesLandingData'
 import { renderHeroOrbs, initHeroOrbs } from '../../components/hero-orbs/heroOrbs'
+import { initHeroBlend } from '../../components/hero-blend/heroBlend'
 
 // Shared across every service — a single, honest guarantee reads as more
 // credible than a different one invented per page.
@@ -39,11 +40,9 @@ const renderHero = (d: ServiceLandingData) => `
 `
 
 // Section 2 — Market Reality & Proof: a couple of real, sourced stats (never
-// invented) and the "strategic shift" paragraph. It rises into the hero in
-// the site's framed oval edge (.oval-top in global.css) — the only section
-// edge that gets one.
+// invented) and the "strategic shift" paragraph.
 const renderProof = (d: ServiceLandingData) => `
-    <section class="oval-top px-6 sm:px-10 py-20 sm:py-24 bg-[var(--color-paper-dim)]">
+    <section class="px-6 sm:px-10 py-20 sm:py-24 bg-[var(--color-paper-dim)]">
       <div class="mx-auto max-w-5xl">
         <div class="reveal grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-6 mb-14">
           ${d.stats
@@ -183,11 +182,15 @@ ${renderDiagnostic(d)}
 ${renderCta(d)}
 `
 
-// Wires up the hero's orbs, the diagnostic checklist and the mailto-based
-// contact form. Call after the markup is in the DOM.
+// Wires up the hero's orbs and its blend into the section below, the
+// diagnostic checklist and the mailto-based contact form. Call after the
+// markup is in the DOM.
 export function initServiceLandingContent(d: ServiceLandingData) {
   const hero = document.querySelector<HTMLElement>('.svc-hero')
-  if (hero) initHeroOrbs(hero)
+  if (hero) {
+    initHeroOrbs(hero)
+    initHeroBlend(hero)
+  }
   setupDiagnostic(d)
   setupForm(d)
 }

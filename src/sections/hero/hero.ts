@@ -3,6 +3,7 @@
 // (components/hero-orbs). Styles live in hero.css.
 import './hero.css'
 import { renderHeroOrbs, initHeroOrbs } from '../../components/hero-orbs/heroOrbs'
+import { initHeroBlend } from '../../components/hero-blend/heroBlend'
 
 // Markup: background orbs, eyebrow, two-line headline (with the four glitch
 // slices for "fast"), intro copy, and the "See our work" link.
@@ -38,10 +39,14 @@ export const renderHero = () => `
     </section>
 `
 
-// Starts the hero's ambient motion. Call after the markup is in the DOM.
+// Starts the hero's ambient motion and its blend into the section below
+// (components/hero-blend). Call after the markup is in the DOM.
 export function initHero() {
   const hero = document.getElementById('hero')
-  if (hero) initHeroOrbs(hero)
+  if (hero) {
+    initHeroOrbs(hero)
+    initHeroBlend(hero)
+  }
   setupHeroGlitch()
 }
 

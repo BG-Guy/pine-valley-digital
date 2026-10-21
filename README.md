@@ -28,7 +28,7 @@ src/
   components/      reusable pieces, one folder each (code + its own .css)
     navbar/  footer/  marquee/  preloader/  logo/  cta-button/
     hover-carousel-link/  reveal-footer/  flowing-lines/
-    card-art/  hero-orbs/
+    card-art/  hero-orbs/  hero-blend/
   sections/        one folder per page section
     hero/  services/  work/  process/  contact/
   pages/           the other pages: lab/, services/ (the 14 service landing pages)
