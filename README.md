@@ -27,7 +27,7 @@ src/
   global.css       design tokens + base styles only
   components/      reusable pieces, one folder each (code + its own .css)
     navbar/  footer/  marquee/  preloader/  logo/  cta-button/
-    hover-carousel-link/  reveal-footer/  flowing-lines/
+    hover-carousel-link/  reveal-footer/
     card-art/  hero-orbs/  hero-blend/
   sections/        one folder per page section
     hero/  services/  work/  process/  contact/

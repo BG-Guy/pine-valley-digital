@@ -147,44 +147,6 @@
   transition: transform 0.6s var(--svc-ease);
 }
 
-/* The art's static faint wavy lines (card-lines), on the pills. On the
-   open card they fade out for the moving lines (.svc-flow) — one animated
-   canvas, not fourteen. */
-.svc-art::after {
-  transition: opacity 0.4s ease 0.2s;
-}
-
-.svc-card.is-active .svc-art::after {
-  opacity: 0;
-  transition: opacity 0.25s ease;
-}
-
-/* The moving lines (components/flowing-lines), a single canvas services.ts
-   moves into whichever card is open. Laid out at the open width and pinned
-   left like the body, so it's revealed — not stretched — as the card
-   grows; above the art, below the pill label and the body text. */
-.svc-flow {
-  position: absolute;
-  inset-block: 0;
-  left: 0;
-  z-index: 0;
-  width: var(--svc-we);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s ease;
-}
-
-.svc-card.is-active .svc-flow {
-  opacity: 0.75;
-  transition: opacity 0.6s ease 0.25s;
-}
-
-.svc-flow canvas {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
 .svc-card.is-animating .svc-art {
   will-change: transform;
 }

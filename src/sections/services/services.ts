@@ -7,13 +7,11 @@
 // into it glides the page until it fills the screen, then the mouse wheel /
 // trackpad moves the row sideways (bouncing at the ends) until a fresh
 // scroll takes the page on; on touch screens the row drags and flings. The
-// open card's background lines move (components/flowing-lines), a little
-// differently on each card. The list itself lives in
-// pages/services/servicesLandingData.ts, shared with the 14 service landing
-// pages — edit services there, not here. Styles live in services.css.
+// list itself lives in pages/services/servicesLandingData.ts, shared with
+// the 14 service landing pages — edit services there, not here. Styles live
+// in services.css.
 import './services.css'
 import { servicesLandingData as services, type ServiceLandingData } from '../../pages/services/servicesLandingData'
-import { createFlowingLines, type FlowingLinesConfig } from '../../components/flowing-lines/flowingLines'
 import { CARD_THEMES } from '../../components/card-art/cardArt'
 
 // Two-digit service number ("01").
@@ -43,7 +41,7 @@ const renderCard = (s: ServiceLandingData, i: number) => {
   return `
           <li class="svc-card card-theme-${CARD_THEMES[i % CARD_THEMES.length]}${open ? ' is-active' : ''}">
             <div class="svc-clip">
-              <div class="svc-art card-art card-lines" aria-hidden="true"></div>
+              <div class="svc-art card-art" aria-hidden="true"></div>
               <button type="button" class="svc-trigger" aria-expanded="${open}" aria-controls="svc-body-${i}"${open ? ' inert' : ''}>
                 <span class="svc-label-n" aria-hidden="true">${pad(i + 1)}</span>
                 <span class="svc-label-t">${s.navTitle}</span>
@@ -134,61 +132,6 @@ const STRETCH_RELAX = 120
 // next wheel event starts a new one.
 const GESTURE_GAP = 300
 
-// The moving lines: the provided effect, recoloured from its neon defaults
-// to light tints of the site palette so it reads on all four card themes,
-// and with its angles mirrored — the snippet's comments say the lines enter
-// from down-left and exit up-right, but canvas y points down, so its
-// defaults actually ran top-left to bottom-right, straight through the
-// card's title.
-const FLOW_LINES = {
-  entryAngles: [152, 111] as [number, number],
-  exitAngles: [352, 302] as [number, number],
-  palette: [
-    [254, 249, 231],
-    [190, 236, 226],
-    [120, 210, 196],
-    [205, 170, 255],
-    [255, 222, 150],
-  ] as [number, number, number][],
-  accentColor: [196, 140, 255] as [number, number, number],
-}
-
-// Card `i`'s own version of the lines: the bundle's tilt, spread and pinch
-// point, its ripple, pace and number of lines, and which colour leads, all
-// nudged by an amount fixed per card — so no two cards' lines move quite
-// alike, and a card looks the same every time it opens.
-function linesFor(i: number): Partial<FlowingLinesConfig> {
-  // A repeatable pseudo-random value between min and max, for this card and
-  // the given setting.
-  const pick = (setting: number, min: number, max: number) => {
-    const x = Math.sin((i + 1) * 12.9898 + setting * 78.233) * 43758.5453
-    return min + (x - Math.floor(x)) * (max - min)
-  }
-  const tilt = pick(1, -14, 14)
-  const spread = pick(2, 0.75, 1.3)
-  const fan = ([from, to]: [number, number]): [number, number] => {
-    const mid = (from + to) / 2 + tilt
-    const half = ((to - from) / 2) * spread
-    return [mid - half, mid + half]
-  }
-  const lead = i % FLOW_LINES.palette.length
-  return {
-    ...FLOW_LINES,
-    entryAngles: fan(FLOW_LINES.entryAngles),
-    exitAngles: fan(FLOW_LINES.exitAngles),
-    pinch: { x: pick(3, 0.56, 0.76), y: pick(4, 0.36, 0.58) },
-    lineCount: Math.round(pick(5, 22, 34)),
-    bunch: pick(6, 14, 32),
-    curveAmount: pick(7, 10, 34),
-    waveAmp: pick(8, 22, 42),
-    waveFreq: pick(9, 1.8, 3.2),
-    waveSpeed: pick(10, 0.35, 0.8),
-    breathPeriod: pick(11, 7, 12),
-    highlightPeriod: pick(12, 4, 6.5),
-    palette: [...FLOW_LINES.palette.slice(lead), ...FLOW_LINES.palette.slice(0, lead)],
-  }
-}
-
 // Converts a CSS length read from a custom property ("7rem", "44px") to px.
 const toPx = (value: string) => {
   const v = value.trim()
@@ -234,7 +177,7 @@ function advance(s: SpringValue, dt: number) {
 // Wires up the row: the motion engine, opening pills, closing the open card
 // (click, close button, Escape), page dots, prev/next, arrow/Home/End keys,
 // gliding the section into place, wheel and touch scrolling, the
-// scrollbar, the moving lines, and re-layout on resize. Call after the
+// scrollbar, and re-layout on resize. Call after the
 // markup is in the DOM.
 export function initServices() {
   const section = document.getElementById('services')
@@ -396,39 +339,6 @@ export function initServices() {
     moveRow(clamp(next, minX(m), 0), LAYOUT_SPRING)
   }
 
-  // ── Moving lines ──────────────────────────────────────────────────────
-  // One canvas, moved into whichever card is open and switched to that
-  // card's version of the lines, drawing only while a card is open and the
-  // row is on screen.
-  const flow = document.createElement('div')
-  flow.className = 'svc-flow'
-  flow.setAttribute('aria-hidden', 'true')
-  const canvas = document.createElement('canvas')
-  flow.append(canvas)
-  cards[0].querySelector('.svc-art')!.after(flow)
-  const lines = createFlowingLines(canvas, linesFor(0))
-  let inView = false
-
-  function updateLines() {
-    if (open && inView) lines.start()
-    else lines.stop()
-  }
-
-  // Moves the lines into card `index`, which is about to open, in its own
-  // version. The card arrives closed (so the lines are faded out); reading
-  // a layout value commits that, so the opening then fades the lines in
-  // instead of popping them.
-  function showLinesIn(index: number) {
-    cards[index].querySelector('.svc-art')!.after(flow)
-    lines.configure(linesFor(index))
-    void flow.offsetWidth
-  }
-
-  new IntersectionObserver(([entry]) => {
-    inView = entry.isIntersecting
-    updateLines()
-  }).observe(viewport)
-
   // ── Open / close ──────────────────────────────────────────────────────
   // Swaps which half of a card (pill trigger vs. body and corner link) is
   // inert.
@@ -460,7 +370,6 @@ export function initServices() {
       markAnimating(cards[active])
       setOpen(cards[active], false)
     }
-    showLinesIn(next)
     markAnimating(cards[next])
     setOpen(cards[next], true)
     active = next
@@ -468,7 +377,6 @@ export function initServices() {
     const m = metrics()
     aimWidths(m)
     moveRow(slotFor(next, m), LAYOUT_SPRING)
-    updateLines()
 
     dots.forEach((dot, i) => dot.setAttribute('aria-current', String(i === next)))
     counter!.textContent = `${pad(next + 1)} / ${pad(count)}`
@@ -491,7 +399,6 @@ export function initServices() {
     const m = metrics()
     aimWidths(m)
     moveRow(clamp(row.target, minX(m), 0), LAYOUT_SPRING)
-    updateLines()
     live!.textContent = `All ${count} services`
 
     // The close button (or heading) that had focus is now inert — hand
