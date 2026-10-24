@@ -1,0 +1,219 @@
+/* Neo-brutalist primitives, shared by every page (imported by global.css):
+   the press recipe for buttons and cards, mono pill labels, the stuck-on
+   highlight box for a heading's key word, ink-lined panels and stickers.
+   The settings they use (--nb-line, --nb-drop, ...) live in global.css. */
+
+/* Press: the wrapper paints the hard shadow and never moves; the face
+   (.nb-face) lifts off it on hover and slams flat into it on click, so the
+   shadow seems to grow and collapse — transforms only. Set --nb-face for
+   the face colour and --nb-cast for the shadow's. */
+.nb-press {
+  position: relative;
+  isolation: isolate;
+  display: inline-grid;
+  padding: 0;
+  border: 0;
+  border-radius: var(--nb-r2);
+  background: none;
+  color: var(--color-ink);
+  font: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.nb-press::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--nb-cast, var(--color-ink));
+  translate: var(--nb-drop) var(--nb-drop);
+}
+
+.nb-face {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6em;
+  border: var(--nb-line) solid var(--color-ink);
+  border-radius: inherit;
+  background: var(--nb-face, var(--color-surface));
+  transition:
+    translate 0.2s var(--ease-pop),
+    rotate 0.2s var(--ease-pop);
+}
+
+@media (hover: hover) {
+  .nb-press:hover > .nb-face {
+    translate: calc(var(--nb-lift) * -1) calc(var(--nb-lift) * -1);
+    rotate: var(--nb-tilt);
+  }
+}
+
+.nb-press:focus-visible {
+  outline: none;
+}
+
+.nb-press:focus-visible > .nb-face {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 4px;
+  translate: calc(var(--nb-lift) * -1) calc(var(--nb-lift) * -1);
+}
+
+.nb-press:active > .nb-face {
+  translate: var(--nb-drop) var(--nb-drop);
+  rotate: 0deg;
+  transition-duration: 0.12s;
+}
+
+.nb-press svg {
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Sizes: a regular button, and the big one for the main call to action. */
+.nb-btn > .nb-face {
+  min-height: 3rem;
+  padding: 0 1.25rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.nb-btn-lg {
+  --nb-r2: 20px;
+}
+
+.nb-btn-lg > .nb-face {
+  min-height: 4rem;
+  padding: 0 1.6rem;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-stretch: 75%;
+  font-size: clamp(1.35rem, 1.1rem + 0.9vw, 1.75rem);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+.nb-btn-lg svg {
+  width: 1em;
+  height: 1em;
+  transition: translate 0.32s var(--ease-pop);
+}
+
+@media (hover: hover) {
+  .nb-btn-lg:hover svg {
+    translate: 0.2em 0;
+  }
+}
+
+/* Face colours. */
+.nb-lemon { --nb-face: var(--color-lemon); }
+.nb-lilac { --nb-face: var(--color-lilac); }
+.nb-mint { --nb-face: var(--color-mint); }
+.nb-coral { --nb-face: var(--color-coral); }
+
+/* Mono pill label (eyebrows, tags). Set --nb-pill-bg to recolour it. */
+.nb-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: fit-content;
+  padding: 0.5rem 0.9rem;
+  border: 3px solid var(--color-ink);
+  border-radius: 999px;
+  background: var(--nb-pill-bg, var(--color-lemon));
+  box-shadow: 4px 4px 0 var(--color-ink);
+  color: var(--color-ink);
+  font: 700 0.75rem/1.1 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* The highlight box stuck on one word of a heading, a little crooked. Its
+   line and shadow scale with the type, up to the full theme weight. */
+.nb-mark {
+  display: inline-block;
+  padding: 0 0.12em 0.04em;
+  border: min(var(--nb-line), 0.07em) solid var(--color-ink);
+  border-radius: min(var(--nb-r2), 0.22em);
+  background: var(--nb-mark-bg, var(--color-lemon));
+  box-shadow: min(var(--nb-drop), 0.1em) min(var(--nb-drop), 0.1em) 0 var(--color-ink);
+  color: var(--color-ink);
+  rotate: -2deg;
+}
+
+.nb-mark-lilac { --nb-mark-bg: var(--color-lilac); }
+.nb-mark-mint { --nb-mark-bg: var(--color-mint); }
+.nb-mark-coral { --nb-mark-bg: var(--color-coral); }
+
+/* An ink-lined panel with the heavy shadow, for things that sit still. */
+.nb-card {
+  border: var(--nb-line) solid var(--color-ink);
+  border-radius: var(--nb-r3);
+  background: var(--nb-card-bg, var(--color-surface));
+  box-shadow: var(--nb-drop) var(--nb-drop) 0 var(--color-ink);
+}
+
+/* Stickers (components/sticker): SVG shapes with a hard drop shadow. They
+   wiggle on their own (the theme's loud motion), which stops for reduced
+   motion and while the tape's pause button is on. */
+.nb-sticker {
+  overflow: visible;
+  filter: drop-shadow(4px 4px 0 var(--color-ink));
+  animation: nb-wiggle 2.6s ease-in-out infinite;
+}
+
+.nb-sticker .base {
+  stroke: var(--color-ink);
+  stroke-width: 3;
+  vector-effect: non-scaling-stroke;
+}
+
+.nb-sticker .ring {
+  fill: none;
+  stroke: var(--color-ink);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 4;
+  vector-effect: non-scaling-stroke;
+}
+
+.nb-sticker text {
+  fill: var(--color-ink);
+  font: 800 25px var(--font-display);
+  font-stretch: 75%;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+.nb-sticker .small {
+  font: 700 9px var(--font-mono);
+  font-stretch: 100%;
+  letter-spacing: 0.12em;
+}
+
+@keyframes nb-wiggle {
+  50% {
+    transform: rotate(8deg);
+  }
+}
+
+html[data-motion="paused"] .nb-sticker {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nb-sticker {
+    animation: none;
+  }
+  .nb-face,
+  .nb-btn-lg svg {
+    transition-duration: 0.01ms;
+  }
+}
