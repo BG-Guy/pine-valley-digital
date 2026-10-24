@@ -1,6 +1,6 @@
 // Entry point: renders the whole page from the section/component templates,
 // then boots the animations and interactive widgets. Where to look:
-//   components/  reusable pieces (navbar, footer, preloader, marquee, ...)
+//   components/  reusable pieces (navbar, footer, preloader, tape, ...)
 //   sections/    one folder per page section (hero, services, work, ...)
 //   animations/  page-wide motion (load-in sequence, scroll reveals)
 //   global.css   design tokens and base styles only
@@ -9,7 +9,7 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { renderPreloader } from './components/preloader/preloader'
 import { renderNavbar, initNavbar } from './components/navbar/navbar'
-import { renderMarquee, initMarquee } from './components/marquee/marquee'
+import { renderTape, initTape } from './components/tape/tape'
 import { renderFooter, initFooter } from './components/footer/footer'
 import { initSiteHoverCarouselLinks } from './components/hover-carousel-link/hoverCarouselLink'
 import { renderHero, initHero } from './sections/hero/hero'
@@ -34,7 +34,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 
   <main id="top">
     ${renderHero()}
-    ${renderMarquee()}
+    ${renderTape()}
     ${renderServices()}
     ${renderWork()}
     ${renderProcess()}
@@ -49,7 +49,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 initPageLoad()
 initScrollReveals()
 initScrollScenes()
-initMarquee()
+initTape()
 initHero()
 initServices()
 initWork()

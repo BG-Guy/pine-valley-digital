@@ -1,21 +1,17 @@
-// CTA button: the bordered pill with a bouncy lift and a sliding color fill
-// on hover (styles in ctaButton.css). Used for the navbar's "Start a project".
+// CTA button: a lemon press button (components/press) sized for the navbar
+// and the mobile menu — "Start a project". Styles in ctaButton.css.
 import './ctaButton.css'
 
 interface CtaButtonOptions {
   href: string
   label: string
-  // Extra utility classes for placement/visibility (e.g. hide on mobile).
+  // Extra classes for placement/visibility (e.g. hide on mobile).
   className?: string
 }
 
-// Markup: outer link carries the border/shadow/lift; the inner clip layer
-// hosts the sliding fill and the label.
+// Markup: the press wrapper paints the shadow; the face carries the label.
 export const renderCtaButton = ({ href, label, className = '' }: CtaButtonOptions) => `
-          <a href="${href}" class="btn-cta ${className}">
-            <span class="btn-cta-clip">
-              <span class="btn-cta-bg"></span>
-              <span class="btn-cta-label">${label}</span>
-            </span>
+          <a href="${href}" class="btn-cta nb-press nb-lemon ${className}">
+            <span class="nb-face btn-cta-face">${label}</span>
           </a>
 `

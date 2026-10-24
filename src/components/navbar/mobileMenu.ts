@@ -1,9 +1,8 @@
 // Mobile menu: the toggle key in the navbar and the full-screen "poster"
 // sheet it opens, below 768px only (the desktop bar has its own links).
-// The sheet comes down from behind the bar as a paper curtain whose leading
-// edge is a wide oval framed in the site's 3px ink line — the .oval-top
-// edge turned upside down, and the page-transition curtain's gesture in
-// paper — and goes back up on close. Under the edge, the hero's reveal: the
+// The sheet comes down from behind the bar as a paper curtain with a heavy
+// ink line along its leading edge — the page-transition curtain's gesture
+// in paper — and goes back up on close. Under the edge, the hero's reveal: the
 // links stacked in big display type, each sliding up through its own mask
 // as the edge passes it. Styles live in mobileMenu.css.
 import './mobileMenu.css'
@@ -65,9 +64,9 @@ export const renderMenuToggle = () => `
           </button>
 `
 
-// The sheet: the curtain (paper, its oval ink edge at the bottom) with the
+// The sheet: the curtain (paper, its ink edge at the bottom) with the
 // content inside it. Inside: an eyebrow and the numbered links, then a
-// bottom band rising in the site's framed oval edge, with the email and the
+// lilac bottom band under a heavy ink line, with the email and the
 // CTA (the bar hides its own CTA below 640px). Every piece of text that
 // slides sits in a mask. Each link's word has two aria-hidden copies behind
 // it for the press glitch (real elements, like the hero's "fast" slices).
@@ -141,7 +140,7 @@ export function initMobileMenu() {
   let inerted: HTMLElement[] = []
 
   // ── The curtain ───────────────────────────────────────────────────
-  // The curtain is the screen's height plus its oval edge (and a little
+  // The curtain is the screen's height plus its edge strip (and a little
   // more, so the edge parks fully out of sight). It moves on its own
   // transform; the sheet inside it — the content — is moved by exactly the
   // opposite amount, so the content stays still on the screen and the edge
@@ -238,8 +237,8 @@ export function initMobileMenu() {
 
     // About 0.6s for the curtain; under it, the hero's load-in, smaller and
     // quicker, each part starting as the edge reaches it: the eyebrow and
-    // its hairline, the links rising through their masks, the band's oval
-    // edge drawing out from its peak, and the CTA settling in. All done in
+    // its hairline, the links rising through their masks, the band's line
+    // drawing out from the middle, and the CTA settling in. All done in
     // about 0.7s.
     const travel = drop()
     const tip = travel + (gsap.getProperty(curtain, 'y') as number)
@@ -264,9 +263,8 @@ export function initMobileMenu() {
       timeline!.to(line, { yPercent: 0, duration: 0.42, ease: 'power4.out' }, at)
     })
 
-    // The band's line draws only once the curtain's edge is clear of it
-    // (its ends too, which trail the tip by the oval's depth), so the two
-    // ovals never cross.
+    // The band's line draws only once the curtain's edge is clear of it, so
+    // the two lines never cross.
     const bandClear = band.getBoundingClientRect().top + bandEdge.offsetHeight + edge.offsetHeight
     timeline.to(bandEdge, { clipPath: 'inset(0% 0% 0% 0%)', duration: 0.42, ease: 'power3.out' }, reachY(bandClear))
     // From the moment the edge starts to uncover them; the edge does most

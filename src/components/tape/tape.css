@@ -1,0 +1,100 @@
+/* Tape (see tape.ts): a lemon band between two heavy ink lines, tilted and
+   overhanging both screen edges, on a hard shadow. The wrapper clips it
+   sideways only (so the overhang never widens the page) and leaves room
+   above and below for the tilt. It pulls up over the bottom of the section
+   before it, so it sits across the edge between the two. */
+.nb-tape-wrap {
+  position: relative;
+  z-index: 5;
+  margin-top: -2.5rem;
+  padding-block: 1.25rem 1.75rem;
+  overflow-x: clip;
+}
+
+.nb-tape {
+  margin-inline: -2rem;
+  rotate: -2deg;
+  overflow: hidden;
+  border-block: var(--nb-line) solid var(--color-ink);
+  background: var(--color-lemon);
+  box-shadow: 0 var(--nb-drop) 0 var(--color-ink);
+}
+
+.nb-tape-track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+}
+
+.nb-tape-list {
+  display: flex;
+  flex: none;
+  gap: 2rem;
+  margin: 0;
+  padding: 0.85rem 2rem 0.85rem 0;
+  list-style: none;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-stretch: 75%;
+  font-size: clamp(1.2rem, 0.95rem + 0.9vw, 1.75rem);
+  line-height: 1;
+  letter-spacing: -0.005em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.nb-tape-list li {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.nb-tape-pine {
+  flex: none;
+  width: 1.35em;
+  height: 1.35em;
+}
+
+/* The pause button sits on the tape's right end. A small press: lighter
+   shadow and lift than the theme's. */
+.nb-tape-pause {
+  --nb-drop: 4px;
+  --nb-lift: 2px;
+  --nb-line: 3px;
+  position: absolute;
+  top: 50%;
+  right: max(1rem, env(safe-area-inset-right, 0px));
+  z-index: 1;
+  border-radius: 999px;
+  translate: 0 -50%;
+}
+
+.nb-tape-pause[hidden] {
+  display: none;
+}
+
+.nb-tape-pause .nb-face {
+  width: 2.75rem;
+  height: 2.75rem;
+}
+
+.nb-tape-pause svg {
+  fill: currentColor;
+  stroke: currentColor;
+  stroke-width: 2;
+}
+
+.nb-icon-play,
+.nb-tape-pause[aria-pressed="true"] .nb-icon-pause {
+  display: none;
+}
+
+.nb-tape-pause[aria-pressed="true"] .nb-icon-play {
+  display: block;
+}
+
+@media (min-width: 768px) {
+  .nb-tape-pause {
+    right: max(2rem, env(safe-area-inset-right, 0px));
+  }
+}

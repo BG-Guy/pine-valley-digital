@@ -1,5 +1,5 @@
 // Brand logo pieces (pine mark + wordmark), returned as HTML strings so they
-// can be dropped into any markup — the navbar, footer, preloader, and marquee.
+// can be dropped into any markup — the navbar, footer, preloader, and tape.
 
 // Pine tree nestled in a valley — the two slopes are separate strokes at
 // 80% opacity with round caps that share an endpoint, so they naturally
