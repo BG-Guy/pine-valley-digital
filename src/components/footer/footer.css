@@ -1,7 +1,79 @@
-/* Footer shell — full-width, flush to the screen edges. The reveal itself
-   (the footer sitting fixed at the viewport bottom, uncovered as the page
-   scrolls away) is handled by reveal-footer/revealFooter.ts. */
+/* Footer shell — full-width, flush to the screen edges: an ink panel the
+   page scrolls away from (the reveal itself is reveal-footer/revealFooter.ts).
+   Cream text on ink, with the studio's name set huge in poster type, its
+   last word in lemon. */
 #footer-shell {
-  border-top: 3px solid var(--color-ink);
-  background: var(--color-paper-dim);
+  border-top: var(--nb-line) solid var(--color-ink);
+  background: var(--color-ink);
+  color: var(--color-paper);
+}
+
+.footer-word {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-stretch: 75%;
+  font-size: clamp(3.25rem, 1rem + 11vw, 11rem);
+  line-height: 0.85;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+.footer-word span {
+  color: var(--color-lemon);
+}
+
+.footer-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem 2rem;
+}
+
+.footer-copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: color-mix(in srgb, var(--color-paper) 80%, var(--color-ink));
+}
+
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+/* Cream-ringed pills that fill lemon on hover. */
+.footer-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0 1rem;
+  border: 3px solid var(--color-paper);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    translate 0.2s var(--ease-pop);
+}
+
+@media (hover: hover) {
+  .footer-pill:hover {
+    background: var(--color-lemon);
+    color: var(--color-ink);
+    translate: 0 -3px;
+  }
+}
+
+.footer-pill:focus-visible {
+  outline: 3px solid var(--color-lemon);
+  outline-offset: 3px;
 }

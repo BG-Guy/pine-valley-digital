@@ -77,7 +77,7 @@ async function closeCurtainThenNavigate(href: string, title: string) {
   gsap.set(preWord, { autoAlpha: 0, scale: 1 }) // kept fully hidden — icon included — until the curtain has closed
   hidePreloaderText()
 
-  const curtain = curveTransition({ container: preloader, color: '#333333', duration: 700 })
+  const curtain = curveTransition({ container: preloader, color: '#141210', duration: 700 })
   await curtain.cover() // the curtain closes down over the current page first
 
   gsap.set(preWord, { autoAlpha: 1 }) // reveal the block (the faint pine backdrop) now that the curtain is fully closed

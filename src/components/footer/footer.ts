@@ -1,21 +1,30 @@
 // Footer: the "reveal" footer — fixed to the viewport bottom behind the page,
-// uncovered as you scroll to the end. Full-width from the start. Styles live
+// uncovered as you scroll to the end. An ink panel with the name set huge in
+// poster type, the quick links as pills, and the copyright line. Styles live
 // in footer.css.
 import './footer.css'
 import { logoMark } from '../logo/logo'
 import { initRevealFooter } from '../reveal-footer/revealFooter'
 
-// Markup: logo + copyright on the left, quick links on the right.
+const LINKS = [
+  ['Services', '/#services'],
+  ['Work', '/#work'],
+  ['Contact', '/#contact'],
+  ['Lab', '/lab.html'],
+]
+
+// Markup: the big wordmark (decorative; the logo line below names the
+// studio for screen readers), then the copyright and the links.
 export const renderFooter = () => `
   <footer id="site-footer">
-    <div id="footer-shell" class="footer-shell px-6 sm:px-10 py-10">
-      <div class="mx-auto max-w-7xl flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-ink/50">
-        <span class="inline-flex items-center gap-2">${logoMark('w-5 h-5 shrink-0')}&copy; ${new Date().getFullYear()} Pine Valley Digital.</span>
-        <div class="flex items-center gap-6">
-          <a href="/#services" class="nav-link">Services</a>
-          <a href="/#work" class="nav-link">Work</a>
-          <a href="/#contact" class="nav-link">Contact</a>
-          <a href="/lab.html" class="nav-link">Lab</a>
+    <div id="footer-shell" class="footer-shell px-6 sm:px-10 pt-12 pb-10 sm:pt-16">
+      <div class="mx-auto max-w-7xl grid gap-8 sm:gap-10">
+        <p class="footer-word" aria-hidden="true">Pine Valley <span>Digital</span></p>
+        <div class="footer-row">
+          <span class="footer-copy">${logoMark('w-6 h-6 shrink-0')}&copy; ${new Date().getFullYear()} Pine Valley Digital.</span>
+          <nav class="footer-links" aria-label="Footer">
+            ${LINKS.map(([label, href]) => `<a href="${href}" class="footer-pill nav-link">${label}</a>`).join('')}
+          </nav>
         </div>
       </div>
     </div>

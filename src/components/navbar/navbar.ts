@@ -14,19 +14,19 @@ import { renderMenuToggle, renderMobileMenu, initMobileMenu } from './mobileMenu
 // different-path is a normal navigation back to the home page's section.
 // Starts hidden (opacity-0): every page's own preloader curtain fades it in
 // as it opens (see components/preloader). The CTA's show-from-sm wrapper is
-// a separate span on purpose: .btn-cta's own display rule (ctaButton.css)
+// a separate span on purpose: .btn-cta's own display rule (.nb-press, press.css)
 // is unlayered CSS, which beats Tailwind v4's layered `hidden` utility if
 // both sit on the same element — so the button showed (and wrapped the bar)
 // on phones.
 export const renderNavbar = () => `
   <header id="site-nav" class="navbar-shell fixed top-0 inset-x-0 z-40 opacity-0">
-    <div id="navbar-bar" class="navbar-bar border-[3px] border-[var(--color-ink)] bg-[var(--color-paper)]">
+    <div id="navbar-bar" class="navbar-bar">
       <div class="mx-auto max-w-7xl px-6 sm:px-10 py-5 flex items-center justify-between">
         <a href="/#top" class="flex items-center gap-2">
           ${logoMark('w-7 h-7 shrink-0')}
           ${logoWordmark('text-base sm:text-lg')}
         </a>
-        <nav class="hidden md:flex items-center gap-8 text-sm font-medium">
+        <nav class="navbar-links hidden md:flex items-center gap-7">
           <a href="/#services" class="nav-link">Services</a>
           <a href="/#work" class="nav-link">Work</a>
           <a href="/#process" class="nav-link">Process</a>

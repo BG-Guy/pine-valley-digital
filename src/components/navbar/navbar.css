@@ -36,11 +36,26 @@
   }
 }
 
-/* Positioned and lifted so it stays on top of the open mobile menu sheet,
+/* The bar: the theme's heavy ink line on a surface face. Its hard shadow
+   leans down and to the right while it floats as a pill, and falls straight
+   down once it has docked flush with the screen edges (where a sideways
+   shadow would run off the screen) — the same --nav-progress drives both.
+   Positioned and lifted so it stays on top of the open mobile menu sheet,
    which comes after it in the header. */
 .navbar-bar {
   position: relative;
   z-index: 1;
-  box-shadow: 0 6px 0 0 var(--color-ink);
+  border: var(--nb-line) solid var(--color-ink);
+  background: var(--color-surface);
+  box-shadow: calc(var(--nb-drop) * var(--nav-progress)) calc(6px + 4px * var(--nav-progress)) 0 0 var(--color-ink);
   border-radius: calc(999px * var(--nav-progress));
+}
+
+/* Desktop links in Space Mono capitals. */
+.navbar-links {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }

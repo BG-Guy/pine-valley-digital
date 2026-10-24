@@ -82,7 +82,7 @@ export async function playPreloader(onReveal: () => void) {
     return
   }
 
-  const curtain = curveTransition({ container: preloader, color: '#333333', duration: 1000 })
+  const curtain = curveTransition({ container: preloader, color: '#141210', duration: 1000 })
   curtain.setCovered() // start already closed, logo already visible — no grow-in for the curtain itself
 
   if (arrivedViaTransition) {
