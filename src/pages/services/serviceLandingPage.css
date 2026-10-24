@@ -1,59 +1,335 @@
 /* Service landing page (see serviceLandingPage.ts) — the pieces that need
-   real CSS beyond Tailwind utilities: the diagnostic checklist's custom
-   checkbox and the closing form's inputs. Both reuse the site's thick-border,
-   hard-edge visual language (see global.css's theme note). */
+   real CSS beyond Tailwind utilities, in the neo-brutalist theme
+   (global.css; the press, pill, highlight, card and form parts are in
+   components/press). */
 
-/* Custom checkbox: a plain square that fills with the accent color and
-   shows a check mark when ticked — matches the bordered, no-soft-shadow
-   language used elsewhere (navbar, CTA button) instead of the OS default. */
-.svc-check-input {
-  appearance: none;
-  flex-shrink: 0;
-  width: 20px;
-  height: 20px;
-  border: 2px solid var(--color-paper);
-  border-radius: 4px;
+/* ── Hero ───────────────────────────────────────────────────────────── */
+
+.svc-hero-title {
+  margin-top: 1.5rem;
+  font-size: clamp(2.6rem, 1rem + 6.4vw, 5.25rem);
+  line-height: 0.92;
+}
+
+.svc-hero-sub {
+  max-width: 40rem;
+  margin-top: 1.75rem;
+  font-size: 1.15rem;
+  line-height: 1.6;
+  color: color-mix(in srgb, var(--color-ink) 80%, var(--color-paper));
+}
+
+/* The teasers, as ticked cards. */
+.svc-hero-teasers {
+  display: grid;
+  gap: 0.9rem;
+  margin: 2rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 768px) {
+  .svc-hero-teasers {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+}
+
+.svc-hero-teasers li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 1rem;
+  border: 3px solid var(--color-ink);
+  border-radius: var(--nb-r2);
+  background: var(--color-surface);
+  box-shadow: 5px 5px 0 var(--color-ink);
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.svc-hero-teasers li::before {
+  content: "✓";
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  border: 2px solid var(--color-ink);
+  border-radius: 6px;
+  background: var(--color-mint);
+  font-size: 0.8rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.svc-hero-cta {
+  margin-top: 2.5rem;
+}
+
+/* The reply-time sticker, up on the right; phones skip it, where it would
+   sit on the headline. */
+.svc-hero-sticker {
+  position: absolute;
+  top: -1.25rem;
+  right: 0;
+  display: none;
+  width: 6.5rem;
+  height: 6.5rem;
+  rotate: 10deg;
+}
+
+@media (min-width: 640px) {
+  .svc-hero-sticker {
+    display: block;
+  }
+}
+
+@media (min-width: 1024px) {
+  .svc-hero-sticker {
+    right: -4rem;
+    width: 7.5rem;
+    height: 7.5rem;
+  }
+}
+
+/* ── Proof ──────────────────────────────────────────────────────────── */
+
+.svc-stats {
+  display: grid;
+  gap: 1.75rem;
+  margin-bottom: 3.5rem;
+}
+
+@media (min-width: 640px) {
+  .svc-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.svc-stat {
+  display: grid;
+  align-content: start;
+  gap: 0.6rem;
+  padding: 1.5rem;
+}
+
+.svc-stat-value {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-stretch: 75%;
+  font-size: clamp(3rem, 2rem + 3vw, 4.5rem);
+  line-height: 0.9;
+  text-transform: uppercase;
+}
+
+.svc-stat-label {
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.svc-stat-source {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.svc-shift {
+  max-width: 48rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 1.1rem + 0.9vw, 1.75rem);
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+/* ── Offering ───────────────────────────────────────────────────────── */
+
+.svc-lead {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: color-mix(in srgb, var(--color-ink) 80%, var(--color-paper));
+}
+
+/* ── Diagnostic ─────────────────────────────────────────────────────── */
+
+/* An ink panel (.nb-card) on a lilac shadow, cream text. */
+.svc-diag {
+  --nb-card-bg: var(--color-ink);
+  display: grid;
+  gap: 1.25rem;
+  padding: clamp(1.5rem, 1rem + 3vw, 3rem);
+  box-shadow: var(--nb-drop) var(--nb-drop) 0 var(--color-lilac);
+  color: var(--color-paper);
+}
+
+/* The highlight box sits on ink here, so its shadow goes lilac to show. */
+.svc-diag .nb-mark {
+  box-shadow: min(var(--nb-drop), 0.1em) min(var(--nb-drop), 0.1em) 0 var(--color-lilac);
+}
+
+.svc-diag-intro {
+  color: color-mix(in srgb, var(--color-paper) 82%, var(--color-ink));
+}
+
+.svc-diag-list {
+  display: grid;
+  gap: 0.9rem;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.svc-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  font-size: 1.05rem;
+  line-height: 1.45;
   cursor: pointer;
+}
+
+/* Chunky checkbox: a cream-ringed square that fills lemon with an ink
+   tick. */
+.svc-check-input {
   position: relative;
+  flex: none;
+  width: 1.6rem;
+  height: 1.6rem;
+  margin-top: 0.05rem;
+  border: 3px solid var(--color-paper);
+  border-radius: 7px;
+  background: transparent;
+  cursor: pointer;
+  appearance: none;
+  transition: background-color 0.15s ease;
 }
 
 .svc-check-input:checked {
-  background: var(--color-accent-2);
-  border-color: var(--color-accent-2);
+  border-color: var(--color-lemon);
+  background: var(--color-lemon);
 }
 
 .svc-check-input:checked::after {
-  content: '';
+  content: "";
   position: absolute;
-  left: 5px;
-  top: 1px;
-  width: 5px;
-  height: 10px;
+  top: 0.08rem;
+  left: 0.4rem;
+  width: 0.38rem;
+  height: 0.75rem;
   border: solid var(--color-ink);
-  border-width: 0 2px 2px 0;
+  border-width: 0 3px 3px 0;
   transform: rotate(45deg);
 }
 
-/* Closing form fields — same thick-border card language as the rest of the
-   site, on the light (paper) background this section sits on. */
-.svc-input {
-  width: 100%;
-  border: 2px solid var(--color-ink);
-  border-radius: 0.75rem;
-  padding: 0.75rem 1rem;
-  background: var(--color-paper);
-  color: var(--color-ink);
-  font-family: var(--font-body);
-  font-size: 1rem;
-  resize: vertical;
-  transition: box-shadow 0.2s ease;
+.svc-check-input:focus-visible {
+  outline: 3px solid var(--color-lemon);
+  outline-offset: 3px;
 }
 
-.svc-input::placeholder {
-  color: rgb(51 51 51 / 0.4);
+.svc-diag-result {
+  min-height: 1.5em;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--color-lemon);
 }
 
-.svc-input:focus {
-  outline: none;
-  box-shadow: 3px 3px 0 0 var(--color-ink);
+.svc-diag-proof {
+  padding-top: 1.25rem;
+  border-top: 3px dashed color-mix(in srgb, var(--color-paper) 35%, transparent);
+  color: color-mix(in srgb, var(--color-paper) 85%, var(--color-ink));
+}
+
+/* ── Call to action ─────────────────────────────────────────────────── */
+
+.svc-faq {
+  display: grid;
+  gap: 1rem;
+  margin: 0;
+}
+
+.svc-faq-item {
+  padding: 1.1rem 1.25rem;
+  border: 3px solid var(--color-ink);
+  border-radius: var(--nb-r2);
+  background: var(--color-surface);
+  box-shadow: 5px 5px 0 var(--color-ink);
+}
+
+.svc-faq-item dt {
+  margin-bottom: 0.4rem;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.svc-faq-item dd {
+  margin: 0;
+  color: color-mix(in srgb, var(--color-ink) 80%, var(--color-paper));
+}
+
+.svc-promise {
+  --nb-card-bg: var(--color-lemon);
+  display: grid;
+  gap: 0.6rem;
+  padding: clamp(1.25rem, 1rem + 1.5vw, 2rem);
+}
+
+.svc-promise-title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-stretch: 75%;
+  font-size: 1.6rem;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.svc-form-panel {
+  --nb-card-bg: var(--color-lilac);
+  display: grid;
+  gap: 2rem;
+  padding: clamp(1.5rem, 1rem + 3vw, 3rem);
+}
+
+@media (min-width: 1024px) {
+  .svc-form-panel {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    gap: 3rem;
+  }
+}
+
+.svc-form-intro {
+  display: grid;
+  align-content: start;
+  gap: 1rem;
+}
+
+.svc-form {
+  display: grid;
+  gap: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .svc-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .svc-form-wide {
+    grid-column: 1 / -1;
+  }
+}
+
+.svc-form-send {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.5rem;
+}
+
+.svc-form-note {
+  font-size: 0.9rem;
 }

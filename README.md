@@ -10,9 +10,15 @@ Marketing site for Pine Valley Digital — a single-page, fast-loading site buil
 
 ## Design system
 
-The color theme (purple `#6C3BAA` / green `#3BAA99` on warm off-white paper,
-dark ink for contrast) and several component patterns — the sliding-fill CTA
-button, the duotone contact heading — are shared with [portfolio-2025](https://github.com/bg-guy/portfolio-2025), which
+Neo-brutalist, from the Neo-Brutalist Section kit in the web-component-library:
+a cream graph-paper page, a heavy 4px ink line and hard 10px shadows, flat
+lilac / mint / lemon fills (coral on stickers), poster headings in condensed
+Bricolage capitals with Space Mono labels, and buttons and cards that lift
+off their shadow on hover and press flat into it. The brand's purple
+`#6C3BAA` and green `#3BAA99` stay in the logo. Tokens and notes live in
+`src/global.css`; the shared parts (press buttons, pills, highlight boxes,
+cards, stickers, form fields) in `src/components/press/press.css`. The color
+theme started out shared with [portfolio-2025](https://github.com/bg-guy/portfolio-2025), which
 also hosts this content as a page (`/web-agency`) alongside the personal
 portfolio.
 
@@ -26,9 +32,9 @@ src/
   main.ts          entry: renders the page, then boots animations/widgets
   global.css       design tokens + base styles only
   components/      reusable pieces, one folder each (code + its own .css)
-    navbar/  footer/  marquee/  preloader/  logo/  cta-button/
+    navbar/  footer/  tape/  preloader/  logo/  cta-button/
     hover-carousel-link/  reveal-footer/
-    card-art/  hero-orbs/  hero-blend/
+    press/  sticker/  tickets/  card-art/
   sections/        one folder per page section
     hero/  services/  work/  process/  contact/
   pages/           the other pages: lab/, services/ (the 14 service landing pages)
@@ -36,7 +42,7 @@ src/
 ```
 
 - **Add or edit a service:** `servicesLandingData` in `src/pages/services/servicesLandingData.ts` (feeds both the "What we do" row and the landing pages).
-- **Change what the banner lists:** `marqueeItems` in `src/components/marquee/marquee.ts`.
+- **Change what the tape lists:** `ITEMS` in `src/components/tape/tape.ts`.
 - **Add or edit a project in the showcase:** the `projects` array in `src/sections/work/work.ts`.
 - **Add or edit a nav link:** `MENU_LINKS` in `src/components/navbar/mobileMenu.ts` for the mobile menu, and the desktop links in `src/components/navbar/navbar.ts` (a link to another page gets the menu's little diagonal arrow on its own, from its href).
 - **Add a section:** make `src/sections/<name>/<name>.ts` (+ `.css` if it needs one), export a `render…` function, and add it to the template in `main.ts`.

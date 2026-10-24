@@ -1,169 +1,156 @@
 // Service landing page template (Thrive & Scale framework — see
 // ~/.claude/skills/seo-landing-page-copywriter). One shared template, one
 // data object per service (servicesLandingData.ts) — every services/*.html
-// page renders through this. Styles live in serviceLandingPage.css.
+// page renders through this, in the site's neo-brutalist theme (global.css).
+// Styles live in serviceLandingPage.css.
 import './serviceLandingPage.css'
 import type { ServiceLandingData } from './servicesLandingData'
-import { renderHeroOrbs, initHeroOrbs } from '../../components/hero-orbs/heroOrbs'
-import { initHeroBlend } from '../../components/hero-blend/heroBlend'
+import { renderTape, initTape } from '../../components/tape/tape'
+import { renderTickets } from '../../components/tickets/tickets'
+import { circleSticker } from '../../components/sticker/sticker'
 
 // Shared across every service — a single, honest guarantee reads as more
 // credible than a different one invented per page.
 const GUARANTEE =
   "If the first round of work isn't right, we revise it until it is — at no extra cost. If it's still not working for you, you don't pay for that stage. No multi-month lock-in, no cancellation fee."
 
-// Section 1 — Hero: outcome-first headline (one word/phrase in the accent
-// color), an objection-neutralizing subhead, and three teaser bullets, over
-// the same drifting colour orbs as the home hero (components/hero-orbs).
+const EMAIL = 'hello@pinevalleydigital.com'
+
+const ARROW = `<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg>`
+
+// The stat cards' fills, in order.
+const STAT_FILLS = ['var(--color-lilac)', 'var(--color-mint)', 'var(--color-lemon)']
+
+// Section 1 — Hero: the eyebrow as a mono pill, the outcome-first headline
+// (its accent phrase on a lemon highlight box), an objection-neutralizing
+// subhead, the three teasers as ticked cards and the call to action, with
+// a reply-time sticker. The tape (components/tape) runs across its bottom
+// edge.
 const renderHero = (d: ServiceLandingData) => `
-    <section class="svc-hero relative overflow-hidden px-6 sm:px-10 pt-40 pb-20 sm:pt-52 sm:pb-28">
-      ${renderHeroOrbs()}
-      <div class="relative mx-auto max-w-4xl">
-        <p class="reveal text-sm font-semibold uppercase tracking-[0.2em] text-ink/60 mb-6">${d.eyebrow}</p>
-        <h1 class="reveal font-display font-extrabold tracking-tight text-[10vw] leading-[1.02] sm:text-6xl sm:leading-[1.05]">
-          ${d.headline.replace(d.headlineAccent, `<span class="text-[var(--color-accent)]">${d.headlineAccent}</span>`)}
+    <section class="svc-hero relative px-6 sm:px-10 pt-36 pb-24 sm:pt-44 sm:pb-28">
+      <div class="relative mx-auto max-w-6xl">
+        ${circleSticker(['Usually', '1 day', 'to reply'], { className: 'svc-hero-sticker', label: 'Usually replies within one business day' })}
+        <p class="reveal"><span class="nb-pill">${d.eyebrow}</span></p>
+        <h1 class="svc-hero-title reveal font-display font-extrabold">
+          ${d.headline.replace(d.headlineAccent, `<span class="nb-mark">${d.headlineAccent}</span>`)}
         </h1>
-        <p class="reveal mt-6 text-lg text-ink/70 max-w-2xl">${d.subhead}</p>
-        <ul class="reveal mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
-          ${d.teasers
-            .map(
-              (t) => `
-          <li class="svc-teaser text-sm text-ink/75 border-t-2 border-[var(--color-accent-2)] pt-3">${t}</li>`
-            )
-            .join('')}
+        <p class="svc-hero-sub reveal">${d.subhead}</p>
+        <ul class="svc-hero-teasers reveal">
+          ${d.teasers.map((t) => `<li>${t}</li>`).join('')}
         </ul>
-        <a href="#svc-cta" class="hero-cta mt-10 inline-flex items-center text-sm font-semibold uppercase tracking-wide">
-          Start a project <span aria-hidden="true">&darr;</span>
-        </a>
+        <div class="svc-hero-cta reveal">
+          <a href="#svc-cta" class="nb-press nb-btn-lg nb-lemon"><span class="nb-face">Start a project ${ARROW}</span></a>
+        </div>
       </div>
     </section>
+${renderTape()}
 `
 
 // Section 2 — Market Reality & Proof: a couple of real, sourced stats (never
-// invented) and the "strategic shift" paragraph.
+// invented), each on a flat colour card, and the "strategic shift"
+// paragraph.
 const renderProof = (d: ServiceLandingData) => `
-    <section class="px-6 sm:px-10 py-20 sm:py-24 bg-[var(--color-paper-dim)]">
-      <div class="mx-auto max-w-5xl">
-        <div class="reveal grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-6 mb-14">
+    <section class="px-6 sm:px-10 py-20 sm:py-24">
+      <div class="mx-auto max-w-6xl">
+        <div class="svc-stats reveal">
           ${d.stats
             .map(
-              (s) => `
-          <div>
-            <div class="font-display font-extrabold text-4xl sm:text-5xl text-[var(--color-accent)]">${s.value}</div>
-            <p class="mt-2 text-sm text-ink/65 max-w-xs">${s.label}${s.source ? `<span class="block text-xs text-ink/40 mt-1">${s.source}</span>` : ''}</p>
-          </div>`
+              (s, i) => `
+          <div class="svc-stat nb-card" style="--nb-card-bg: ${STAT_FILLS[i % STAT_FILLS.length]}">
+            <div class="svc-stat-value">${s.value}</div>
+            <p class="svc-stat-label">${s.label}</p>
+            ${s.source ? `<p class="svc-stat-source">${s.source}</p>` : ''}
+          </div>`,
             )
             .join('')}
         </div>
-        <p class="reveal text-lg sm:text-xl font-display font-medium max-w-3xl leading-relaxed">${d.strategicShift}</p>
+        <p class="svc-shift reveal">${d.strategicShift}</p>
       </div>
     </section>
 `
 
-// Section 3 — Core Offering & Process: the deliverables paragraph, then a
-// 3-4 step timeline (same alternating-border pattern as the home page's
-// process section).
+// Section 3 — Core Offering & Process: the deliverables paragraph, then the
+// 3-4 step journey as ticket cards (components/tickets, as on the home
+// page's process).
 const renderOffering = (d: ServiceLandingData) => `
     <section class="px-6 sm:px-10 py-20 sm:py-24">
-      <div class="mx-auto max-w-5xl">
-        <div class="reveal mb-14 max-w-2xl">
-          <h2 class="font-display font-extrabold text-3xl sm:text-4xl tracking-tight mb-4">What this <span class="text-[var(--color-accent-2)]">actually includes</span></h2>
-          <p class="text-ink/70 text-lg">${d.whatWeDo}</p>
+      <div class="mx-auto max-w-6xl">
+        <div class="reveal mb-14 max-w-2xl grid gap-5">
+          <p class="nb-pill" style="--nb-pill-bg: var(--color-lilac)">What you get</p>
+          <h2 class="font-display font-extrabold text-4xl sm:text-5xl">What this <span class="nb-mark nb-mark-mint">actually includes</span></h2>
+          <p class="svc-lead">${d.whatWeDo}</p>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-4 gap-8 sm:gap-6">
-          ${d.journey
-            .map(
-              (step, i) => `
-          <div class="reveal pt-5" style="border-top: 2px solid ${i % 2 === 0 ? 'var(--color-accent)' : 'var(--color-accent-2)'}">
-            <span class="font-display text-ink/30 text-xl">0${i + 1}</span>
-            <h3 class="font-display font-bold text-xl mt-2 mb-2">${step.title}</h3>
-            <p class="text-ink/65 text-sm leading-relaxed">${step.copy}</p>
-          </div>`
-            )
-            .join('')}
-        </div>
+        ${renderTickets(d.journey)}
       </div>
     </section>
 `
 
 // Section 4 — Validation & Diagnostic: "signs you need this" as a live
-// self-check checklist (see setupDiagnostic), plus a reasoned, non-invented
-// line of social proof.
+// self-check checklist (see setupDiagnostic) on an ink panel, plus a
+// reasoned, non-invented line of social proof.
 const renderDiagnostic = (d: ServiceLandingData) => `
-    <section class="px-6 sm:px-10 py-20 sm:py-24 bg-[var(--color-ink)] text-[var(--color-paper)]">
-      <div class="mx-auto max-w-3xl">
-        <h2 class="reveal font-display font-extrabold text-3xl sm:text-4xl tracking-tight mb-3">Is this <span class="text-[var(--color-accent-2)]">actually</span> a problem for you?</h2>
-        <p class="reveal text-[var(--color-paper)]/60 mb-8">${d.diagnosticIntro}</p>
-        <ul id="svc-diagnostic" class="reveal space-y-3">
+    <section class="px-6 sm:px-10 py-20 sm:py-24">
+      <div class="svc-diag nb-card reveal mx-auto max-w-4xl">
+        <h2 class="font-display font-extrabold text-4xl sm:text-5xl">Is this <span class="nb-mark">actually</span> a problem for you?</h2>
+        <p class="svc-diag-intro">${d.diagnosticIntro}</p>
+        <ul id="svc-diagnostic" class="svc-diag-list">
           ${d.signs
             .map(
               (sign, i) => `
           <li>
-            <label class="svc-check flex items-start gap-3 cursor-pointer text-base sm:text-lg">
-              <input type="checkbox" class="svc-check-input mt-1.5" data-diagnostic-item="${i}" />
+            <label class="svc-check">
+              <input type="checkbox" class="svc-check-input" data-diagnostic-item="${i}" />
               <span>${sign}</span>
             </label>
-          </li>`
+          </li>`,
             )
             .join('')}
         </ul>
-        <p id="svc-diagnostic-result" class="reveal mt-6 text-sm text-[var(--color-accent-2)] font-semibold min-h-[1.5em]" aria-live="polite"></p>
-        <p class="reveal mt-10 text-[var(--color-paper)]/70 max-w-xl border-t border-[var(--color-paper)]/15 pt-8">${d.socialProof}</p>
+        <p id="svc-diagnostic-result" class="svc-diag-result" aria-live="polite"></p>
+        <p class="svc-diag-proof">${d.socialProof}</p>
       </div>
     </section>
 `
 
-// Section 5 — Conclusion, Risk Reversal & Conversion: objections, the
-// shared guarantee, and the closing CTA (a lightweight mailto form — this
-// site has no backend, so "submit" composes an email rather than posting to
-// a hidden service).
+// Section 5 — Conclusion, Risk Reversal & Conversion: the objections as
+// cards, the shared guarantee on a lemon card, and the closing form on a
+// lilac panel (a lightweight mailto form — this site has no backend, so
+// "submit" composes an email rather than posting to a hidden service).
 const renderCta = (d: ServiceLandingData) => `
     <section id="svc-cta" class="px-6 sm:px-10 py-20 sm:py-24">
-      <div class="mx-auto max-w-3xl">
-        <div class="reveal mb-16">
-          <h2 class="font-display font-extrabold text-2xl sm:text-3xl tracking-tight mb-8">Before you reach out</h2>
-          <dl class="space-y-6">
+      <div class="mx-auto max-w-6xl grid gap-14">
+        <div class="reveal">
+          <h2 class="font-display font-extrabold text-3xl sm:text-4xl mb-8">Before you reach out</h2>
+          <dl class="svc-faq">
             ${d.objections
               .map(
                 (o) => `
-            <div class="border-t border-[var(--color-ink)]/10 pt-5">
-              <dt class="font-display font-bold text-lg mb-1.5">${o.q}</dt>
-              <dd class="text-ink/65">${o.a}</dd>
-            </div>`
+            <div class="svc-faq-item">
+              <dt>${o.q}</dt>
+              <dd>${o.a}</dd>
+            </div>`,
               )
               .join('')}
           </dl>
         </div>
 
-        <div class="reveal border-2 border-[var(--color-ink)] rounded-2xl p-6 sm:p-8 mb-16 bg-[var(--color-paper-dim)]">
-          <p class="font-display font-bold text-lg mb-2">The promise, in plain terms</p>
-          <p class="text-ink/70">${GUARANTEE}</p>
+        <div class="svc-promise nb-card reveal">
+          <p class="svc-promise-title">The promise, in plain terms</p>
+          <p>${GUARANTEE}</p>
         </div>
 
-        <div class="reveal">
-          <h2 class="font-display font-extrabold text-3xl sm:text-4xl tracking-tight mb-2">${d.ctaHeadline}</h2>
-          <p class="text-ink/70 mb-8">${d.ctaSub}</p>
-          <form id="svc-form" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <label class="block sm:col-span-1">
-              <span class="sr-only">Your name</span>
-              <input required name="name" type="text" placeholder="Your name" class="svc-input" />
-            </label>
-            <label class="block sm:col-span-1">
-              <span class="sr-only">Email</span>
-              <input required name="email" type="email" placeholder="Email" class="svc-input" />
-            </label>
-            <label class="block sm:col-span-2">
-              <span class="sr-only">What do you need?</span>
-              <textarea name="message" rows="3" placeholder="What are you hoping to fix or build?" class="svc-input"></textarea>
-            </label>
-            <div class="sm:col-span-2 flex flex-col sm:flex-row sm:items-center gap-4">
-              <button type="submit" class="btn-cta text-sm font-semibold">
-                <span class="btn-cta-clip">
-                  <span class="btn-cta-bg"></span>
-                  <span class="btn-cta-label">Send it over</span>
-                </span>
-              </button>
-              <span class="text-xs text-ink/50">Opens your email client, addressed to hello@pinevalleydigital.com.</span>
+        <div class="svc-form-panel nb-card reveal">
+          <div class="svc-form-intro">
+            <h2 class="font-display font-extrabold text-4xl sm:text-5xl">${d.ctaHeadline}</h2>
+            <p>${d.ctaSub}</p>
+          </div>
+          <form id="svc-form" class="svc-form">
+            <label class="nb-field"><span class="nb-label">Your name</span><input required name="name" type="text" autocomplete="name" class="nb-input" /></label>
+            <label class="nb-field"><span class="nb-label">Email</span><input required name="email" type="email" autocomplete="email" class="nb-input" /></label>
+            <label class="nb-field svc-form-wide"><span class="nb-label">What do you need?</span><textarea name="message" rows="3" placeholder="What are you hoping to fix or build?" class="nb-input"></textarea></label>
+            <div class="svc-form-send svc-form-wide">
+              <button type="submit" class="nb-press nb-btn-lg nb-lemon"><span class="nb-face">Send it over ${ARROW}</span></button>
+              <p class="svc-form-note">Opens your email app, addressed to ${EMAIL}.</p>
             </div>
           </form>
         </div>
@@ -182,15 +169,10 @@ ${renderDiagnostic(d)}
 ${renderCta(d)}
 `
 
-// Wires up the hero's orbs and its blend into the section below, the
-// diagnostic checklist and the mailto-based contact form. Call after the
-// markup is in the DOM.
+// Wires up the tape under the hero, the diagnostic checklist and the
+// mailto-based contact form. Call after the markup is in the DOM.
 export function initServiceLandingContent(d: ServiceLandingData) {
-  const hero = document.querySelector<HTMLElement>('.svc-hero')
-  if (hero) {
-    initHeroOrbs(hero)
-    initHeroBlend(hero)
-  }
+  initTape()
   setupDiagnostic(d)
   setupForm(d)
 }
@@ -231,6 +213,6 @@ function setupForm(d: ServiceLandingData) {
     const message = String(data.get('message') ?? '')
     const subject = encodeURIComponent(`${d.navTitle} — enquiry from ${name || 'your site'}`)
     const body = encodeURIComponent(`${message}\n\n— ${name}${email ? ` (${email})` : ''}`)
-    window.location.href = `mailto:hello@pinevalleydigital.com?subject=${subject}&body=${body}`
+    window.location.href = `mailto:${EMAIL}?subject=${subject}&body=${body}`
   })
 }
