@@ -1,7 +1,7 @@
 // Hero blend: how a hero meets the section right below it. Three takes, for
 // choosing between — pick one with ?blend=<name> in the URL (default: wave):
-//   wave   the section below rises in a drifting ink-lined wave, the same
-//          motion as the site's flowing lines.
+//   wave   the section below rises in an ink-lined wave that drifts
+//          slowly sideways.
 //   stack  the section below slides up over the hero as a framed card (the
 //          navbar's 3px ink line, rounded top), while the hero's content
 //          sinks and shrinks behind it as you scroll.
