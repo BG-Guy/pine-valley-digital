@@ -217,3 +217,67 @@ html[data-motion="paused"] .nb-sticker {
     transition-duration: 0.01ms;
   }
 }
+
+/* Form fields: a mono label over a chunky input in the theme's line, on a
+   small hard shadow that lifts as the field takes focus. */
+.nb-field {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.nb-label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.nb-optional {
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.nb-input {
+  width: 100%;
+  min-height: 3.25rem;
+  padding: 0.75rem 1rem;
+  border: 3px solid var(--color-ink);
+  border-radius: var(--nb-r2);
+  background: var(--color-surface);
+  box-shadow: 4px 4px 0 var(--color-ink);
+  color: var(--color-ink);
+  font: 500 1rem/1.4 var(--font-body);
+  transition:
+    translate 0.2s var(--ease-pop),
+    box-shadow 0.2s var(--ease-pop);
+}
+
+.nb-input::placeholder {
+  color: color-mix(in srgb, var(--color-ink) 60%, var(--color-surface));
+  opacity: 1;
+}
+
+textarea.nb-input {
+  min-height: 6.5rem;
+  resize: vertical;
+}
+
+.nb-input:focus {
+  outline: none;
+  translate: -2px -2px;
+  box-shadow: 6px 6px 0 var(--color-ink);
+}
+
+.nb-input:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nb-input {
+    transition-duration: 0.01ms;
+  }
+}

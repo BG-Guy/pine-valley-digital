@@ -1,10 +1,10 @@
-// Card art: the colourful card backgrounds shared by the "What we do" row
-// and the work showcase. Put a theme class (card-theme-<name>) on a card,
-// and the card-art class on a positioned layer inside it (plus card-lines
-// for faint wavy lines over it). Styles live in cardArt.css.
+// Card art: the flat colour fills shared by the "What we do" row and the
+// work showcase. Put a theme class (card-theme-<name>) on a card; it sets
+// --card-fill, which the card-art class paints on a layer inside it (or the
+// card uses directly). Styles live in cardArt.css.
 import './cardArt.css'
 
-// The four themes, in the order cards cycle through them, so neighbouring
+// The four fills, in the order cards cycle through them, so neighbouring
 // cards never share one.
-export const CARD_THEMES = ['purple', 'green', 'gold', 'ink'] as const
+export const CARD_THEMES = ['lilac', 'mint', 'lemon', 'cream'] as const
 export type CardTheme = (typeof CARD_THEMES)[number]

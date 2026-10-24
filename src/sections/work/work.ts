@@ -14,7 +14,7 @@ import { CARD_THEMES } from '../../components/card-art/cardArt'
 // One entry per project: its card (name, tag) and its preview — the site's
 // address, and its homepage hero's title and description. The preview
 // copy is placeholder text until the real sites go in.
-const projects = [
+export const projects = [
   {
     name: 'Northfield Studio',
     tag: 'Architecture · 2025',
@@ -49,33 +49,32 @@ type Project = (typeof projects)[number]
 // Two-digit project number ("01").
 const pad = (n: number) => String(n).padStart(2, '0')
 
-// Each project's card art theme, cycled like the "What we do" cards.
+// Each project's fill (components/card-art), cycled like the "What we do" cards.
 const themeOf = (i: number) => CARD_THEMES[i % CARD_THEMES.length]
 
-// One project card — a tab: its art, number, name and tag.
+// One project card — a tab: its fill, number, name and tag.
 const renderCard = (p: Project, i: number) => `
             <button type="button" role="tab" id="pj-tab-${i}" class="pj-card card-theme-${themeOf(i)}"
                     aria-selected="${i === 0}" aria-controls="pj-stage" tabindex="${i === 0 ? 0 : -1}">
-              <span class="pj-card-art card-art card-lines" aria-hidden="true"></span>
               <span class="pj-card-n" aria-hidden="true">${pad(i + 1)}</span>
               <span class="pj-card-name">${p.name}</span>
               <span class="pj-card-tag">${p.tag}</span>
             </button>`
 
-// One project's frame on the browser screen: its card art behind a sketch
+// One project's frame on the browser screen: its fill behind a sketch
 // of the site's top bar. The hero text isn't part of the frame — it sits
 // above the frames (.pj-copy), so it can swap on its own.
 const renderFrame = (_: Project, i: number) => `
                   <div class="pj-frame card-theme-${themeOf(i)}">
-                    <span class="pj-art card-art card-lines"></span>
+                    <span class="pj-art card-art"></span>
                     <span class="pj-site-bar"><i></i><i></i><i></i><i></i></span>
                   </div>`
 
-// One project's frame on the phone: its card art behind a sketch of the
+// One project's frame on the phone: its fill behind a sketch of the
 // hero (heading, text and a button) — a stand-in until real screenshots.
 const renderPhoneFrame = (_: Project, i: number) => `
                   <div class="pj-frame card-theme-${themeOf(i)}">
-                    <span class="pj-art card-art card-lines"></span>
+                    <span class="pj-art card-art"></span>
                     <span class="pj-sketch"><i></i><i></i><i></i><i></i><i></i></span>
                   </div>`
 
@@ -83,11 +82,11 @@ const renderPhoneFrame = (_: Project, i: number) => `
 // the stage (their tab panel) showing the first project. The section is
 // sized to one screen in work.css (.pj-section).
 export const renderWork = () => `
-    <section id="work" class="pj-section px-6 sm:px-10 bg-[var(--color-paper-dim)]">
+    <section id="work" class="pj-section px-6 sm:px-10">
       <div class="mx-auto w-full max-w-7xl">
         <div class="reveal flex items-end justify-between gap-6 mb-10">
-          <h2 class="font-display font-extrabold text-4xl sm:text-5xl tracking-tight">Selected <span class="text-[var(--color-accent-2)]">work</span></h2>
-          <span class="hidden sm:block text-sm font-semibold text-[var(--color-accent)]">(${pad(projects.length)})</span>
+          <h2 class="font-display font-extrabold text-4xl sm:text-5xl">Selected <span class="nb-mark">work</span></h2>
+          <span class="hidden sm:block"><span class="nb-pill" style="--nb-pill-bg: var(--color-mint)">${pad(projects.length)} projects</span></span>
         </div>
 
         <div class="pj reveal">

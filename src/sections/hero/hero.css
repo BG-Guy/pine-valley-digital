@@ -1,5 +1,240 @@
-/* Hero styles (see hero.ts). The background orbs are their own component
-   (components/hero-orbs). */
+/* Hero styles (see hero.ts): the split layout, the headline with its
+   highlight box, the buttons, the card stack and its sticker, and the
+   "fast" glitch. */
+
+.hero {
+  position: relative;
+  overflow-x: clip;
+}
+
+.hero-grid {
+  display: grid;
+  gap: 3.5rem;
+  align-items: center;
+}
+
+@media (min-width: 1024px) {
+  .hero-grid {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: 2rem;
+  }
+}
+
+/* The eyebrow and each headline line slide up through a mask on load
+   (animations/pageLoad.ts). The masks reach a little past their text, so
+   the pill's shadow and the highlight box's tilt and shadow aren't cut;
+   negative margins take the room back, so nothing moves. */
+.hero-eyebrow {
+  overflow: hidden;
+  margin: 0 -0.5rem -0.5rem 0;
+  padding: 0 0.5rem 0.5rem 0;
+}
+
+.hero-title {
+  margin-top: 1.5rem;
+  font-size: clamp(2.5rem, 0.2rem + 10.6vw, 5.75rem);
+  line-height: 0.92;
+}
+
+@media (min-width: 1024px) {
+  .hero-title {
+    font-size: clamp(3.5rem, 5.9vw, 5.6rem);
+  }
+}
+
+.hero-line {
+  display: block;
+  overflow: hidden;
+  margin: -0.08em -0.2em -0.2em -0.06em;
+  padding: 0.08em 0.2em 0.2em 0.06em;
+}
+
+/* Room on the right for the box's shadow, so the comma after it stays
+   clear of the ink. */
+.hero-mark {
+  margin-inline: 0.04em 0.16em;
+}
+
+/* The full stop, in the brand's purple. */
+.hero-dot {
+  color: var(--color-accent);
+}
+
+.hero-sub {
+  display: grid;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.hero-lead {
+  max-width: 32rem;
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: color-mix(in srgb, var(--color-ink) 80%, var(--color-paper));
+}
+
+.hero-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.25rem 1.5rem;
+}
+
+/* ── Card stack ─────────────────────────────────────────────────────── */
+
+/* A fan of three press cards (components/press). Each card's place in the
+   fan comes from its data-pos (0 = front): a shift and a tilt, springing
+   between places with the theme's pop when the stack shuffles. */
+.hero-stack {
+  --card-w: min(19rem, 72vw);
+  --card-h: clamp(18rem, 24vw, 23rem);
+  position: relative;
+  height: calc(var(--card-h) + 4rem);
+}
+
+.hero-card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--card-w);
+  height: var(--card-h);
+  margin: calc(var(--card-h) / -2) 0 0 calc(var(--card-w) / -2);
+  border-radius: var(--nb-r3);
+  transition: transform 0.6s var(--ease-pop);
+}
+
+.hero-card[data-pos="0"] {
+  z-index: 3;
+  transform: translate(-14%, -2%) rotate(-6deg);
+}
+
+.hero-card[data-pos="1"] {
+  z-index: 2;
+  transform: translate(6%, 3%) rotate(3deg);
+}
+
+.hero-card[data-pos="2"] {
+  z-index: 1;
+  transform: translate(26%, 8%) rotate(11deg);
+}
+
+/* Phones: narrower cards in a tighter fan, so the stack stays on screen. */
+@media (max-width: 639px) {
+  .hero-stack {
+    --card-w: 60vw;
+  }
+
+  .hero-card[data-pos="0"] {
+    transform: translate(-12%, -2%) rotate(-6deg);
+  }
+
+  .hero-card[data-pos="1"] {
+    transform: translate(4%, 3%) rotate(3deg);
+  }
+
+  .hero-card[data-pos="2"] {
+    transform: translate(18%, 7%) rotate(9deg);
+  }
+}
+
+.hero-card-face {
+  height: 100%;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  text-align: left;
+}
+
+.hero-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.hero-card-tag {
+  padding: 0.3rem 0.55rem;
+  border: 3px solid var(--color-ink);
+  border-radius: var(--nb-r1);
+  background: var(--color-surface);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.hero-card-n {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.hero-card-name {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-stretch: 75%;
+  font-size: clamp(2.25rem, 1.6rem + 2vw, 3.25rem);
+  line-height: 0.88;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+.hero-card-foot {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.hero-card-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.hero-card-go {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  background: var(--color-ink);
+  color: var(--color-surface);
+  transition: rotate 0.32s var(--ease-pop);
+}
+
+@media (hover: hover) {
+  .hero-card:hover .hero-card-go {
+    rotate: -45deg;
+  }
+}
+
+/* The "14 services" sticker, slapped on the stack's top-right corner. */
+.hero-sticker {
+  position: absolute;
+  top: 0;
+  right: 4%;
+  z-index: 4;
+  width: 6.5rem;
+  height: 6.5rem;
+  rotate: 12deg;
+  pointer-events: none;
+}
+
+@media (min-width: 1024px) {
+  .hero-sticker {
+    top: -1.5rem;
+    right: -1rem;
+    width: 7.5rem;
+    height: 7.5rem;
+  }
+}
+
+/* ── "Fast" glitch ──────────────────────────────────────────────────── */
 
 /* "Fast" — tears into four horizontal slices that jolt sideways with
    purple/green fringing, on a slow interval (see setupHeroGlitch). The
@@ -71,4 +306,11 @@
   25% { transform: translateX(-5px); }
   50% { transform: translateX(8px); }
   75% { transform: translateX(-4px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-card,
+  .hero-card-go {
+    transition-duration: 0.01ms;
+  }
 }

@@ -13,6 +13,7 @@
 import './services.css'
 import { servicesLandingData as services, type ServiceLandingData } from '../../pages/services/servicesLandingData'
 import { CARD_THEMES } from '../../components/card-art/cardArt'
+import { circleSticker } from '../../components/sticker/sticker'
 
 // Two-digit service number ("01").
 const pad = (n: number) => String(n).padStart(2, '0')
@@ -71,9 +72,9 @@ const renderCard = (s: ServiceLandingData, i: number) => {
 export const renderServices = () => `
     <section id="services" class="svc-section px-6 sm:px-10">
       <div class="mx-auto w-full max-w-7xl">
-        <div class="reveal flex items-end justify-between gap-6 mb-10">
-          <h2 class="font-display font-extrabold text-4xl sm:text-5xl tracking-tight">What we <span class="text-[var(--color-accent-2)]">do</span></h2>
-          <span class="hidden sm:block text-sm font-semibold text-[var(--color-accent)]">(${pad(services.length)})</span>
+        <div class="svc-head reveal flex items-end justify-between gap-6 mb-10">
+          <h2 class="font-display font-extrabold text-4xl sm:text-5xl">What we <span class="nb-mark nb-mark-lilac">do</span></h2>
+          ${circleSticker(['All', String(services.length), 'services'], { className: 'svc-sticker', label: `${services.length} services` })}
         </div>
 
         <div id="svc" class="svc reveal">
@@ -205,7 +206,9 @@ export function initServices() {
   // services.css sizes it with.
   function metrics() {
     const css = getComputedStyle(viewport!)
-    const width = viewport!.clientWidth
+    // The content width (services.css sizes the open card from 100cqw); the
+    // viewport's side padding is room for the cards' lift and shadow.
+    const width = viewport!.clientWidth - (parseFloat(css.paddingLeft) || 0) - (parseFloat(css.paddingRight) || 0)
     const gap = parseFloat(getComputedStyle(track!).columnGap) || 0
     const pill = toPx(css.getPropertyValue('--svc-wc'))
     const pills = parseInt(css.getPropertyValue('--svc-p'), 10) || 1

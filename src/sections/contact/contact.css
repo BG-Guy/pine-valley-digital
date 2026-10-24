@@ -1,21 +1,161 @@
-/* Contact headline — duotone layered text (ported from the portfolio's
-   Footer heading, purple over a green echo layer) */
-.duotone-heading {
-  position: relative;
-  display: inline-block;
+/* Contact (see contact.ts): a lilac panel (.nb-card) in two columns on
+   desktop — the ask on the left, the form on the right. The fields use the
+   theme's form parts (.nb-field, .nb-input in components/press). */
+.contact-panel {
+  --nb-card-bg: var(--color-lilac);
+  display: grid;
+  gap: 2.5rem;
+  padding: clamp(1.5rem, 0.75rem + 3.5vw, 3.5rem);
 }
 
-/* Green echo layer, offset by JS on mouse move (see initContact). */
-.duotone-heading .duotone-back {
+@media (min-width: 1024px) {
+  .contact-panel {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    gap: 3.5rem;
+  }
+}
+
+.contact-intro {
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  gap: 1.5rem;
+}
+
+.contact-title {
+  font-size: clamp(2.75rem, 1rem + 6vw, 5.5rem);
+  line-height: 0.92;
+}
+
+.contact-reply {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.contact-direct {
+  font-size: 0.95rem;
+}
+
+.contact-email {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  overflow-wrap: anywhere;
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+  text-underline-offset: 4px;
+}
+
+.contact-form {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.contact-row {
+  display: grid;
+  gap: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .contact-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.contact-topics {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.contact-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+/* Topic chips: real checkboxes under press-style pills; a ticked one turns
+   lemon and shows a check. */
+.contact-chip {
+  position: relative;
+  cursor: pointer;
+}
+
+.contact-chip input {
   position: absolute;
-  top: 0;
-  left: 0;
-  color: var(--color-accent-2);
-  transition: transform 0.2s ease-out;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
 }
 
-/* Purple text in normal flow, on top of the echo. */
-.duotone-heading .duotone-front {
-  position: relative;
-  color: var(--color-accent);
+.contact-chip span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.75rem;
+  padding: 0 1rem;
+  border: 3px solid var(--color-ink);
+  border-radius: 999px;
+  background: var(--color-surface);
+  box-shadow: 3px 3px 0 var(--color-ink);
+  font-size: 0.9rem;
+  font-weight: 700;
+  transition:
+    translate 0.2s var(--ease-pop),
+    box-shadow 0.2s var(--ease-pop),
+    background-color 0.15s ease;
+}
+
+@media (hover: hover) {
+  .contact-chip:hover span {
+    translate: -2px -2px;
+    box-shadow: 5px 5px 0 var(--color-ink);
+  }
+}
+
+.contact-chip input:checked + span {
+  background: var(--color-lemon);
+}
+
+.contact-chip input:checked + span::before {
+  content: "✓";
+}
+
+.contact-chip input:focus-visible + span {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+.contact-send {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.25rem 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.contact-note {
+  font-size: 0.9rem;
+}
+
+.contact-status:empty {
+  display: none;
+}
+
+.contact-status {
+  justify-self: start;
+  padding: 0.55rem 0.85rem;
+  border: 3px solid var(--color-ink);
+  border-radius: var(--nb-r1);
+  background: var(--color-mint);
+  font-weight: 700;
+  rotate: -1deg;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-chip span {
+    transition-duration: 0.01ms;
+  }
 }

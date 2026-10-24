@@ -1,0 +1,118 @@
+/* Tickets (see tickets.ts): cards in the theme's heavy line and hard
+   shadow, one column on phones, two on tablets, all in a row on desktop.
+   A dashed perforation runs under the stamp, with a punched notch at each
+   end (circles in the page colour, ringed in ink, sat on the card's
+   edges). On desktop a round lemon arrow sits in each gap. */
+.tickets {
+  display: grid;
+  gap: 2.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 640px) {
+  .tickets {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .tickets {
+    grid-template-columns: repeat(var(--tickets, 4), minmax(0, 1fr));
+    gap: 2.5rem;
+  }
+}
+
+.ticket {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 0.75rem;
+  padding: 1.5rem 1.4rem 1.75rem;
+  border: var(--nb-line) solid var(--color-ink);
+  border-radius: var(--nb-r3);
+  background: var(--color-surface);
+  box-shadow: var(--nb-drop) var(--nb-drop) 0 var(--color-ink);
+}
+
+/* The notches, centred on the card's border line, level with the
+   perforation under the stamp. */
+.ticket::before,
+.ticket::after {
+  content: "";
+  position: absolute;
+  top: 5.5rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: var(--nb-line) solid var(--color-ink);
+  border-radius: 50%;
+  background: var(--color-paper);
+}
+
+.ticket::before {
+  left: calc(var(--nb-line) / -2 - 0.75rem);
+}
+
+.ticket::after {
+  right: calc(var(--nb-line) / -2 - 0.75rem);
+}
+
+/* The number, as a crooked rubber stamp. */
+.ticket-stamp {
+  display: grid;
+  place-items: center;
+  width: 4rem;
+  height: 4rem;
+  border: var(--nb-line) solid var(--color-ink);
+  border-radius: var(--nb-r2);
+  background: var(--stamp);
+  box-shadow: 4px 4px 0 var(--color-ink);
+  font-family: var(--font-mono);
+  font-size: 1.55rem;
+  font-weight: 700;
+  rotate: -4deg;
+}
+
+.ticket-title {
+  padding-top: 1rem;
+  border-top: 3px dashed color-mix(in srgb, var(--color-ink) 45%, transparent);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 2rem;
+  line-height: 0.95;
+}
+
+.ticket-copy {
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--color-ink) 80%, var(--color-paper));
+}
+
+.ticket-arrow {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .ticket-arrow {
+    position: absolute;
+    top: 1.75rem;
+    right: calc(-1 * (var(--nb-line) + 2.25rem));
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border: 3px solid var(--color-ink);
+    border-radius: 50%;
+    background: var(--color-lemon);
+  }
+
+  .ticket-arrow svg {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+}
