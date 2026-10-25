@@ -1,7 +1,8 @@
 // Sticker roll: now and then, while you scroll, one of the mascots rolls
 // across the bottom of the screen on its round sticker — Pine Pal, Zap or
-// Clicky, picked at random. It rolls the way you're scrolling, faster the
-// faster you scroll, turning exactly as far as it travels, and somewhere
+// Clicky, picked at random. It rolls the way you're scrolling, at an easy
+// pace (CROSSING seconds edge to edge), turning exactly as far as it
+// travels, and somewhere
 // along the way it may hop and says something. Just for fun: decorative,
 // it never takes a click, and it stays away for reduced motion and while
 // the tape's pause button is on. Styles live in stickerRoll.css.
@@ -24,10 +25,8 @@ const FIRST = 1.2
 const GAP = [1.8, 3.6]
 const REST_MS = 7000
 
-// Speed, in px per second: a steady roll, pushed along by scrolling.
-const BASE_SPEED = 280
-const PUSH = 0.8 // extra px/s for every px/s scrolled
-const MAX_SPEED = 1400
+// Seconds to cross the screen, edge to edge, whatever the scrolling.
+const CROSSING = 3
 
 const random = (min: number, max: number) => min + Math.random() * (max - min)
 const pickFrom = <T>(list: T[]) => list[Math.floor(Math.random() * list.length)]
@@ -99,17 +98,11 @@ function roll(layer: HTMLElement, name: MascotName, dir: 1 | -1) {
   const hops = Math.random() < 0.55
   let talked = false
   let hop = -1 // seconds into the hop, or -1
-  let speed = BASE_SPEED
-  let lastY = window.scrollY
+  const speed = (exit - x) * dir / CROSSING
 
   return new Promise<void>((resolve) => {
     const tick = (_time: number, deltaMs: number) => {
       const dt = Math.min(deltaMs, 50) / 1000
-      const scrolled = Math.abs(window.scrollY - lastY) / dt
-      lastY = window.scrollY
-      // Pick up speed quickly when pushed, ease back slowly.
-      const target = Math.min(BASE_SPEED + scrolled * PUSH, MAX_SPEED)
-      speed += (target - speed) * (target > speed ? 0.25 : 0.05)
       x += dir * speed * dt
 
       const centre = x + radius
