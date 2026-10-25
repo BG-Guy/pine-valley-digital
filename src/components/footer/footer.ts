@@ -26,7 +26,7 @@ export const renderFooter = () => `
         <div class="footer-row">
           <span class="footer-copy">${logoMark('w-6 h-6 shrink-0')}&copy; ${new Date().getFullYear()} Pine Valley Digital.</span>
           <nav class="footer-links" aria-label="Footer">
-            ${LINKS.map(([label, href]) => `<a href="${href}" class="footer-pill nav-link">${label}</a>`).join('')}
+            ${LINKS.map(([label, href]) => `<a href="${href}" class="footer-pill">${label}</a>`).join('')}
           </nav>
         </div>
       </div>
