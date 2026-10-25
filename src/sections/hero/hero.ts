@@ -1,11 +1,13 @@
 // Hero section, split in two: on the left the headline (its glitching
-// "fast" stuck on a lemon highlight box), the intro and the two buttons; on
-// the right a fanned stack of project cards that shuffles when clicked,
-// with a "14 services" sticker. Styles live in hero.css.
+// "fast" stuck on a lemon highlight box, with Zap the lightning bolt on its
+// corner), the intro and the two buttons; on the right a fanned stack of
+// project cards that shuffles when clicked, with a "14 services" sticker.
+// Styles live in hero.css.
 import './hero.css'
 import { projects } from '../work/work'
 import { servicesLandingData } from '../../pages/services/servicesLandingData'
 import { burstSticker } from '../../components/sticker/sticker'
+import { zap } from '../../components/mascots/mascots'
 
 const pad = (n: number) => String(n).padStart(2, '0')
 
@@ -44,7 +46,7 @@ export const renderHero = () => `
               <span class="hero-fast-slice s2" aria-hidden="true">fast</span>
               <span class="hero-fast-slice s3" aria-hidden="true">fast</span>
               <span class="hero-fast-slice s4" aria-hidden="true">fast</span>
-            </span></span>,</span></span>
+            </span>${zap('hero-zap')}</span>,</span></span>
             <span class="hero-line"><span class="block">modern websites<span class="hero-dot">.</span></span></span>
           </h1>
           <div class="hero-sub">

@@ -15,6 +15,14 @@
   }
 }
 
+/* Room under the form for the flowing bands while the columns are stacked
+   (side by side, the bands fit under the intro instead). */
+@media (max-width: 1023px) {
+  .contact-panel {
+    padding-bottom: calc(clamp(1.5rem, 0.75rem + 3.5vw, 3.5rem) + 4.5rem);
+  }
+}
+
 .contact-intro {
   display: grid;
   align-content: start;
@@ -136,7 +144,9 @@
   margin-top: 0.5rem;
 }
 
+/* On its own line under the button, leaving Clicky room beside it. */
 .contact-note {
+  flex-basis: 100%;
   font-size: 0.9rem;
 }
 

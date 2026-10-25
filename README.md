@@ -17,7 +17,16 @@ Bricolage capitals with Space Mono labels, and buttons and cards that lift
 off their shadow on hover and press flat into it. The brand's purple
 `#6C3BAA` and green `#3BAA99` stay in the logo. Tokens and notes live in
 `src/global.css`; the shared parts (press buttons, pills, highlight boxes,
-cards, stickers, form fields) in `src/components/press/press.css`. The color
+cards, stickers, form fields) in `src/components/press/press.css`.
+
+The playful layer, after FlowFest: three mascots (`components/mascots`:
+Pine Pal on the loading screen, Zap on the hero's "fast", Clicky pointing at
+the send buttons) that now and then roll across the bottom of the screen as
+you scroll (`components/sticker-roll`); tilted stripes that sweep across for
+page loads and page transitions (`components/preloader`); flowing bands in
+the contact panels' corner (`components/flow-bands`); and a valley sunrise
+along the bottom of the footer (`components/sunrise`). All of it stops for
+reduced motion, and the ambient parts with the tape's pause button. The color
 theme started out shared with [portfolio-2025](https://github.com/bg-guy/portfolio-2025), which
 also hosts this content as a page (`/web-agency`) alongside the personal
 portfolio.
@@ -35,6 +44,7 @@ src/
     navbar/  footer/  tape/  preloader/  logo/  cta-button/
     hover-carousel-link/  reveal-footer/
     press/  sticker/  tickets/  card-art/
+    mascots/  sticker-roll/  flow-bands/  sunrise/  drawing/
   sections/        one folder per page section
     hero/  services/  work/  process/  contact/
   pages/           the other pages: lab/, services/ (the 14 service landing pages)

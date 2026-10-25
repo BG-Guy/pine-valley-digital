@@ -1,4 +1,4 @@
-// Shared "simple" page-load boot: plays the same preloader curtain as the
+// Shared "simple" page-load boot: plays the same preloader stripes as the
 // home page, then just fades the navbar in — no hero-line stagger, no
 // section-specific timeline. Used by every secondary page (Lab, each
 // service landing page) that doesn't need anything fancier than that; the

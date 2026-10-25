@@ -1,6 +1,6 @@
-// Page load: the first-visit sequence — the preloader curtain plays, then the
-// navbar, hero lines and the hero's card stack animate in underneath it as
-// it opens.
+// Page load: the first-visit sequence — the preloader's stripes sweep off,
+// and the navbar, hero lines and the hero's card stack animate in
+// underneath them. Once the headline has landed, Zap pops onto "fast".
 import { gsap } from 'gsap'
 import { playPreloader } from '../components/preloader/preloader'
 
@@ -10,17 +10,20 @@ export function initPageLoad() {
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
   const nav = document.querySelector('#site-nav')
+  const hero = document.querySelector('#hero')
   const heroLines = gsap.utils.toArray<HTMLElement>('.hero-line > span')
   const heroEyebrow = document.querySelector('.hero-eyebrow span')
   const heroSub = document.querySelector('.hero-sub')
   const heroStack = document.querySelector('.hero-stack')
   const preloader = document.querySelector<HTMLElement>('#preloader')
+  const landed = () => hero?.classList.add('is-landed')
 
   if (reduceMotion) {
     gsap.set([preloader], { display: 'none' })
     gsap.set([nav, heroSub], { opacity: 1 })
     gsap.set(heroLines, { y: 0 })
     if (heroEyebrow) gsap.set(heroEyebrow, { y: 0 })
+    landed()
     return
   }
 
@@ -31,8 +34,8 @@ export function initPageLoad() {
   gsap.set(heroSub, { autoAlpha: 0, y: 16 })
   if (heroStack) gsap.set(heroStack, { autoAlpha: 0, y: 70, rotation: 6 })
 
-  // The page's own intro, played as the curtain opens.
-  const revealPage = gsap.timeline({ paused: true, defaults: { ease: 'power4.out' } })
+  // The page's own intro, played as the stripes sweep off.
+  const revealPage = gsap.timeline({ paused: true, defaults: { ease: 'power4.out' }, onComplete: landed })
   revealPage
     .to(nav, { opacity: 1, duration: 0.6 })
     .to(heroEyebrow, { yPercent: 0, duration: 0.7 }, '<')

@@ -1,10 +1,12 @@
 // Footer: the "reveal" footer — fixed to the viewport bottom behind the page,
 // uncovered as you scroll to the end. An ink panel with the name set huge in
-// poster type, the quick links as pills, and the copyright line. Styles live
-// in footer.css.
+// poster type, the quick links as pills, and the copyright line, over a
+// pine valley where the sun comes up as the footer is uncovered
+// (components/sunrise). Styles live in footer.css.
 import './footer.css'
 import { logoMark } from '../logo/logo'
 import { initRevealFooter } from '../reveal-footer/revealFooter'
+import { renderSunrise, initSunrise } from '../sunrise/sunrise'
 
 const LINKS = [
   ['Services', '/#services'],
@@ -14,7 +16,8 @@ const LINKS = [
 ]
 
 // Markup: the big wordmark (decorative; the logo line below names the
-// studio for screen readers), then the copyright and the links.
+// studio for screen readers), then the copyright and the links, then the
+// valley along the bottom edge.
 export const renderFooter = () => `
   <footer id="site-footer">
     <div id="footer-shell" class="footer-shell px-6 sm:px-10 pt-12 pb-10 sm:pt-16">
@@ -28,11 +31,13 @@ export const renderFooter = () => `
         </div>
       </div>
     </div>
+    ${renderSunrise()}
   </footer>
 `
 
-// Pins the footer behind the page shell so scrolling reveals it. Call after
-// the markup is in the DOM.
+// Pins the footer behind the page shell so scrolling reveals it, and lets
+// that same scroll raise the sun. Call after the markup is in the DOM.
 export function initFooter() {
-  initRevealFooter(document.getElementById('page-shell')!, document.getElementById('site-footer')!)
+  const { spacer } = initRevealFooter(document.getElementById('page-shell')!, document.getElementById('site-footer')!)
+  initSunrise(spacer)
 }

@@ -11,6 +11,8 @@ import { renderPreloader } from './components/preloader/preloader'
 import { renderNavbar, initNavbar } from './components/navbar/navbar'
 import { renderTape, initTape } from './components/tape/tape'
 import { renderFooter, initFooter } from './components/footer/footer'
+import { initFlowBands } from './components/flow-bands/flowBands'
+import { initStickerRoll } from './components/sticker-roll/stickerRoll'
 import { initSiteHoverCarouselLinks } from './components/hover-carousel-link/hoverCarouselLink'
 import { renderHero, initHero } from './sections/hero/hero'
 import { renderServices, initServices } from './sections/services/services'
@@ -56,5 +58,7 @@ initWork()
 initSiteHoverCarouselLinks()
 initNavbar()
 initContact()
+initFlowBands()
 initFooter()
+initStickerRoll()
 initPageTransitionLinks()

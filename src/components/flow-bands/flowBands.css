@@ -1,0 +1,32 @@
+/* Flowing bands (see flowBands.ts). The panel that holds them gets
+   .flow-panel: it anchors the bands, and its content is positioned too so
+   it paints over them. The bands sit in the bottom-left corner, clipped to
+   the panel's rounded corner; flowBands.ts sets their size. */
+.flow-panel {
+  position: relative;
+}
+
+.flow-panel > :not(.flow-bands) {
+  position: relative;
+}
+
+.flow-bands {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  border-bottom-left-radius: calc(var(--nb-r3) - var(--nb-line));
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.flow-bands-art {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.flow-bands-art path {
+  stroke: var(--color-ink);
+  stroke-width: 3;
+  stroke-linejoin: round;
+}

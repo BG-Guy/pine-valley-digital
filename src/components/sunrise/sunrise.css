@@ -1,0 +1,47 @@
+/* Sunrise (see sunrise.ts): a full-width strip along the bottom of the
+   footer, its sky the footer's own ink. The sun is a layer of its own
+   behind the hills' drawing, moved and turned with transforms. */
+.sunrise {
+  position: relative;
+  height: clamp(7.5rem, 5rem + 8vw, 13rem);
+  overflow: hidden;
+  background: var(--color-ink);
+}
+
+.sunrise-sun {
+  position: absolute;
+  top: 0;
+  left: 0;
+  will-change: transform;
+}
+
+.sunrise-ring,
+.sunrise-face {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.sunrise-ring {
+  will-change: transform;
+}
+
+.sunrise-art {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* The sun's right eye: open while it rises, a wink once it's up. */
+.sunrise-face .m-eye-wink,
+.sunrise-face.is-winking .m-eye-open {
+  display: none;
+}
+
+.sunrise-face.is-winking .m-eye-wink {
+  display: inline;
+}

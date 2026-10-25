@@ -8,6 +8,8 @@ import type { ServiceLandingData } from './servicesLandingData'
 import { renderTape, initTape } from '../../components/tape/tape'
 import { renderTickets } from '../../components/tickets/tickets'
 import { circleSticker } from '../../components/sticker/sticker'
+import { renderFlowBands, initFlowBands } from '../../components/flow-bands/flowBands'
+import { clicky } from '../../components/mascots/mascots'
 
 // Shared across every service — a single, honest guarantee reads as more
 // credible than a different one invented per page.
@@ -114,7 +116,8 @@ const renderDiagnostic = (d: ServiceLandingData) => `
 
 // Section 5 — Conclusion, Risk Reversal & Conversion: the objections as
 // cards, the shared guarantee on a lemon card, and the closing form on a
-// lilac panel (a lightweight mailto form — this site has no backend, so
+// lilac panel with flowing bands in its corner and Clicky pointing at the
+// send button (a lightweight mailto form — this site has no backend, so
 // "submit" composes an email rather than posting to a hidden service).
 const renderCta = (d: ServiceLandingData) => `
     <section id="svc-cta" class="px-6 sm:px-10 py-20 sm:py-24">
@@ -139,7 +142,8 @@ const renderCta = (d: ServiceLandingData) => `
           <p>${GUARANTEE}</p>
         </div>
 
-        <div class="svc-form-panel nb-card reveal">
+        <div class="svc-form-panel nb-card flow-panel reveal">
+          ${renderFlowBands()}
           <div class="svc-form-intro">
             <h2 class="font-display font-extrabold text-4xl sm:text-5xl">${d.ctaHeadline}</h2>
             <p>${d.ctaSub}</p>
@@ -149,7 +153,7 @@ const renderCta = (d: ServiceLandingData) => `
             <label class="nb-field"><span class="nb-label">Email</span><input required name="email" type="email" autocomplete="email" class="nb-input" /></label>
             <label class="nb-field svc-form-wide"><span class="nb-label">What do you need?</span><textarea name="message" rows="3" placeholder="What are you hoping to fix or build?" class="nb-input"></textarea></label>
             <div class="svc-form-send svc-form-wide">
-              <button type="submit" class="nb-press nb-btn-lg nb-lemon"><span class="nb-face">Send it over ${ARROW}</span></button>
+              <span class="clicky-at"><button type="submit" class="nb-press nb-btn-lg nb-lemon"><span class="nb-face">Send it over ${ARROW}</span></button>${clicky()}</span>
               <p class="svc-form-note">Opens your email app, addressed to ${EMAIL}.</p>
             </div>
           </form>
@@ -169,12 +173,14 @@ ${renderDiagnostic(d)}
 ${renderCta(d)}
 `
 
-// Wires up the tape under the hero, the diagnostic checklist and the
-// mailto-based contact form. Call after the markup is in the DOM.
+// Wires up the tape under the hero, the diagnostic checklist, and the
+// mailto-based contact form with its flowing bands. Call after the markup
+// is in the DOM.
 export function initServiceLandingContent(d: ServiceLandingData) {
   initTape()
   setupDiagnostic(d)
   setupForm(d)
+  initFlowBands()
 }
 
 // A live, non-judgmental read-out as items are checked — no fake urgency,

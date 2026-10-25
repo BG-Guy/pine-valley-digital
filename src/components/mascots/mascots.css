@@ -1,0 +1,86 @@
+/* Mascots (see mascots.ts): the idle motion of each figure, in the SVG's own
+   100×100 units. It all stops with the tape's pause button and for reduced
+   motion, like the stickers. */
+.mascot {
+  display: block;
+  overflow: visible;
+}
+
+/* Every face blinks now and then. */
+.m-blink {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: m-blink 4.2s infinite;
+}
+
+/* Pine Pal sways from its trunk, like a tree in the wind. */
+.m-sway {
+  transform-box: view-box;
+  transform-origin: 50px 92px;
+  animation: m-sway 3.2s ease-in-out infinite;
+}
+
+/* Zap twitches every couple of seconds. */
+.m-zap {
+  transform-box: view-box;
+  transform-origin: 50px 50px;
+  animation: m-zap 2.4s steps(1) infinite;
+}
+
+/* Clicky bobs up and down. */
+.m-float {
+  animation: m-float 3s ease-in-out infinite;
+}
+
+@keyframes m-blink {
+  0%, 92%, 100% { transform: scaleY(1); }
+  95% { transform: scaleY(0.1); }
+}
+
+@keyframes m-sway {
+  50% { transform: rotate(-5deg); }
+}
+
+@keyframes m-zap {
+  0%, 52%, 100% { transform: none; }
+  48% { transform: translate(1.5px, -1.5px) rotate(4deg); }
+  50% { transform: translate(-1.5px, 1px) rotate(-3deg); }
+}
+
+@keyframes m-float {
+  50% { transform: translateY(-6px); }
+}
+
+/* Clicky pointing at a button: wrap the button and Clicky in .clicky-at.
+   Clicky hangs off the button's right edge with the tip of its arrow just
+   touching it, and follows the face when it lifts on hover. */
+.clicky-at {
+  position: relative;
+  display: inline-block;
+}
+
+.clicky-at > .mascot {
+  position: absolute;
+  top: 8%;
+  left: calc(100% - 0.65rem);
+  width: clamp(4.25rem, 3.5rem + 2vw, 5.25rem);
+  pointer-events: none;
+  filter: drop-shadow(3px 3px 0 var(--color-ink));
+  transition: translate 0.2s var(--ease-pop);
+}
+
+@media (hover: hover) {
+  .clicky-at:hover > .mascot {
+    translate: calc(var(--nb-lift) * -1) calc(var(--nb-lift) * -1);
+  }
+}
+
+html[data-motion="paused"] :is(.m-blink, .m-sway, .m-zap, .m-float) {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :is(.m-blink, .m-sway, .m-zap, .m-float) {
+    animation: none;
+  }
+}

@@ -12,8 +12,8 @@ import { renderMenuToggle, renderMobileMenu, initMobileMenu } from './mobileMenu
 // root-prefixed (`/#services`) so they resolve correctly from any page,
 // not just the home page — same-path + hash is a same-document scroll,
 // different-path is a normal navigation back to the home page's section.
-// Starts hidden (opacity-0): every page's own preloader curtain fades it in
-// as it opens (see components/preloader). The CTA's show-from-sm wrapper is
+// Starts hidden (opacity-0): every page's own preloader fades it in as the
+// stripes sweep off (see components/preloader). The CTA's show-from-sm wrapper is
 // a separate span on purpose: .btn-cta's own display rule (.nb-press, press.css)
 // is unlayered CSS, which beats Tailwind v4's layered `hidden` utility if
 // both sit on the same element — so the button showed (and wrapped the bar)

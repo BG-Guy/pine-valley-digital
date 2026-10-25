@@ -302,6 +302,14 @@
   }
 }
 
+/* Room under the form for the flowing bands while the columns are stacked
+   (side by side, the bands fit under the intro instead). */
+@media (max-width: 1023px) {
+  .svc-form-panel {
+    padding-bottom: calc(clamp(1.5rem, 1rem + 3vw, 3rem) + 4.5rem);
+  }
+}
+
 .svc-form-intro {
   display: grid;
   align-content: start;
@@ -330,6 +338,8 @@
   gap: 1rem 1.5rem;
 }
 
+/* On its own line under the button, leaving Clicky room beside it. */
 .svc-form-note {
+  flex-basis: 100%;
   font-size: 0.9rem;
 }

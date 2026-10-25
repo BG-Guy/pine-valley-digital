@@ -52,7 +52,31 @@
 /* Room on the right for the box's shadow, so the comma after it stays
    clear of the ink. */
 .hero-mark {
+  position: relative;
   margin-inline: 0.04em 0.16em;
+}
+
+/* Zap, stuck on the box's top corner. It waits for the headline to land
+   (pageLoad.ts adds .is-landed then), since the lines' masks would cut it
+   off while they slide up, and then pops on. */
+.hero-zap {
+  position: absolute;
+  top: -0.52em;
+  right: -0.48em;
+  width: 0.84em;
+  rotate: 14deg;
+  scale: 0;
+  pointer-events: none;
+  filter: drop-shadow(3px 3px 0 var(--color-ink));
+  transition: scale 0.5s var(--ease-pop);
+}
+
+.hero.is-landed .hero-line {
+  overflow: visible;
+}
+
+.hero.is-landed .hero-zap {
+  scale: 1;
 }
 
 /* The full stop, in the brand's purple. */
@@ -310,7 +334,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .hero-card,
-  .hero-card-go {
+  .hero-card-go,
+  .hero-zap {
     transition-duration: 0.01ms;
   }
 }

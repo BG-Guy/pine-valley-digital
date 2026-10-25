@@ -1,11 +1,75 @@
-/* Preloader — background is painted by the curveTransition panel (see
-   curveTransition.ts), not by CSS, so it can animate in with a curved edge. */
+/* Preloader (see preloader.ts): the tilted stripes covering the screen, and
+   the cream card on top of them. */
 #preloader {
   position: fixed;
   inset: 0;
   z-index: 100;
-  color: var(--color-paper);
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+  color: var(--color-ink);
+}
+
+/* The strip of stripes reaches past both sides of the screen by more than
+   the tilt's lean (tan 12° × half the height, about 11vh), so the tilted
+   edges never leave a gap at the corners. stripeWipe.ts slides each one. */
+.wipe {
+  position: absolute;
+  inset: 0 -12vh;
+  display: flex;
+}
+
+.wipe-stripe {
+  flex: 1 1 0;
+  margin-left: calc(var(--nb-line) * -1);
+  border-inline: var(--nb-line) solid var(--color-ink);
+  background: var(--stripe);
+  transform: skewX(-12deg);
+  will-change: transform;
+}
+
+/* The card: Pine Pal stuck over its top edge, the wordmark, then the
+   page's name. A little crooked, like everything stuck on in this theme. */
+.pre-word {
+  position: relative;
+  padding-inline: 1.5rem;
+}
+
+.pre-card {
+  --pal: clamp(5rem, 4rem + 4vw, 7rem);
+  display: grid;
+  justify-items: center;
+  gap: 1rem;
+  padding: 0 clamp(1.5rem, 1rem + 2vw, 2.75rem) 1.75rem;
+  border: var(--nb-line) solid var(--color-ink);
+  border-radius: var(--nb-r3);
+  background: var(--color-surface);
+  box-shadow: var(--nb-drop) var(--nb-drop) 0 var(--color-ink);
+  rotate: -2deg;
+  text-align: center;
+}
+
+.pre-pal {
+  width: var(--pal);
+  height: auto;
+  aspect-ratio: 1;
+  margin-top: calc(var(--pal) / -2);
+  filter: drop-shadow(4px 4px 0 var(--color-ink));
+}
+
+/* Room in the wordmark's mask for the italic's tails. */
+.pre-name {
+  padding-bottom: 0.15em;
+}
+
+/* The page's name, on a lemon pill in mono capitals. */
+.pre-title {
+  padding: 0.45rem 0.85rem;
+  border: 3px solid var(--color-ink);
+  border-radius: 999px;
+  background: var(--color-lemon);
+  font: 700 0.8rem/1.1 var(--font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
