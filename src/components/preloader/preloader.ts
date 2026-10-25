@@ -6,7 +6,7 @@
 // the stripes sweep in and the card shows the next page's name.
 import './preloader.css'
 import { gsap } from 'gsap'
-import { renderStripes, stripeWipe } from './stripeWipe'
+import { renderStripes, stripeWipe, CURTAIN, SWEEP } from './stripeWipe'
 import { logoWordmark } from '../logo/logo'
 import { pinePal } from '../mascots/mascots'
 
@@ -33,18 +33,28 @@ export const renderPreloader = (title: string) => `
 
 const TEXT = '#preloader .pre-name-inner, #preloader .pre-title'
 
+// The card's contents take their time: the text and Pine Pal move at half
+// the stripes' speed (stripeWipe.ts), so the stripes read as the quick part.
+const SLOW = CURTAIN * 2
+
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
-// The card pops up with a spring, then the wordmark and the name slide up
-// into place. Resolves once both have landed.
+// The card springs up as fast as the stripes. Then, at half that speed, the
+// wordmark and the page's name glide up into place and Pine Pal bounces
+// onto the card's edge — and once he's landed, he winks. Resolves once the
+// wink is over.
 function showCard(card: HTMLElement) {
+  const pal = card.querySelector<SVGElement>('.pre-pal')
   gsap.set(TEXT, { yPercent: 110 })
   return new Promise<void>((resolve) => {
     gsap
       .timeline({ onComplete: resolve })
-      .fromTo(card, { autoAlpha: 0, y: 0, scale: 0.6, rotation: -10 }, { autoAlpha: 1, scale: 1, rotation: 0, duration: 0.35, ease: 'back.out(1.7)' })
-      .to('#preloader .pre-name-inner', { yPercent: 0, duration: 0.42, ease: 'power4.out' }, '-=0.18')
-      .to('#preloader .pre-title', { yPercent: 0, duration: 0.35, ease: 'power4.out' }, '<+=0.1')
+      .fromTo(card, { autoAlpha: 0, y: 0, scale: 0.85, rotation: -6 }, { autoAlpha: 1, scale: 1, rotation: 0, duration: CURTAIN, ease: 'back.out(1.7)' }, 0)
+      .fromTo(pal, { scale: 0, rotation: -40 }, { scale: 1, rotation: 0, duration: SLOW, ease: 'back.out(2.2)' }, 0.05)
+      .to('#preloader .pre-name-inner', { yPercent: 0, duration: SLOW, ease: 'power3.out' }, 0.1)
+      .to('#preloader .pre-title', { yPercent: 0, duration: SLOW, ease: 'power3.out' }, 0.22)
+      .call(() => pal?.classList.add('is-winking'), [], 0.68)
+      .call(() => pal?.classList.remove('is-winking'), [], 1.06)
   })
 }
 
@@ -62,11 +72,12 @@ function hideCard(card: HTMLElement) {
 // playPreloader() call.
 const TRANSITION_FLAG = 'pvd:arrived-via-transition'
 
-// Plays the load sequence. On a normal load: the card pops in during a
-// 1200ms hold, drops away (210ms) and the stripes sweep off (about 0.8s).
-// Arriving via a cross-page transition instead, the card is already up, as
-// the last page left it, so the hold is a brief 210ms. `onReveal` fires as
-// the stripes start to leave, so the page's own intro plays underneath them.
+// Plays the load sequence. On a normal load: the card comes in (and Pine Pal
+// winks) during a 1200ms hold, drops away (210ms) and the stripes sweep off
+// (about 0.5s). Arriving via a cross-page transition instead, the card is
+// already up, as the last page left it, so the hold is a brief 210ms.
+// `onReveal` fires as the stripes start to leave, so the page's own intro
+// plays underneath them.
 export async function playPreloader(onReveal: () => void) {
   const preloader = document.querySelector<HTMLElement>('#preloader')
   const card = preloader?.querySelector<HTMLElement>('.pre-word')
@@ -82,8 +93,7 @@ export async function playPreloader(onReveal: () => void) {
   if (arrivedViaTransition) {
     await wait(210)
   } else {
-    showCard(card) // not awaited: it plays during the hold
-    await wait(1200)
+    await Promise.all([showCard(card), wait(1200)])
   }
 
   await hideCard(card)
@@ -92,9 +102,10 @@ export async function playPreloader(onReveal: () => void) {
   gsap.set(preloader, { display: 'none' })
 }
 
-// The way out to another page: the stripes sweep in over this one, then the
-// card pops up with `title`. Resolves once it has held a moment, ready for
-// the caller to navigate; the next page opens from this same picture.
+// The way out to another page: the stripes sweep in over this one, and as
+// the last of them lands the card comes in with `title`. Resolves once Pine
+// Pal has winked and it has held a moment, ready for the caller to
+// navigate; the next page opens from this same picture.
 export async function coverForNavigation(title: string) {
   const preloader = document.querySelector<HTMLElement>('#preloader')
   const card = preloader?.querySelector<HTMLElement>('.pre-word')
@@ -103,9 +114,10 @@ export async function coverForNavigation(title: string) {
   preloader.querySelector('.pre-title')!.textContent = title
   gsap.set(card, { autoAlpha: 0 })
   gsap.set(preloader, { display: 'flex' })
-  await stripeWipe(preloader.querySelector<HTMLElement>('.wipe')!).cover()
+  stripeWipe(preloader.querySelector<HTMLElement>('.wipe')!).cover()
+  await wait((SWEEP - 0.1) * 1000)
   await showCard(card)
-  await wait(105)
+  await wait(100)
   sessionStorage.setItem(TRANSITION_FLAG, '1')
 }
 

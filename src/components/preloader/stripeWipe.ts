@@ -9,6 +9,13 @@ import { gsap } from 'gsap'
 const FILLS = ['lemon', 'coral', 'mint', 'lilac']
 const TILT = -12 // degrees; the stripes lean forward, the way they travel
 
+// The stripes are the quickest part of a transition: each crosses in
+// CURTAIN seconds, easing in and out, setting off STAGGER apart. SWEEP is
+// the whole sweep, first stripe off to last stripe in.
+export const CURTAIN = 0.42
+const STAGGER = 0.04
+export const SWEEP = CURTAIN + STAGGER * (FILLS.length - 1)
+
 // The stripes' markup, for the preloader to render.
 export const renderStripes = () => `
     <div class="wipe" aria-hidden="true">
@@ -23,19 +30,19 @@ export function stripeWipe(wipe: HTMLElement) {
   // screen by the tilt's lean on both sides (see preloader.css).
   const travel = () => wipe.offsetWidth + 16
   // The rightmost stripe leads, so they move as one bundle with small gaps.
-  const sweep = (from: number, to: number, duration: number, ease: string) =>
+  const sweep = (from: number, to: number) =>
     new Promise<void>((resolve) => {
       gsap.fromTo(
         stripes,
         { x: from, skewX: TILT },
-        { x: to, duration, ease, stagger: { each: 0.05, from: 'end' }, onComplete: resolve },
+        { x: to, duration: CURTAIN, ease: 'power3.inOut', stagger: { each: STAGGER, from: 'end' }, onComplete: resolve },
       )
     })
 
   return {
     // In from the left until the screen is covered.
-    cover: () => sweep(-travel(), 0, 0.53, 'power3.out'),
+    cover: () => sweep(-travel(), 0),
     // On out to the right, uncovering the page.
-    reveal: () => sweep(0, travel(), 0.63, 'power3.inOut'),
+    reveal: () => sweep(0, travel()),
   }
 }

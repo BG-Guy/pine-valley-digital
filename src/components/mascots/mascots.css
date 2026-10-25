@@ -13,6 +13,18 @@
   animation: m-blink 4.2s infinite;
 }
 
+/* A face that can wink (face() with winkable, in drawing.ts): the right eye
+   stays open until something adds .is-winking around it — Pine Pal on the
+   loading card, the footer's sun. */
+.m-eye-wink,
+.is-winking .m-eye-open {
+  display: none;
+}
+
+.is-winking .m-eye-wink {
+  display: inline;
+}
+
 /* Pine Pal sways from its trunk, like a tree in the wind. */
 .m-sway {
   transform-box: view-box;

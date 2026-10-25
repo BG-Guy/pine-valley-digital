@@ -37,7 +37,7 @@
 }
 
 .pre-card {
-  --pal: clamp(5rem, 4rem + 4vw, 7rem);
+  --pal: clamp(6rem, 4.5rem + 5vw, 8.5rem);
   display: grid;
   justify-items: center;
   gap: 1rem;
@@ -56,6 +56,12 @@
   aspect-ratio: 1;
   margin-top: calc(var(--pal) / -2);
   filter: drop-shadow(4px 4px 0 var(--color-ink));
+  transition: rotate 0.2s var(--ease-pop);
+}
+
+/* He tips his head as he winks (preloader.ts switches the wink on). */
+.pre-pal.is-winking {
+  rotate: -12deg;
 }
 
 /* Room in the wordmark's mask for the italic's tails. */

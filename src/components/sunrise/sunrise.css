@@ -35,13 +35,3 @@
   width: 100%;
   height: 100%;
 }
-
-/* The sun's right eye: open while it rises, a wink once it's up. */
-.sunrise-face .m-eye-wink,
-.sunrise-face.is-winking .m-eye-open {
-  display: none;
-}
-
-.sunrise-face.is-winking .m-eye-wink {
-  display: inline;
-}

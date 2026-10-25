@@ -26,7 +26,9 @@ export function initCtaCursor() {
     (e) => {
       const over = (e.target as Element | null)?.closest?.(TARGETS)
       cursor.classList.toggle('is-on', !!over)
-      if (over) cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`
+      // Placed with `translate`, which sits outside the pop's `scale`, so
+      // growing never drags it in from the corner of the screen.
+      if (over) cursor.style.translate = `${e.clientX}px ${e.clientY}px`
     },
     { passive: true },
   )

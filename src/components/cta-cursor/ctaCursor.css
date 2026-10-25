@@ -1,6 +1,7 @@
 /* CTA cursor (see ctaCursor.ts). The tip of Clicky's arrow sits 14% across
    and 8% down its box, so the box is pulled back by that much to put the
-   tip on the pointer. It pops in from the tip when you reach a button. */
+   tip on the pointer. Reaching a button, it grows out of the tip from
+   nothing with a quick bounce; leaving, it shrinks back into it. */
 .cta-cursor {
   --size: 4.5rem;
   position: fixed;
@@ -11,17 +12,30 @@
   margin: calc(var(--size) * -0.08) 0 0 calc(var(--size) * -0.14);
   pointer-events: none;
   filter: drop-shadow(3px 3px 0 var(--color-ink));
-  opacity: 0;
-  scale: 0.4;
+  scale: 0;
   transform-origin: 14% 8%;
-  transition:
-    opacity 0.15s ease,
-    scale 0.25s var(--ease-pop);
+  transition: scale 0.12s ease-in;
 }
 
 .cta-cursor.is-on {
-  opacity: 1;
   scale: 1;
+  animation: cta-cursor-pop 0.32s ease-out;
+}
+
+@keyframes cta-cursor-pop {
+  0% { scale: 0; }
+  45% { scale: 1.28; }
+  68% { scale: 0.88; }
+  86% { scale: 1.07; }
+  100% { scale: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cta-cursor,
+  .cta-cursor.is-on {
+    animation: none;
+    transition: none;
+  }
 }
 
 /* The real pointer steps aside over the buttons while Clicky stands in. */
