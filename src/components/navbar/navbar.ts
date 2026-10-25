@@ -3,12 +3,14 @@
 // navbar.css.
 import './navbar.css'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { logoMark, logoWordmark } from '../logo/logo'
+import { pinePal } from '../mascots/mascots'
 import { renderCtaButton } from '../cta-button/ctaButton'
 import { renderMenuToggle, renderMobileMenu, initMobileMenu } from './mobileMenu'
 
 // Markup: the bar (logo, desktop links, CTA, menu toggle) and, after it,
-// the mobile menu sheet, which sits under the bar while open. Links are
+// the mobile menu sheet, which sits under the bar while open. The logo is
+// Pine Pal and the name in the footer's poster capitals, its last word on a
+// lemon highlight box; Pine Pal winks when you point at it. Links are
 // root-prefixed (`/#services`) so they resolve correctly from any page,
 // not just the home page — same-path + hash is a same-document scroll,
 // different-path is a normal navigation back to the home page's section.
@@ -22,9 +24,9 @@ export const renderNavbar = () => `
   <header id="site-nav" class="navbar-shell fixed top-0 inset-x-0 z-40 opacity-0">
     <div id="navbar-bar" class="navbar-bar">
       <div class="mx-auto max-w-7xl px-6 sm:px-10 py-5 flex items-center justify-between">
-        <a href="/#top" class="flex items-center gap-2">
-          ${logoMark('w-7 h-7 shrink-0')}
-          ${logoWordmark('text-base sm:text-lg')}
+        <a href="/#top" class="navbar-logo wink-on-hover">
+          ${pinePal('navbar-pal')}
+          <span class="navbar-word">Pine Valley <span class="nb-mark">Digital</span></span>
         </a>
         <nav class="navbar-links hidden md:flex items-center gap-7">
           <a href="/#services" class="nav-link">Services</a>

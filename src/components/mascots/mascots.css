@@ -25,6 +25,18 @@
   display: inline;
 }
 
+/* Or while you point at something marked .wink-on-hover: Zap's "fast"
+   box, the navbar logo. */
+@media (hover: hover) {
+  .wink-on-hover:hover .m-eye-open {
+    display: none;
+  }
+
+  .wink-on-hover:hover .m-eye-wink {
+    display: inline;
+  }
+}
+
 /* Pine Pal sways from its trunk, like a tree in the wind. */
 .m-sway {
   transform-box: view-box;

@@ -58,7 +58,8 @@
 
 /* Zap, stuck on the box's top corner. It waits for the headline to land
    (pageLoad.ts adds .is-landed then), since the lines' masks would cut it
-   off while they slide up, and then pops on. */
+   off while they slide up, and then pops on. Pointing at Zap or the box
+   makes it wink (.wink-on-hover, components/mascots). */
 .hero-zap {
   position: absolute;
   top: -0.52em;
@@ -66,7 +67,6 @@
   width: 0.84em;
   rotate: 14deg;
   scale: 0;
-  pointer-events: none;
   filter: drop-shadow(3px 3px 0 var(--color-ink));
   transition: scale 0.5s var(--ease-pop);
 }

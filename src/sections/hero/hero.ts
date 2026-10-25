@@ -1,6 +1,7 @@
 // Hero section, split in two: on the left the headline (its glitching
 // "fast" stuck on a lemon highlight box, with Zap the lightning bolt on its
-// corner), the intro and the two buttons; on the right a fanned stack of
+// corner, winking when you point at either), the intro and the two
+// buttons; on the right a fanned stack of
 // project cards that shuffles when clicked, with a "14 services" sticker.
 // Styles live in hero.css.
 import './hero.css'
@@ -40,7 +41,7 @@ export const renderHero = () => `
         <div class="hero-copy">
           <p class="hero-eyebrow"><span class="nb-pill">Web design &amp; development studio</span></p>
           <h1 class="hero-title font-display font-extrabold">
-            <span class="hero-line"><span class="block">We build <span class="nb-mark hero-mark"><span class="hero-fast">
+            <span class="hero-line"><span class="block">We build <span class="nb-mark hero-mark wink-on-hover"><span class="hero-fast">
               <span class="hero-fast-base">fast</span>
               <span class="hero-fast-slice s1" aria-hidden="true">fast</span>
               <span class="hero-fast-slice s2" aria-hidden="true">fast</span>
