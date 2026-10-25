@@ -1,5 +1,5 @@
 // Tape: the tilted lemon caution tape that runs across the edge under a
-// hero, listing the services with the pine mark between them. It loops on
+// hero, listing the services with Pine Pal between them. It loops on
 // its own, speeds up with scroll velocity, and freezes while it's off
 // screen. Its pause button stops every ambient motion on the page (the
 // tape and the stickers, via html[data-motion="paused"]) — moving content
@@ -8,7 +8,7 @@
 // tape.css.
 import './tape.css'
 import { gsap } from 'gsap'
-import { logoMark } from '../logo/logo'
+import { pinePal } from '../mascots/mascots'
 
 // What the tape lists — a short version of the services.
 const ITEMS = ['Web Design', 'Development', 'Brand Identity', 'SEO & Performance', 'Business Automation', 'Local SEO']
@@ -17,7 +17,7 @@ const ITEMS = ['Web Design', 'Development', 'Brand Identity', 'SEO & Performance
 // translating the track by -50% loop seamlessly.
 const list = (hidden: boolean) => `
           <ul class="nb-tape-list"${hidden ? ' aria-hidden="true"' : ' aria-label="What we do"'}>
-            ${ITEMS.map((item) => `<li>${item}${logoMark('nb-tape-pine')}</li>`).join('')}
+            ${ITEMS.map((item) => `<li>${item}${pinePal('nb-tape-pine')}</li>`).join('')}
           </ul>`
 
 export const renderTape = () => `

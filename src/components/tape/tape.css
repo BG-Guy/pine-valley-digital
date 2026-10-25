@@ -49,10 +49,15 @@
   gap: 2rem;
 }
 
+/* Pine Pal, the logo, between the items; he sits still here. */
 .nb-tape-pine {
   flex: none;
-  width: 1.35em;
-  height: 1.35em;
+  width: 1.5em;
+  height: 1.5em;
+}
+
+.nb-tape-pine .m-sway {
+  animation: none;
 }
 
 /* The pause button sits on the tape's right end. A small press: lighter
