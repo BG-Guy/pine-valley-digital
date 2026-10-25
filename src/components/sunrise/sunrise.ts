@@ -22,7 +22,7 @@ export const renderSunrise = () => `
     <div class="sunrise" aria-hidden="true">
       <div class="sunrise-sun">
         <svg class="sunrise-ring" viewBox="-50 -50 100 100"><polygon points="${teeth(0, 0, 48.5, 41.5, 26)}" ${paint('coral', 2.5)}/></svg>
-        <svg class="sunrise-face" viewBox="-50 -50 100 100"><circle r="37.5" ${paint('paper', 2.5)}/><circle r="31.5" ${paint('lemon', 2.5)}/>${face(0, -4, 1.6, { round: true })}</svg>
+        <svg class="sunrise-face" viewBox="-50 -50 100 100"><circle r="37.5" ${paint('paper', 2.5)}/><circle r="31.5" ${paint('lemon', 2.5)}/>${face(0, -2, 1.05, { round: true, smileLine: 2 })}</svg>
       </div>
       <svg class="sunrise-art"></svg>
     </div>`

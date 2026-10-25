@@ -77,14 +77,15 @@ export function scallop(cx: number, cy: number, r: number, bump: number, n: numb
 // A face centred on (cx, cy) at scale `s`: two blinking eyes and a smile.
 // `wink` closes the right eye; `winkable` draws both the open eye and the
 // wink, for a caller that switches between them (Pine Pal, Zap). `round`
-// gives small round eyes instead of tall ovals (the footer's sun).
-export function face(cx: number, cy: number, s = 1, { wink = false, winkable = false, round = false } = {}) {
+// gives small round eyes instead of tall ovals, and `smileLine` sets the
+// smile's thickness (the footer's sun has both, for a small, cute face).
+export function face(cx: number, cy: number, s = 1, { wink = false, winkable = false, round = false, smileLine = 3 } = {}) {
   const [rx, ry] = round ? [2, 2] : [2.6, 3.6]
   const eye = (x: number, extra = '') =>
     `<ellipse class="m-blink${extra}" cx="${n1(x)}" cy="${n1(cy)}" rx="${n1(rx * s)}" ry="${n1(ry * s)}" style="fill:var(--color-ink)"/>`
   const lid = (extra = '') =>
     `<path class="${extra}" d="M${n1(cx + 5 * s)} ${n1(cy + 0.5 * s)} q${n1(3.5 * s)} ${n1(-3.5 * s)} ${n1(7 * s)} 0" style="fill:none;stroke:var(--color-ink);stroke-width:${n1(2.6 * s)};stroke-linecap:round"/>`
   const right = winkable ? eye(cx + 8.5 * s, ' m-eye-open') + lid('m-eye-wink') : wink ? lid() : eye(cx + 8.5 * s)
-  const smile = `<path d="M${n1(cx - 9 * s)} ${n1(cy + 9 * s)} q${n1(9 * s)} ${n1(9 * s)} ${n1(18 * s)} 0" style="fill:none;stroke:var(--color-ink);stroke-width:${n1(3 * s)};stroke-linecap:round"/>`
+  const smile = `<path d="M${n1(cx - 9 * s)} ${n1(cy + 9 * s)} q${n1(9 * s)} ${n1(9 * s)} ${n1(18 * s)} 0" style="fill:none;stroke:var(--color-ink);stroke-width:${n1(smileLine * s)};stroke-linecap:round"/>`
   return eye(cx - 8.5 * s) + right + smile
 }
