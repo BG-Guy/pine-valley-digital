@@ -10,11 +10,9 @@ const FILLS = ['lemon', 'coral', 'mint', 'lilac']
 const TILT = -12 // degrees; the stripes lean forward, the way they travel
 
 // The stripes are the quickest part of a transition: each crosses in
-// CURTAIN seconds, easing in and out, setting off STAGGER apart. SWEEP is
-// the whole sweep, first stripe off to last stripe in.
-export const CURTAIN = 0.42
-const STAGGER = 0.04
-export const SWEEP = CURTAIN + STAGGER * (FILLS.length - 1)
+// CURTAIN seconds, easing in and out, setting off STAGGER apart.
+const CURTAIN = 0.48
+const STAGGER = 0.046
 
 // The stripes' markup, for the preloader to render.
 export const renderStripes = () => `
