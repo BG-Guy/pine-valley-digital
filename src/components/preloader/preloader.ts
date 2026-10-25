@@ -10,9 +10,10 @@ import { renderStripes, stripeWipe } from './stripeWipe'
 import { logoWordmark } from '../logo/logo'
 import { pinePal } from '../mascots/mascots'
 
-// Markup: the stripes, then the card. The wordmark and the page's name each
-// sit in their own mask (overflow-hidden outer + a block inner) so they can
-// slide up into place — the same technique the hero's lines use.
+// Markup: the stripes, then the card: a small wordmark over the page's name,
+// which is the big text. Each sits in its own mask (overflow-hidden outer +
+// a block inner) so it can slide up into place — the same technique the
+// hero's lines use.
 export const renderPreloader = (title: string) => `
   <div id="preloader">
     ${renderStripes()}
@@ -20,7 +21,7 @@ export const renderPreloader = (title: string) => `
       <div class="pre-card">
         ${pinePal('pre-pal')}
         <span class="pre-name overflow-hidden block">
-          <span class="pre-name-inner block">${logoWordmark('text-3xl sm:text-5xl')}</span>
+          <span class="pre-name-inner block">${logoWordmark('text-lg sm:text-xl')}</span>
         </span>
         <span class="pre-title-viewport overflow-hidden block">
           <span class="pre-title block">${title}</span>
@@ -41,16 +42,16 @@ function showCard(card: HTMLElement) {
   return new Promise<void>((resolve) => {
     gsap
       .timeline({ onComplete: resolve })
-      .fromTo(card, { autoAlpha: 0, y: 0, scale: 0.6, rotation: -10 }, { autoAlpha: 1, scale: 1, rotation: 0, duration: 0.5, ease: 'back.out(1.7)' })
-      .to('#preloader .pre-name-inner', { yPercent: 0, duration: 0.6, ease: 'power4.out' }, '-=0.25')
-      .to('#preloader .pre-title', { yPercent: 0, duration: 0.5, ease: 'power4.out' }, '<+=0.15')
+      .fromTo(card, { autoAlpha: 0, y: 0, scale: 0.6, rotation: -10 }, { autoAlpha: 1, scale: 1, rotation: 0, duration: 0.35, ease: 'back.out(1.7)' })
+      .to('#preloader .pre-name-inner', { yPercent: 0, duration: 0.42, ease: 'power4.out' }, '-=0.18')
+      .to('#preloader .pre-title', { yPercent: 0, duration: 0.35, ease: 'power4.out' }, '<+=0.1')
   })
 }
 
 // The card drops away, before the stripes leave.
 function hideCard(card: HTMLElement) {
   return new Promise<void>((resolve) => {
-    gsap.to(card, { autoAlpha: 0, y: 40, rotation: 6, scale: 0.9, duration: 0.3, ease: 'power2.in', onComplete: resolve })
+    gsap.to(card, { autoAlpha: 0, y: 40, rotation: 6, scale: 0.9, duration: 0.21, ease: 'power2.in', onComplete: resolve })
   })
 }
 
@@ -62,9 +63,9 @@ function hideCard(card: HTMLElement) {
 const TRANSITION_FLAG = 'pvd:arrived-via-transition'
 
 // Plays the load sequence. On a normal load: the card pops in during a
-// 1200ms hold, drops away (300ms) and the stripes sweep off (about 1.1s).
+// 1200ms hold, drops away (210ms) and the stripes sweep off (about 0.8s).
 // Arriving via a cross-page transition instead, the card is already up, as
-// the last page left it, so the hold is a brief 300ms. `onReveal` fires as
+// the last page left it, so the hold is a brief 210ms. `onReveal` fires as
 // the stripes start to leave, so the page's own intro plays underneath them.
 export async function playPreloader(onReveal: () => void) {
   const preloader = document.querySelector<HTMLElement>('#preloader')
@@ -79,7 +80,7 @@ export async function playPreloader(onReveal: () => void) {
   }
 
   if (arrivedViaTransition) {
-    await wait(300)
+    await wait(210)
   } else {
     showCard(card) // not awaited: it plays during the hold
     await wait(1200)
@@ -104,7 +105,7 @@ export async function coverForNavigation(title: string) {
   gsap.set(preloader, { display: 'flex' })
   await stripeWipe(preloader.querySelector<HTMLElement>('.wipe')!).cover()
   await showCard(card)
-  await wait(150)
+  await wait(105)
   sessionStorage.setItem(TRANSITION_FLAG, '1')
 }
 

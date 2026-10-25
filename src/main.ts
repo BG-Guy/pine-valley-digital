@@ -13,6 +13,7 @@ import { renderTape, initTape } from './components/tape/tape'
 import { renderFooter, initFooter } from './components/footer/footer'
 import { initFlowBands } from './components/flow-bands/flowBands'
 import { initStickerRoll } from './components/sticker-roll/stickerRoll'
+import { initCtaCursor } from './components/cta-cursor/ctaCursor'
 import { initSiteHoverCarouselLinks } from './components/hover-carousel-link/hoverCarouselLink'
 import { renderHero, initHero } from './sections/hero/hero'
 import { renderServices, initServices } from './sections/services/services'
@@ -61,4 +62,5 @@ initContact()
 initFlowBands()
 initFooter()
 initStickerRoll()
+initCtaCursor()
 initPageTransitionLinks()

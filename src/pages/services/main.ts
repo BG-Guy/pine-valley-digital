@@ -11,6 +11,7 @@ import { renderPreloader } from '../../components/preloader/preloader'
 import { renderNavbar, initNavbar } from '../../components/navbar/navbar'
 import { renderFooter, initFooter } from '../../components/footer/footer'
 import { initStickerRoll } from '../../components/sticker-roll/stickerRoll'
+import { initCtaCursor } from '../../components/cta-cursor/ctaCursor'
 import { initSiteHoverCarouselLinks } from '../../components/hover-carousel-link/hoverCarouselLink'
 import { initScrollReveals } from '../../animations/scrollReveals'
 import { initScrollScenes } from '../../animations/scrollScenes'
@@ -53,4 +54,5 @@ initNavbar()
 initFooter()
 initServiceLandingContent(data)
 initStickerRoll()
+initCtaCursor()
 initPageTransitionLinks()

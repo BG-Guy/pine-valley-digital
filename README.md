@@ -44,7 +44,7 @@ src/
     navbar/  footer/  tape/  preloader/  logo/  cta-button/
     hover-carousel-link/  reveal-footer/
     press/  sticker/  tickets/  card-art/
-    mascots/  sticker-roll/  flow-bands/  sunrise/  drawing/
+    mascots/  sticker-roll/  flow-bands/  sunrise/  drawing/  cta-cursor/
   sections/        one folder per page section
     hero/  services/  work/  process/  contact/
   pages/           the other pages: lab/, services/ (the 14 service landing pages)

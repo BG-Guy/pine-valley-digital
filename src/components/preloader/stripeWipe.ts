@@ -28,14 +28,14 @@ export function stripeWipe(wipe: HTMLElement) {
       gsap.fromTo(
         stripes,
         { x: from, skewX: TILT },
-        { x: to, duration, ease, stagger: { each: 0.07, from: 'end' }, onComplete: resolve },
+        { x: to, duration, ease, stagger: { each: 0.05, from: 'end' }, onComplete: resolve },
       )
     })
 
   return {
     // In from the left until the screen is covered.
-    cover: () => sweep(-travel(), 0, 0.75, 'power3.out'),
+    cover: () => sweep(-travel(), 0, 0.53, 'power3.out'),
     // On out to the right, uncovering the page.
-    reveal: () => sweep(0, travel(), 0.9, 'power3.inOut'),
+    reveal: () => sweep(0, travel(), 0.63, 'power3.inOut'),
   }
 }

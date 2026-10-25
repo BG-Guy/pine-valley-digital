@@ -1,0 +1,42 @@
+/* CTA cursor (see ctaCursor.ts). The tip of Clicky's arrow sits 14% across
+   and 8% down its box, so the box is pulled back by that much to put the
+   tip on the pointer. It pops in from the tip when you reach a button. */
+.cta-cursor {
+  --size: 4.5rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 90;
+  width: var(--size);
+  margin: calc(var(--size) * -0.08) 0 0 calc(var(--size) * -0.14);
+  pointer-events: none;
+  filter: drop-shadow(3px 3px 0 var(--color-ink));
+  opacity: 0;
+  scale: 0.4;
+  transform-origin: 14% 8%;
+  transition:
+    opacity 0.15s ease,
+    scale 0.25s var(--ease-pop);
+}
+
+.cta-cursor.is-on {
+  opacity: 1;
+  scale: 1;
+}
+
+/* The real pointer steps aside over the buttons while Clicky stands in. */
+html.has-cta-cursor :is(.nb-btn-lg, .btn-cta),
+html.has-cta-cursor :is(.nb-btn-lg, .btn-cta) * {
+  cursor: none;
+}
+
+/* The Clicky already pointing at a send button hands over to the cursor. */
+html.has-cta-cursor .clicky-at > .mascot {
+  transition:
+    translate 0.2s var(--ease-pop),
+    opacity 0.15s ease;
+}
+
+html.has-cta-cursor .clicky-at:hover > .mascot {
+  opacity: 0;
+}
