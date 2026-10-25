@@ -1,7 +1,6 @@
 // Sunrise: the footer's closing scene — four rolling hills with pines, a
 // pine valley, and a smiling sun that rises from behind them as the footer
-// is uncovered, its toothed ring turning, then winks once it's all the way
-// up. Scroll-driven: the sun only moves while you scroll. The hills are a
+// is uncovered, its toothed ring turning. Scroll-driven: the sun only moves while you scroll. The hills are a
 // still drawing, redrawn only to fit the width; the sun is its own layer
 // that slides and turns (transforms only), so nothing is redrawn as it
 // moves. Styles live in sunrise.css.
@@ -23,7 +22,7 @@ export const renderSunrise = () => `
     <div class="sunrise" aria-hidden="true">
       <div class="sunrise-sun">
         <svg class="sunrise-ring" viewBox="-50 -50 100 100"><polygon points="${teeth(0, 0, 48.5, 41.5, 26)}" ${paint('coral', 2.5)}/></svg>
-        <svg class="sunrise-face" viewBox="-50 -50 100 100"><circle r="37.5" ${paint('paper', 2.5)}/><circle r="31.5" ${paint('lemon', 2.5)}/>${face(0, -4, 1.6, { winkable: true })}</svg>
+        <svg class="sunrise-face" viewBox="-50 -50 100 100"><circle r="37.5" ${paint('paper', 2.5)}/><circle r="31.5" ${paint('lemon', 2.5)}/>${face(0, -4, 1.6, { round: true })}</svg>
       </div>
       <svg class="sunrise-art"></svg>
     </div>`
@@ -65,9 +64,8 @@ export function initSunrise(trigger: HTMLElement) {
   const box = document.querySelector<HTMLElement>('.sunrise')
   const sun = box?.querySelector<HTMLElement>('.sunrise-sun')
   const ring = box?.querySelector<SVGElement>('.sunrise-ring')
-  const sunFace = box?.querySelector<SVGElement>('.sunrise-face')
   const svg = box?.querySelector<SVGElement>('.sunrise-art')
-  if (!box || !sun || !ring || !sunFace || !svg) return
+  if (!box || !sun || !ring || !svg) return
 
   const state = { progress: 0, w: 0, h: 0, r: 0, x: 0, low: 0, high: 0 }
 
@@ -78,7 +76,6 @@ export function initSunrise(trigger: HTMLElement) {
     const y = state.low + (state.high - state.low) * lift
     sun.style.transform = `translate(${n1(state.x - state.r)}px, ${n1(y - state.r)}px)`
     ring.style.transform = `rotate(${n1(state.progress * 140)}deg)`
-    sunFace.classList.toggle('is-winking', state.progress > 0.96)
   }
 
   // Redraws the hills and pines, and sizes the sun, for the strip's
