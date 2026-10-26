@@ -77,3 +77,14 @@
   outline: 3px solid var(--color-lemon);
   outline-offset: 3px;
 }
+
+/* Pine Pal, the logo, at the start of the copyright line; he sits still. */
+.footer-pal {
+  flex: none;
+  width: 2rem;
+  height: 2rem;
+}
+
+.footer-pal .m-sway {
+  animation: none;
+}

@@ -4,7 +4,7 @@
 // pine valley where the sun comes up as the footer is uncovered
 // (components/sunrise). Styles live in footer.css.
 import './footer.css'
-import { logoMark } from '../logo/logo'
+import { pinePal } from '../mascots/mascots'
 import { initRevealFooter } from '../reveal-footer/revealFooter'
 import { renderSunrise, initSunrise } from '../sunrise/sunrise'
 
@@ -24,7 +24,7 @@ export const renderFooter = () => `
       <div class="mx-auto max-w-7xl grid gap-8 sm:gap-10">
         <p class="footer-word" aria-hidden="true">Pine Valley <span>Digital</span></p>
         <div class="footer-row">
-          <span class="footer-copy">${logoMark('w-6 h-6 shrink-0')}&copy; ${new Date().getFullYear()} Pine Valley Digital.</span>
+          <span class="footer-copy">${pinePal('footer-pal')}&copy; ${new Date().getFullYear()} Pine Valley Digital.</span>
           <nav class="footer-links" aria-label="Footer">
             ${LINKS.map(([label, href]) => `<a href="${href}" class="footer-pill">${label}</a>`).join('')}
           </nav>
