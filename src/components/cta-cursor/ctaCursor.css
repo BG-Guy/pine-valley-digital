@@ -22,14 +22,10 @@
   animation: cta-cursor-pop 0.32s ease-out;
 }
 
-/* Handing over from the send button's Clicky: no pop for that hover
-   (.no-pop), just a glide from where he stood to the pointer. */
+/* On a send button, Clicky comes from where he stood beside it and chases
+   the pointer (ctaCursor.ts), so there's no pop for that hover. */
 .cta-cursor.is-on.no-pop {
   animation: none;
-}
-
-.cta-cursor.is-on.is-gliding {
-  transition: translate 0.38s var(--ease-pop);
 }
 
 @keyframes cta-cursor-pop {
