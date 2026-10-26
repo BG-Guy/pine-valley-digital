@@ -21,10 +21,28 @@ export function initCtaCursor() {
   // Clicky is here to replace it.
   document.documentElement.classList.add('has-cta-cursor')
 
+  // On a send button, the Clicky already pointing at it (.clicky-at, in
+  // components/mascots) hands over: the cursor starts where he stands,
+  // tip on his tip, and glides to the pointer before following it.
+  let current: Element | null = null
+  let glideEnd = 0
   document.addEventListener(
     'pointermove',
     (e) => {
-      const over = (e.target as Element | null)?.closest?.(TARGETS)
+      const over = (e.target as Element | null)?.closest?.(TARGETS) ?? null
+      const entering = over !== current
+      const stand = entering ? over?.closest('.clicky-at')?.querySelector<SVGElement>('.mascot') : null
+      if (entering) cursor.classList.remove('no-pop')
+      current = over
+      if (stand) {
+        const r = stand.getBoundingClientRect()
+        cursor.classList.remove('is-gliding')
+        cursor.style.translate = `${r.left + r.width * 0.14}px ${r.top + r.height * 0.08}px`
+        void cursor.offsetWidth // place him there before the glide starts
+        cursor.classList.add('is-gliding', 'no-pop')
+        clearTimeout(glideEnd)
+        glideEnd = window.setTimeout(() => cursor.classList.remove('is-gliding'), 400)
+      }
       cursor.classList.toggle('is-on', !!over)
       // Placed with `translate`, which sits outside the pop's `scale`, so
       // growing never drags it in from the corner of the screen.

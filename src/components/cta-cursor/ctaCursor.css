@@ -22,6 +22,16 @@
   animation: cta-cursor-pop 0.32s ease-out;
 }
 
+/* Handing over from the send button's Clicky: no pop for that hover
+   (.no-pop), just a glide from where he stood to the pointer. */
+.cta-cursor.is-on.no-pop {
+  animation: none;
+}
+
+.cta-cursor.is-on.is-gliding {
+  transition: translate 0.38s var(--ease-pop);
+}
+
 @keyframes cta-cursor-pop {
   0% { scale: 0; }
   45% { scale: 1.28; }
