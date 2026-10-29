@@ -1,5 +1,5 @@
 // Footer: the "reveal" footer — fixed to the viewport bottom behind the page,
-// uncovered as you scroll to the end. An ink panel with the name set huge in
+// uncovered as you scroll to the end. A dawn-navy panel with the name set huge in
 // poster type, the quick links as pills, and the copyright line, over a
 // pine valley where the sun comes up as the footer is uncovered
 // (components/sunrise). Styles live in footer.css.

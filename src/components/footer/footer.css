@@ -1,11 +1,18 @@
-/* Footer shell — full-width, flush to the screen edges: an ink panel the
-   page scrolls away from (the reveal itself is reveal-footer/revealFooter.ts).
-   Cream text on ink, with the studio's name set huge in poster type, its
-   last word in lemon. */
+/* Footer shell — full-width, flush to the screen edges: a sky-coloured panel
+   the page scrolls away from (the reveal itself is reveal-footer/revealFooter.ts),
+   with the studio's name set huge in poster type, its last word picked out.
+   The sky is shared with the sunrise strip below, so the sun comes up into
+   it: a deep dawn navy, so the sun reads as coming up, not rising at night. */
+#site-footer {
+  --footer-sky: #26315f;
+  --footer-text: var(--color-paper);
+  --footer-mark: var(--color-lemon);
+}
+
 #footer-shell {
   border-top: var(--nb-line) solid var(--color-ink);
-  background: var(--color-ink);
-  color: var(--color-paper);
+  background: var(--footer-sky);
+  color: var(--footer-text);
 }
 
 .footer-word {
@@ -20,7 +27,7 @@
 }
 
 .footer-word span {
-  color: var(--color-lemon);
+  color: var(--footer-mark);
 }
 
 .footer-row {
@@ -37,7 +44,7 @@
   gap: 0.6rem;
   font-family: var(--font-mono);
   font-size: 0.8rem;
-  color: color-mix(in srgb, var(--color-paper) 80%, var(--color-ink));
+  color: color-mix(in srgb, var(--footer-text) 80%, var(--footer-sky));
 }
 
 .footer-links {
@@ -46,13 +53,13 @@
   gap: 0.6rem;
 }
 
-/* Cream-ringed pills that fill lemon on hover. */
+/* Pills ringed in the text colour that fill lemon on hover. */
 .footer-pill {
   display: inline-flex;
   align-items: center;
   min-height: 2.75rem;
   padding: 0 1rem;
-  border: 3px solid var(--color-paper);
+  border: 3px solid var(--footer-text);
   border-radius: 999px;
   font-family: var(--font-mono);
   font-size: 0.8rem;
@@ -74,7 +81,7 @@
 }
 
 .footer-pill:focus-visible {
-  outline: 3px solid var(--color-lemon);
+  outline: 3px solid var(--footer-text);
   outline-offset: 3px;
 }
 

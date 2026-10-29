@@ -1,11 +1,11 @@
 /* Sunrise (see sunrise.ts): a full-width strip along the bottom of the
-   footer, its sky the footer's own ink. The sun is a layer of its own
+   footer, its sky the footer's own (--footer-sky, set in footer.css). The sun is a layer of its own
    behind the hills' drawing, moved and turned with transforms. */
 .sunrise {
   position: relative;
   height: clamp(7.5rem, 5rem + 8vw, 13rem);
   overflow: hidden;
-  background: var(--color-ink);
+  background: var(--footer-sky);
 }
 
 .sunrise-sun {
