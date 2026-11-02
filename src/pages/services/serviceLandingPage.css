@@ -65,6 +65,10 @@
 }
 
 .svc-hero-cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.25rem 1.5rem;
   margin-top: 2.5rem;
 }
 
@@ -342,4 +346,58 @@
 .svc-form-note {
   flex-basis: 100%;
   font-size: 0.9rem;
+}
+
+/* Free check band: a lemon card with the offer on the left and the button
+   on the right; under it, the other services in this one's group. */
+.svc-free {
+  --nb-card-bg: var(--color-lemon);
+  display: grid;
+  gap: 1.5rem;
+  align-items: center;
+  padding: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+}
+
+.svc-free > div {
+  display: grid;
+  justify-items: start;
+  gap: 0.9rem;
+  max-width: 40rem;
+  line-height: 1.55;
+}
+
+@media (min-width: 860px) {
+  .svc-free {
+    grid-template-columns: 1fr auto;
+  }
+}
+
+.svc-related {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.svc-related-title {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.svc-related ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+}
+
+.svc-related a:hover {
+  --nb-pill-bg: var(--color-mint) !important;
+}
+
+.svc-form-free {
+  margin-top: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
 }

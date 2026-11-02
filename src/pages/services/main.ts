@@ -19,6 +19,7 @@ import { initPageTransitionLinks } from '../../animations/pageTransitions'
 import { initSimplePageLoad } from '../../animations/simplePageLoad'
 import { getServiceLandingData } from './servicesLandingData'
 import { renderServiceLandingContent, initServiceLandingContent } from './serviceLandingPage'
+import { initBgDoodles } from '../../components/bg-doodles/bgDoodles'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -53,6 +54,7 @@ initSiteHoverCarouselLinks()
 initNavbar()
 initFooter()
 initServiceLandingContent(data)
+initBgDoodles()
 initStickerRoll()
 initCtaCursor()
 initPageTransitionLinks()

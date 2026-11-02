@@ -1,0 +1,111 @@
+/* FAQ: the heading and a call button on the left (sticky on wide screens),
+   the questions as ink-lined rows on the right, each with a plus that turns
+   into a cross when open. */
+.faq-grid {
+  display: grid;
+  gap: 2.5rem;
+}
+
+@media (min-width: 960px) {
+  .faq-grid {
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    align-items: start;
+  }
+
+  .faq-head {
+    position: sticky;
+    top: 8rem;
+  }
+}
+
+.faq-head {
+  display: grid;
+  justify-items: start;
+  gap: 1.2rem;
+}
+
+.faq-lead {
+  max-width: 28rem;
+  font-size: 1.05rem;
+  line-height: 1.55;
+}
+
+.faq-list {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.faq-item {
+  border: 3px solid var(--color-ink);
+  border-radius: var(--nb-r2);
+  background: var(--color-surface);
+  box-shadow: 5px 5px 0 var(--color-ink);
+  transition: background-color 0.2s ease;
+}
+
+.faq-item[open] {
+  background: var(--color-lemon);
+}
+
+.faq-item summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.1rem 1.3rem;
+  font-weight: 800;
+  font-size: 1.05rem;
+  cursor: pointer;
+  list-style: none;
+}
+
+.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-item summary:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: var(--nb-r2);
+}
+
+/* The plus: two bars; the open state turns it 45° into a cross. */
+.faq-item summary i {
+  position: relative;
+  flex: none;
+  width: 1.9rem;
+  height: 1.9rem;
+  border: 2px solid var(--color-ink);
+  border-radius: 50%;
+  background: var(--color-paper);
+  transition: rotate 0.25s var(--ease-pop);
+}
+
+.faq-item summary i::before,
+.faq-item summary i::after {
+  content: '';
+  position: absolute;
+  inset: 50% 25% auto;
+  height: 2.5px;
+  margin-top: -1.25px;
+  background: var(--color-ink);
+}
+
+.faq-item summary i::after {
+  rotate: 90deg;
+}
+
+.faq-item[open] summary i {
+  rotate: 45deg;
+}
+
+.faq-item p {
+  padding: 0 1.3rem 1.2rem;
+  line-height: 1.6;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .faq-item summary i {
+    transition: none;
+  }
+}

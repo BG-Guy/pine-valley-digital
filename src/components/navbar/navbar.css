@@ -106,3 +106,144 @@
     transition-duration: 0.01ms;
   }
 }
+
+/* Services menu: a button in the link row that drops a card with the four
+   service groups side by side (see setupServicesMenu in navbar.ts). */
+.nav-menu {
+  position: relative;
+}
+
+.nav-menu-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+}
+
+.nav-menu-toggle svg {
+  width: 0.7rem;
+  height: 0.7rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: rotate 0.2s var(--ease-pop);
+}
+
+.nav-menu.is-open .nav-menu-toggle svg {
+  rotate: 180deg;
+}
+
+/* The bridge under the button keeps the pointer "inside" the menu while it
+   crosses the gap to the panel. */
+.nav-menu::after {
+  content: '';
+  position: absolute;
+  inset: 100% -1rem auto;
+  height: 1.6rem;
+}
+
+.nav-panel {
+  position: absolute;
+  top: calc(100% + 1.4rem);
+  left: 50%;
+  translate: -38% 0;
+  width: min(54rem, calc(100vw - 3rem));
+  padding: 1.4rem;
+  border: var(--nb-line) solid var(--color-ink);
+  border-radius: var(--nb-r2, 18px);
+  background: var(--color-surface);
+  box-shadow: var(--nb-drop) var(--nb-drop) 0 var(--color-ink);
+  text-transform: none;
+  letter-spacing: 0;
+  animation: nav-panel-in 0.22s var(--ease-pop);
+}
+
+.nav-panel[hidden] {
+  display: none;
+}
+
+@keyframes nav-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+.nav-panel-cols {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.nav-panel-col {
+  padding: 0.9rem;
+  border: 3px solid var(--color-ink);
+  border-radius: 12px;
+}
+
+.nav-panel-col:nth-child(1) { background: var(--color-lemon); }
+.nav-panel-col:nth-child(2) { background: var(--color-mint); }
+.nav-panel-col:nth-child(3) { background: var(--color-lilac); }
+.nav-panel-col:nth-child(4) { background: var(--color-paper); }
+
+.nav-panel-title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 800;
+  font-stretch: 75%;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.nav-panel-blurb {
+  margin: 0.3rem 0 0.7rem;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.nav-panel-col ul {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.nav-panel-col a {
+  display: block;
+  padding: 0.3rem 0;
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  font-weight: 700;
+  text-decoration: underline transparent 2px;
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.15s ease;
+}
+
+.nav-panel-col a:hover,
+.nav-panel-col a:focus-visible {
+  text-decoration-color: currentColor;
+}
+
+.nav-panel-foot {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 1rem;
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.nav-panel-foot:hover {
+  text-decoration: underline;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-panel {
+    animation: none;
+  }
+}

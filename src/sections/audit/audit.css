@@ -1,0 +1,313 @@
+/* Free website check: a dawn-navy panel (the footer's sky) with the form on
+   the left and the results beside it once they're in; under it, the free
+   report offer as a cream card next to its request form. */
+.audit-panel {
+  --nb-card-bg: #26315f;
+  display: grid;
+  gap: 2.5rem;
+  padding: clamp(1.6rem, 1rem + 3vw, 3.5rem);
+  color: var(--color-paper);
+}
+
+@media (min-width: 1000px) {
+  .audit-panel:has(.audit-results:not([hidden])) {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  }
+}
+
+.audit-intro {
+  display: grid;
+  align-content: start;
+  gap: 1.2rem;
+  max-width: 44rem;
+}
+
+.audit-intro .nb-pill {
+  justify-self: start;
+  color: var(--color-ink);
+}
+
+.audit-title {
+  font-size: clamp(2.4rem, 1.4rem + 3.6vw, 4.4rem);
+  line-height: 0.92;
+}
+
+.audit-title .nb-mark {
+  color: var(--color-ink);
+}
+
+.audit-lead {
+  font-size: 1.1rem;
+  line-height: 1.55;
+}
+
+.audit-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 1rem;
+}
+
+.audit-url {
+  flex: 1 1 16rem;
+}
+
+.audit-url .nb-label {
+  color: var(--color-paper);
+}
+
+.audit-form.is-busy button {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.audit-status {
+  min-height: 1.5em;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+}
+
+.audit-form.is-busy + .audit-status::before {
+  content: '';
+  display: inline-block;
+  width: 0.8em;
+  height: 0.8em;
+  margin-right: 0.5em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  vertical-align: -0.1em;
+  animation: audit-spin 0.8s linear infinite;
+}
+
+@keyframes audit-spin {
+  to {
+    rotate: 360deg;
+  }
+}
+
+/* Results: a cream card inside the navy panel. */
+.audit-results {
+  display: grid;
+  gap: 1.3rem;
+  padding: 1.5rem;
+  border: 3px solid var(--color-ink);
+  border-radius: var(--nb-r2);
+  background: var(--color-paper);
+  color: var(--color-ink);
+  box-shadow: 6px 6px 0 var(--color-ink);
+}
+
+.audit-results[hidden] {
+  display: none;
+}
+
+.audit-for {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+}
+
+.audit-scores {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+@media (max-width: 520px) {
+  .audit-scores {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.audit-score {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 0.35rem;
+  text-align: center;
+}
+
+.audit-score svg {
+  width: 100%;
+  max-width: 6.5rem;
+  rotate: -90deg;
+}
+
+.audit-score circle {
+  fill: none;
+  stroke-width: 12;
+}
+
+.audit-score .track {
+  stroke: color-mix(in srgb, var(--color-ink) 12%, transparent);
+}
+
+.audit-score .arc {
+  stroke: var(--band);
+  stroke-linecap: round;
+}
+
+.audit-score.is-good { --band: #2fae74; }
+.audit-score.is-ok { --band: #e7a700; }
+.audit-score.is-poor { --band: var(--color-coral); }
+
+.audit-score-n {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  max-width: 6.5rem;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display);
+  font-size: 1.9rem;
+  font-weight: 800;
+  font-stretch: 75%;
+}
+
+.audit-score-label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.audit-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.audit-metrics div {
+  padding: 0.45rem 0.8rem;
+  border: 2px solid var(--color-ink);
+  border-radius: 999px;
+  background: var(--color-surface);
+  font-size: 0.85rem;
+}
+
+.audit-metrics dt {
+  display: inline;
+}
+
+.audit-metrics dd {
+  display: inline;
+  margin-left: 0.35rem;
+  font-weight: 800;
+}
+
+.audit-issues-title {
+  margin-bottom: 0.6rem;
+  font-weight: 800;
+}
+
+.audit-issues ol {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 0.5rem 0.7rem;
+}
+
+.audit-issues li {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
+  align-items: baseline;
+  line-height: 1.4;
+}
+
+.audit-issues .audit-tag {
+  justify-self: start;
+}
+
+.audit-tag {
+  flex: none;
+  padding: 0.1rem 0.5rem;
+  border: 2px solid var(--color-ink);
+  border-radius: 999px;
+  background: var(--color-lemon);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.audit-next {
+  justify-self: start;
+}
+
+/* The free report offer. */
+.audit-offer {
+  display: grid;
+  gap: 2rem;
+  margin-top: 3.5rem;
+}
+
+@media (min-width: 900px) {
+  .audit-offer {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+.audit-offer-copy {
+  display: grid;
+  gap: 1.1rem;
+  line-height: 1.6;
+}
+
+.audit-offer-copy .nb-pill {
+  justify-self: start;
+}
+
+.audit-offer-title {
+  font-size: clamp(1.8rem, 1.2rem + 2vw, 2.8rem);
+  line-height: 0.95;
+}
+
+.audit-covers {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.audit-covers li {
+  display: flex;
+  gap: 0.6rem;
+  font-weight: 600;
+}
+
+.audit-covers li::before {
+  content: '✓';
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 2px solid var(--color-ink);
+  border-radius: 50%;
+  background: var(--color-mint);
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.audit-request {
+  --nb-card-bg: var(--color-lilac);
+  display: grid;
+  gap: 1rem;
+  padding: 1.6rem;
+}
+
+.audit-request .clicky-at {
+  justify-self: start;
+}
+
+.audit-note {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .audit-form.is-busy + .audit-status::before {
+    animation: none;
+  }
+}

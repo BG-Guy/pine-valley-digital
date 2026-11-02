@@ -104,6 +104,37 @@
   gap: 1.25rem 1.5rem;
 }
 
+/* The promises under the buttons: mono capitals, each after a mint tick. */
+.hero-trust {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.4rem;
+  margin-top: 1.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.hero-trust li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.hero-trust li::before {
+  content: '✓';
+  display: grid;
+  place-items: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid var(--color-ink);
+  border-radius: 50%;
+  background: var(--color-mint);
+  font-size: 0.7rem;
+}
+
 /* ── Card stack ─────────────────────────────────────────────────────── */
 
 /* A fan of three press cards (components/press). Each card's place in the

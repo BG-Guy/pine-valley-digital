@@ -10,6 +10,7 @@ import { renderTickets } from '../../components/tickets/tickets'
 import { circleSticker } from '../../components/sticker/sticker'
 import { renderFlowBands, initFlowBands } from '../../components/flow-bands/flowBands'
 import { clicky } from '../../components/mascots/mascots'
+import { groupOf, servicesIn, serviceHref } from './serviceGroups'
 
 // Shared across every service — a single, honest guarantee reads as more
 // credible than a different one invented per page.
@@ -41,7 +42,8 @@ const renderHero = (d: ServiceLandingData) => `
           ${d.teasers.map((t) => `<li>${t}</li>`).join('')}
         </ul>
         <div class="svc-hero-cta reveal">
-          <a href="#svc-cta" class="nb-press nb-btn-lg nb-lemon"><span class="nb-face">Start a project ${ARROW}</span></a>
+          <a href="#svc-cta" class="nb-press nb-btn-lg nb-lemon"><span class="nb-face">Book a free call ${ARROW}</span></a>
+          <a href="/#audit" class="nb-press nb-btn"><span class="nb-face">Free website check</span></a>
         </div>
       </div>
     </section>
@@ -114,6 +116,37 @@ const renderDiagnostic = (d: ServiceLandingData) => `
     </section>
 `
 
+// Section 4b — Free value and related services: the free website check as
+// the low-commitment next step (it lives on the home page, #audit), and the
+// other services in this one's group, so a visitor who's nearly right can
+// find the exact fit.
+const renderFreeCheck = (d: ServiceLandingData) => {
+  const group = groupOf(d.slug)
+  const related = group ? servicesIn(group).filter((s) => s.slug !== d.slug) : []
+  return `
+    <section class="px-6 sm:px-10 py-16 sm:py-20">
+      <div class="mx-auto max-w-6xl grid gap-10">
+        <div class="svc-free nb-card reveal">
+          <div>
+            <p class="nb-pill" style="--nb-pill-bg: var(--color-surface)">Free &middot; no signup</p>
+            <h2 class="font-display font-extrabold text-3xl sm:text-4xl">Not sure where to start? Get a free website check.</h2>
+            <p>See your site's speed, SEO and accessibility scores in about a minute, using Google's own tests. Then get a free, hand-reviewed report with your three quickest wins.</p>
+          </div>
+          <a href="/#audit" class="nb-press nb-btn-lg"><span class="nb-face">Check my site ${ARROW}</span></a>
+        </div>
+        ${
+          related.length
+            ? `<div class="svc-related reveal">
+          <p class="svc-related-title">Also in <strong>${group!.title}</strong></p>
+          <ul>${related.map((s) => `<li><a href="${serviceHref(s.slug)}" class="nb-pill" style="--nb-pill-bg: var(--color-surface)">${s.navTitle} &rarr;</a></li>`).join('')}</ul>
+        </div>`
+            : ''
+        }
+      </div>
+    </section>
+`
+}
+
 // Section 5 — Conclusion, Risk Reversal & Conversion: the objections as
 // cards, the shared guarantee on a lemon card, and the closing form on a
 // lilac panel with flowing bands in its corner and Clicky pointing at the
@@ -147,13 +180,14 @@ const renderCta = (d: ServiceLandingData) => `
           <div class="svc-form-intro">
             <h2 class="font-display font-extrabold text-4xl sm:text-5xl">${d.ctaHeadline}</h2>
             <p>${d.ctaSub}</p>
+            <p class="svc-form-free">Free 20-minute call &middot; fixed quote &middot; no obligation</p>
           </div>
           <form id="svc-form" class="svc-form">
             <label class="nb-field"><span class="nb-label">Your name</span><input required name="name" type="text" autocomplete="name" class="nb-input" /></label>
             <label class="nb-field"><span class="nb-label">Email</span><input required name="email" type="email" autocomplete="email" class="nb-input" /></label>
             <label class="nb-field svc-form-wide"><span class="nb-label">What do you need?</span><textarea name="message" rows="3" placeholder="What are you hoping to fix or build?" class="nb-input"></textarea></label>
             <div class="svc-form-send svc-form-wide">
-              <span class="clicky-at"><button type="submit" class="nb-press nb-btn-lg nb-lemon"><span class="nb-face">Send it over ${ARROW}</span></button>${clicky()}</span>
+              <span class="clicky-at"><button type="submit" class="nb-press nb-btn-lg nb-lemon"><span class="nb-face">Book my free call ${ARROW}</span></button>${clicky()}</span>
               <p class="svc-form-note">Opens your email app, addressed to ${EMAIL}.</p>
             </div>
           </form>
@@ -162,7 +196,8 @@ const renderCta = (d: ServiceLandingData) => `
     </section>
 `
 
-// Markup: hero → proof → offering/process → diagnostic → risk-reversal/CTA.
+// Markup: hero → proof → offering/process → diagnostic → free check and
+// related services → risk-reversal/CTA.
 // Callers assemble this between their own navbar/footer, the same way
 // sections/*.ts pieces are assembled on the home page.
 export const renderServiceLandingContent = (d: ServiceLandingData) => `
@@ -170,6 +205,7 @@ ${renderHero(d)}
 ${renderProof(d)}
 ${renderOffering(d)}
 ${renderDiagnostic(d)}
+${renderFreeCheck(d)}
 ${renderCta(d)}
 `
 

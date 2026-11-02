@@ -1,7 +1,7 @@
 // Hero section, split in two: on the left the headline (its glitching
 // "fast" stuck on a lemon highlight box, with Zap the lightning bolt on its
-// corner, winking when you point at either), the intro and the two
-// buttons; on the right a fanned stack of
+// corner, winking when you point at either), the intro, the two
+// buttons and a line of promises; on the right a fanned stack of
 // project cards that shuffles when clicked, with a "14 services" sticker.
 // Styles live in hero.css.
 import './hero.css'
@@ -11,6 +11,9 @@ import { burstSticker } from '../../components/sticker/sticker'
 import { zap } from '../../components/mascots/mascots'
 
 const pad = (n: number) => String(n).padStart(2, '0')
+
+// The trust line under the buttons: promises we keep on every project.
+const TRUST = ['Fixed quote, no hidden fees', 'Live in 3 to 6 weeks', 'You own everything']
 
 const ARROW = `<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg>`
 
@@ -52,13 +55,16 @@ export const renderHero = () => `
           </h1>
           <div class="hero-sub">
             <p class="hero-lead">
-              Pine Valley Digital designs and builds lean, high-performance websites for
-              studios, founders, and small teams who need to move fast without looking cheap.
+              Pine Valley Digital designs and builds websites that bring small businesses
+              more calls, bookings and sales, then keeps them fast, found on Google and up to date.
             </p>
             <div class="hero-ctas">
-              <a href="#contact" class="nb-press nb-btn-lg nb-lemon"><span class="nb-face">Start a project ${ARROW}</span></a>
-              <a href="#work" class="nb-press nb-btn"><span class="nb-face">See our work <span aria-hidden="true">&darr;</span></span></a>
+              <a href="#contact" class="nb-press nb-btn-lg nb-lemon"><span class="nb-face">Book a free call ${ARROW}</span></a>
+              <a href="#audit" class="nb-press nb-btn"><span class="nb-face">Free website check <span aria-hidden="true">&darr;</span></span></a>
             </div>
+            <ul class="hero-trust">
+              ${TRUST.map((t) => `<li>${t}</li>`).join('')}
+            </ul>
           </div>
         </div>
         <div class="hero-stack" data-hero-stack>

@@ -1,0 +1,113 @@
+/* Background doodles (see bgDoodles.ts): a layer filling the page shell,
+   under the content, clipped so nothing makes the page scroll sideways. */
+#page-shell {
+  position: relative;
+}
+
+#page-shell > main {
+  position: relative;
+  z-index: 1;
+}
+
+.bgd {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Margin doodles: just outside the content's edge on wide screens, tucked
+   half off the screen's edge on narrow ones. */
+.bgd-item {
+  position: absolute;
+  top: calc(var(--y) * 100%);
+  width: var(--size);
+  height: var(--size);
+  will-change: transform;
+}
+
+.bgd-l {
+  left: max(calc(var(--size) * -0.45), calc((100% - 80rem) / 2 - var(--size) * 1.05));
+}
+
+.bgd-r {
+  right: max(calc(var(--size) * -0.45), calc((100% - 80rem) / 2 - var(--size) * 1.05));
+}
+
+.bgd-item svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  rotate: var(--rot);
+  filter: drop-shadow(4px 4px 0 var(--color-ink));
+  animation: bgd-bob var(--bob) ease-in-out infinite alternate;
+}
+
+@keyframes bgd-bob {
+  from {
+    translate: 0 -6px;
+    rotate: calc(var(--rot) - 6deg);
+  }
+  to {
+    translate: 0 6px;
+    rotate: calc(var(--rot) + 6deg);
+  }
+}
+
+@media (max-width: 1023px) {
+  .bgd-wide {
+    display: none;
+  }
+
+  .bgd-item {
+    width: calc(var(--size) * 0.7);
+    height: calc(var(--size) * 0.7);
+  }
+}
+
+/* Ribbons: full width, centred on the top edge of a section, the art twice
+   the width and sliding left by half, forever. */
+.bgd-ribbon {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: clamp(54px, 4vw + 30px, 90px);
+  translate: 0 -50%;
+  overflow: hidden;
+  rotate: -1.5deg;
+}
+
+.bgd-ribbon[hidden] {
+  display: none;
+}
+
+.bgd-ribbon:nth-of-type(even) {
+  rotate: 1.5deg;
+}
+
+.bgd-ribbon-art {
+  display: block;
+  width: 200%;
+  height: 100%;
+  animation: bgd-roll 22s linear infinite;
+}
+
+@keyframes bgd-roll {
+  to {
+    translate: -50% 0;
+  }
+}
+
+html[data-motion='paused'] .bgd-item svg,
+html[data-motion='paused'] .bgd-ribbon-art {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bgd-item svg,
+  .bgd-ribbon-art {
+    animation: none;
+  }
+}

@@ -16,8 +16,9 @@ const MENU_LINKS = [
   { label: 'Services', href: '/#services' },
   { label: 'Work', href: '/#work' },
   { label: 'Process', href: '/#process' },
+  { label: 'Free check', href: '/#audit' },
+  { label: 'FAQ', href: '/#faq' },
   { label: 'Contact', href: '/#contact' },
-  { label: 'Lab', href: '/lab.html' },
 ]
 
 // Same address as the contact section (sections/contact).
@@ -106,7 +107,7 @@ export const renderMobileMenu = () => `
                 <span class="mm-contact-label">Say hello</span>
                 <a href="mailto:${EMAIL}" class="mm-email">${EMAIL}</a>
               </p>
-              ${renderCtaButton({ href: '/#contact', label: `Start a project${CTA_ARROW}`, className: 'mm-cta' })}
+              ${renderCtaButton({ href: '/#contact', label: `Book a free call${CTA_ARROW}`, className: 'mm-cta' })}
             </div>
           </div>
         </div>

@@ -6,6 +6,29 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { pinePal } from '../mascots/mascots'
 import { renderCtaButton } from '../cta-button/ctaButton'
 import { renderMenuToggle, renderMobileMenu, initMobileMenu } from './mobileMenu'
+import { SERVICE_GROUPS, servicesIn, serviceHref } from '../../pages/services/serviceGroups'
+
+// The Services menu: the four groups side by side, each with its services,
+// and a line under them pointing to the free website check.
+const renderServicesMenu = () => `
+          <div class="nav-menu" data-nav-menu>
+            <button type="button" class="nav-link nav-menu-toggle" aria-expanded="false" aria-controls="nav-services-panel">
+              Services <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" /></svg>
+            </button>
+            <div id="nav-services-panel" class="nav-panel" hidden>
+              <div class="nav-panel-cols">
+                ${SERVICE_GROUPS.map(
+                  (g) => `
+                <div class="nav-panel-col">
+                  <p class="nav-panel-title">${g.title}</p>
+                  <p class="nav-panel-blurb">${g.blurb}</p>
+                  <ul>${servicesIn(g).map((s) => `<li><a href="${serviceHref(s.slug)}">${s.navTitle}</a></li>`).join('')}</ul>
+                </div>`,
+                ).join('')}
+              </div>
+              <a class="nav-panel-foot" href="/#audit"><span class="nb-pill" style="--nb-pill-bg: var(--color-mint)">Free</span> Not sure what you need? Run a free website check &rarr;</a>
+            </div>
+          </div>`
 
 // Markup: the bar (logo, desktop links, CTA, menu toggle) and, after it,
 // the mobile menu sheet, which sits under the bar while open. The logo is
@@ -28,15 +51,16 @@ export const renderNavbar = () => `
           ${pinePal('navbar-pal')}
           <span class="navbar-word">Pine Valley <span class="nb-mark">Digital</span></span>
         </a>
-        <nav class="navbar-links hidden md:flex items-center gap-7">
-          <a href="/#services" class="nav-link">Services</a>
+        <nav class="navbar-links hidden md:flex items-center gap-5 xl:gap-7">
+${renderServicesMenu()}
           <a href="/#work" class="nav-link">Work</a>
-          <a href="/#process" class="nav-link">Process</a>
+          <a href="/#process" class="nav-link hidden xl:inline">Process</a>
+          <a href="/#audit" class="nav-link hidden lg:inline">Free check</a>
+          <a href="/#faq" class="nav-link hidden xl:inline">FAQ</a>
           <a href="/#contact" class="nav-link">Contact</a>
-          <a href="/lab.html" class="nav-link">Lab</a>
         </nav>
         <div class="flex items-center gap-3">
-          <span class="hidden sm:inline-flex">${renderCtaButton({ href: '/#contact', label: 'Start a project', className: 'text-sm font-semibold' })}</span>
+          <span class="hidden sm:inline-flex">${renderCtaButton({ href: '/#contact', label: 'Book a free call', className: 'text-sm font-semibold' })}</span>
 ${renderMenuToggle()}
         </div>
       </div>
@@ -50,6 +74,37 @@ ${renderMobileMenu()}
 export function initNavbar() {
   initMobileMenu()
   setupNavbarMorph()
+  setupServicesMenu()
+}
+
+// The Services menu opens on hover (with a short grace period so the
+// pointer can cross the gap to the panel) and on click, and closes on
+// Escape, on a click elsewhere, or when focus leaves it.
+function setupServicesMenu() {
+  const menu = document.querySelector<HTMLElement>('[data-nav-menu]')
+  const toggle = menu?.querySelector<HTMLButtonElement>('.nav-menu-toggle')
+  const panel = menu?.querySelector<HTMLElement>('.nav-panel')
+  if (!menu || !toggle || !panel) return
+
+  let timer = 0
+  const set = (open: boolean) => {
+    window.clearTimeout(timer)
+    toggle.setAttribute('aria-expanded', String(open))
+    panel.hidden = !open
+    menu.classList.toggle('is-open', open)
+  }
+  const hoverable = window.matchMedia('(hover: hover)').matches
+  toggle.addEventListener('click', () => set(hoverable || panel.hidden === true))
+  if (hoverable) {
+    menu.addEventListener('pointerenter', () => set(true))
+    menu.addEventListener('pointerleave', () => { timer = window.setTimeout(() => set(false), 180) })
+  }
+  menu.addEventListener('focusout', (e) => { if (!menu.contains(e.relatedTarget as Node)) set(false) })
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !panel.hidden) { set(false); toggle.focus() }
+  })
+  document.addEventListener('click', (e) => { if (!menu.contains(e.target as Node)) set(false) })
+  panel.addEventListener('click', (e) => { if ((e.target as Element).closest('a')) set(false) })
 }
 
 // Drives the navbar's scroll morph by writing a 0-1 progress value into a

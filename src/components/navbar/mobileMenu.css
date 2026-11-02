@@ -344,7 +344,7 @@ html.mm-lock {
   display: block;
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: clamp(2.5rem, min(20.5vw, (100svh - 23rem) / 5.6), 6rem);
+  font-size: clamp(2.5rem, min(20.5vw, (100svh - 23rem) / 6.6), 6rem);
   font-stretch: 75%;
   line-height: 1;
   letter-spacing: -0.01em;

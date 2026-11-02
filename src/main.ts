@@ -20,6 +20,10 @@ import { renderServices, initServices } from './sections/services/services'
 import { renderWork, initWork } from './sections/work/work'
 import { renderProcess } from './sections/process/process'
 import { renderContact, initContact } from './sections/contact/contact'
+import { renderWhy } from './sections/why/why'
+import { renderAudit, initAudit } from './sections/audit/audit'
+import { renderFaq } from './sections/faq/faq'
+import { initBgDoodles } from './components/bg-doodles/bgDoodles'
 import { initPageLoad } from './animations/pageLoad'
 import { initScrollReveals } from './animations/scrollReveals'
 import { initScrollScenes } from './animations/scrollScenes'
@@ -38,9 +42,12 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <main id="top">
     ${renderHero()}
     ${renderTape()}
+    ${renderWhy()}
     ${renderServices()}
     ${renderWork()}
     ${renderProcess()}
+    ${renderAudit()}
+    ${renderFaq()}
     ${renderContact()}
   </main>
   </div>
@@ -59,6 +66,8 @@ initWork()
 initSiteHoverCarouselLinks()
 initNavbar()
 initContact()
+initAudit()
+initBgDoodles()
 initFlowBands()
 initFooter()
 initStickerRoll()

@@ -15,8 +15,12 @@ export function initRevealFooter(shell: HTMLElement, footer: HTMLElement) {
   const spacer = document.createElement('div')
   shell.insertAdjacentElement('afterend', spacer)
 
+  // A footer taller than the screen can't be pinned behind the page (its
+  // top would be cut off), so then it just follows the page instead.
   const syncHeight = () => {
-    spacer.style.height = `${footer.offsetHeight}px`
+    const tall = footer.offsetHeight > window.innerHeight
+    footer.classList.toggle('rf-static', tall)
+    spacer.style.height = tall ? '0px' : `${footer.offsetHeight}px`
   }
 
   syncHeight()
