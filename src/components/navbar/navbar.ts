@@ -8,27 +8,28 @@ import { renderCtaButton } from '../cta-button/ctaButton'
 import { renderMenuToggle, renderMobileMenu, initMobileMenu } from './mobileMenu'
 import { SERVICE_GROUPS, servicesIn, serviceHref } from '../../pages/services/serviceGroups'
 
-// The Services menu: the four groups side by side, each with its services,
-// and a line under them pointing to the free website check.
-const renderServicesMenu = () => `
+// The Services menu: a classic dropdown, one list of every service under
+// small group labels, with the free website check at the bottom. Each row
+// carries its place in the list (--i) so the opening can stagger them.
+const renderServicesMenu = () => {
+  let i = 0
+  const rows = SERVICE_GROUPS.map(
+    (g) => `
+                <li class="nav-drop-label" style="--i: ${i++}">${g.title}</li>
+                ${servicesIn(g).map((s) => `<li style="--i: ${i++}"><a href="${serviceHref(s.slug)}" class="nav-drop-link">${s.navTitle}</a></li>`).join('')}`,
+  ).join('')
+  return `
           <div class="nav-menu" data-nav-menu>
             <button type="button" class="nav-link nav-menu-toggle" aria-expanded="false" aria-controls="nav-services-panel">
               Services <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" /></svg>
             </button>
-            <div id="nav-services-panel" class="nav-panel" hidden>
-              <div class="nav-panel-cols">
-                ${SERVICE_GROUPS.map(
-                  (g) => `
-                <div class="nav-panel-col">
-                  <p class="nav-panel-title">${g.title}</p>
-                  <p class="nav-panel-blurb">${g.blurb}</p>
-                  <ul>${servicesIn(g).map((s) => `<li><a href="${serviceHref(s.slug)}">${s.navTitle}</a></li>`).join('')}</ul>
-                </div>`,
-                ).join('')}
-              </div>
-              <a class="nav-panel-foot" href="/#audit"><span class="nb-pill" style="--nb-pill-bg: var(--color-mint)">Free</span> Not sure what you need? Run a free website check &rarr;</a>
+            <div id="nav-services-panel" class="nav-drop" inert>
+              <ul class="nav-drop-list">${rows}
+                <li class="nav-drop-foot" style="--i: ${i}"><a href="/#audit" class="nav-drop-link">Free website check &rarr;</a></li>
+              </ul>
             </div>
           </div>`
+}
 
 // Markup: the bar (logo, desktop links, CTA, menu toggle) and, after it,
 // the mobile menu sheet, which sits under the bar while open. The logo is
@@ -79,29 +80,32 @@ export function initNavbar() {
 
 // The Services menu opens on hover (with a short grace period so the
 // pointer can cross the gap to the panel) and on click, and closes on
-// Escape, on a click elsewhere, or when focus leaves it.
+// Escape, on a click elsewhere, or when focus leaves it. It stays in the
+// page while closed, so it can animate both ways; `inert` keeps the closed
+// list out of the tab order and away from screen readers.
 function setupServicesMenu() {
   const menu = document.querySelector<HTMLElement>('[data-nav-menu]')
   const toggle = menu?.querySelector<HTMLButtonElement>('.nav-menu-toggle')
-  const panel = menu?.querySelector<HTMLElement>('.nav-panel')
+  const panel = menu?.querySelector<HTMLElement>('.nav-drop')
   if (!menu || !toggle || !panel) return
 
   let timer = 0
   const set = (open: boolean) => {
     window.clearTimeout(timer)
     toggle.setAttribute('aria-expanded', String(open))
-    panel.hidden = !open
+    panel.inert = !open
     menu.classList.toggle('is-open', open)
   }
+  const isOpen = () => menu.classList.contains('is-open')
   const hoverable = window.matchMedia('(hover: hover)').matches
-  toggle.addEventListener('click', () => set(hoverable || panel.hidden === true))
+  toggle.addEventListener('click', () => set(hoverable || !isOpen()))
   if (hoverable) {
     menu.addEventListener('pointerenter', () => set(true))
     menu.addEventListener('pointerleave', () => { timer = window.setTimeout(() => set(false), 180) })
   }
   menu.addEventListener('focusout', (e) => { if (!menu.contains(e.relatedTarget as Node)) set(false) })
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && !panel.hidden) { set(false); toggle.focus() }
+    if (e.key === 'Escape' && isOpen()) { set(false); toggle.focus() }
   })
   document.addEventListener('click', (e) => { if (!menu.contains(e.target as Node)) set(false) })
   panel.addEventListener('click', (e) => { if ((e.target as Element).closest('a')) set(false) })
