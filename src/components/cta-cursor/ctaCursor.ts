@@ -3,7 +3,8 @@
 // the pointer, tip on the spot you're pointing at. On the forms' send
 // buttons, the Clicky already standing beside the button comes along
 // instead: he leaves his spot and chases the pointer, trailing a little and
-// swinging from the tip of his arrow as he goes. Only with a mouse or
+// swinging from the tip of his arrow as he goes, and when the pointer
+// leaves he walks back to his spot. Only with a mouse or
 // trackpad; touch screens keep their normal taps. Decorative: the buttons
 // work the same without it. Styles live in ctaCursor.css.
 import './ctaCursor.css'
@@ -13,8 +14,10 @@ import { clicky } from '../mascots/mascots'
 const TARGETS = '.nb-btn-lg, .btn-cta'
 
 // On a send button: how far behind the pointer Clicky trails (seconds, the
-// time to close most of the gap), and how far he can swing (degrees).
+// time to close most of the gap), how far he can swing (degrees), and how
+// long the walk home takes once the pointer leaves.
 const TRAIL = 0.14
+const HOME = 0.12
 const MAX_SWING = 14
 
 // Adds the cursor to the page. Call once per page.
@@ -27,6 +30,7 @@ export function initCtaCursor() {
   cursor.setAttribute('aria-hidden', 'true')
   cursor.innerHTML = clicky('', 'Go!')
   document.body.append(cursor)
+  const tag = cursor.querySelector('text')!
   // Hides the real pointer over the buttons (ctaCursor.css), only once
   // Clicky is here to replace it.
   document.documentElement.classList.add('has-cta-cursor')
@@ -39,22 +43,72 @@ export function initCtaCursor() {
     cursor.style.rotate = `${swing}deg`
   }
 
+  // A send button's own Clicky (.clicky-at, components/mascots): where his
+  // tip is and how wide he is, right now (he lifts with the button).
+  const standOf = (el: Element | null) => el?.closest('.clicky-at')?.querySelector<SVGElement>(':scope > .mascot') ?? null
+  const spot = (stand: SVGElement) => {
+    const r = stand.getBoundingClientRect()
+    return { x: r.left + r.width * 0.14, y: r.top + r.height * 0.08, size: r.width }
+  }
+  const baseSize = () => parseFloat(getComputedStyle(document.documentElement).fontSize) * 4.5
+
   let current: Element | null = null
-  let chasing = false
-  const at = { x: 0, y: 0, swing: 0 }
+  // 'chase': following the pointer from a send button; 'home': walking back
+  // to the spot beside it; null: either not shown or on a plain button.
+  let mode: 'chase' | 'home' | null = null
+  let stand: SVGElement | null = null
+  const at = { x: 0, y: 0, size: 0, swing: 0 }
   const pointer = { x: 0, y: 0 }
 
-  // While chasing, Clicky closes part of the gap every frame, and leans
-  // back against the way he's moving, as if pulled along by the tip.
+  // The send button's Clicky steps out: the cursor takes his place, size
+  // and tag, and he hides, all in the same frame, so it reads as one figure.
+  const pickUp = (s: SVGElement) => {
+    if (stand !== s) {
+      drop()
+      stand = s
+      Object.assign(at, spot(s), { swing: 0 })
+      tag.textContent = s.querySelector('text')?.textContent ?? 'Go!'
+      cursor.style.setProperty('--size', `${at.size}px`)
+      place(at.x, at.y)
+    }
+    s.parentElement!.classList.add('is-away')
+    cursor.classList.add('is-on', 'no-pop')
+  }
+  // ...and back: he reappears where the cursor stopped, and it vanishes.
+  const drop = () => {
+    if (!stand) return
+    stand.parentElement!.classList.remove('is-away')
+    stand = null
+    mode = null
+    cursor.classList.remove('is-on')
+    cursor.style.removeProperty('--size')
+    tag.textContent = 'Go!'
+  }
+
+  // Each frame Clicky closes part of the gap to where he's headed (the
+  // pointer, or his spot), grows or shrinks to fit, and leans back against
+  // the way he's moving, as if pulled along by the tip.
   gsap.ticker.add((_time, deltaMs) => {
-    if (!chasing) return
-    const step = 1 - Math.exp(-deltaMs / 1000 / TRAIL)
-    const dx = (pointer.x - at.x) * step
+    if (!mode || !stand) return
+    const home = mode === 'home' ? spot(stand) : null
+    const to = home ?? { ...pointer, size: baseSize() }
+    const step = 1 - Math.exp(-deltaMs / 1000 / (home ? HOME : TRAIL))
+    const dx = (to.x - at.x) * step
     at.x += dx
-    at.y += (pointer.y - at.y) * step
+    at.y += (to.y - at.y) * step
+    at.size += (to.size - at.size) * step
     at.swing += (Math.max(-MAX_SWING, Math.min(MAX_SWING, dx * 0.8)) - at.swing) * 0.2
+    if (home && Math.hypot(to.x - at.x, to.y - at.y) < 0.5 && Math.abs(to.size - at.size) < 0.5) return drop()
+    cursor.style.setProperty('--size', `${at.size}px`)
     place(at.x, at.y, at.swing)
   })
+
+  // Leaving a send button: Clicky walks home (or, for reduced motion, is
+  // simply back there).
+  const leave = () => {
+    if (mode === 'chase' && !still) mode = 'home'
+    else drop()
+  }
 
   document.addEventListener(
     'pointermove',
@@ -64,25 +118,29 @@ export function initCtaCursor() {
       pointer.y = e.clientY
       if (over !== current) {
         current = over
-        // A send button's own Clicky (.clicky-at, components/mascots): the
-        // cursor starts where he stands, tip on his tip, with no pop.
-        const stand = over?.closest('.clicky-at')?.querySelector<SVGElement>('.mascot')
-        chasing = !!stand && !still
-        cursor.classList.toggle('no-pop', !!stand)
-        if (stand) {
-          const r = stand.getBoundingClientRect()
-          Object.assign(at, { x: r.left + r.width * 0.14, y: r.top + r.height * 0.08, swing: 0 })
-          place(at.x, at.y)
+        const s = standOf(over)
+        if (s) {
+          pickUp(s)
+          mode = still ? null : 'chase'
+        } else if (stand) {
+          leave()
         }
       }
-      cursor.classList.toggle('is-on', !!over)
-      if (over && !chasing) place(e.clientX, e.clientY)
+      // A plain button, or a send button with reduced motion: tip right on
+      // the pointer.
+      if (over && (!stand || still)) {
+        if (!stand) cursor.classList.remove('no-pop')
+        cursor.classList.add('is-on')
+        place(e.clientX, e.clientY)
+      } else if (!over && !stand) {
+        cursor.classList.remove('is-on')
+      }
     },
     { passive: true },
   )
   document.documentElement.addEventListener('pointerleave', () => {
     current = null
-    chasing = false
-    cursor.classList.remove('is-on')
+    if (stand) leave()
+    else cursor.classList.remove('is-on')
   })
 }

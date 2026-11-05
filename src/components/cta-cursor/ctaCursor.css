@@ -22,10 +22,13 @@
   animation: cta-cursor-pop 0.32s ease-out;
 }
 
-/* On a send button, Clicky comes from where he stood beside it and chases
-   the pointer (ctaCursor.ts), so there's no pop for that hover. */
+/* On a send button, Clicky comes from where he stood beside it, chases the
+   pointer and walks back (ctaCursor.ts), so he never pops or shrinks: he
+   just swaps places with the Clicky beside the button. */
+.cta-cursor.no-pop,
 .cta-cursor.is-on.no-pop {
   animation: none;
+  transition: none;
 }
 
 @keyframes cta-cursor-pop {
@@ -50,13 +53,8 @@ html.has-cta-cursor :is(.nb-btn-lg, .btn-cta) * {
   cursor: none;
 }
 
-/* The Clicky already pointing at a send button hands over to the cursor. */
-html.has-cta-cursor .clicky-at > .mascot {
-  transition:
-    translate 0.2s var(--ease-pop),
-    opacity 0.15s ease;
-}
-
-html.has-cta-cursor .clicky-at:hover > .mascot {
-  opacity: 0;
+/* The Clicky already pointing at a send button hands over to the cursor
+   while it's out (ctaCursor.ts), in the same frame, so there's no fade. */
+html.has-cta-cursor .clicky-at.is-away > .mascot {
+  visibility: hidden;
 }
