@@ -1,0 +1,131 @@
+/* Service card backgrounds (see serviceArt.ts): the colours of each drawing
+   and how it fits the open card at every screen size. */
+
+/* Every mark is the card's own fill with a little ink mixed in: shapes 5-8%
+   deeper, thin lines 21-27%. The light lemon and cream cards get a little
+   less, so the drawings read the same on every colour. */
+.svc-card {
+  --art-k-shape: 8%;
+  --art-k-deep: 14%;
+  --art-k-line: 27%;
+  --art-k-guide: 16%;
+}
+
+.svc-card.card-theme-lemon {
+  --art-k-shape: 7%;
+  --art-k-deep: 12%;
+  --art-k-line: 25%;
+  --art-k-guide: 15%;
+}
+
+.svc-card.card-theme-cream {
+  --art-k-shape: 5%;
+  --art-k-deep: 9%;
+  --art-k-line: 21%;
+  --art-k-guide: 12%;
+}
+
+/* The art layer is a size container, so the drawing can follow the open
+   card's width (the layer's size never depends on what's inside it). */
+.svc-art {
+  container: svc-art / size;
+}
+
+/* The drawing fills the layer, scaled to fit and pinned to its right edge:
+   on a wide card that puts it in the empty right half, as designed. */
+.svc-art-svg {
+  --art-shape: color-mix(in srgb, var(--card-fill), var(--color-ink) var(--art-k-shape));
+  --art-deep: color-mix(in srgb, var(--card-fill), var(--color-ink) var(--art-k-deep));
+  --art-line: color-mix(in srgb, var(--card-fill), var(--color-ink) var(--art-k-line));
+  --art-guide: color-mix(in srgb, var(--card-fill), var(--color-ink) var(--art-k-guide));
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* On narrower cards the text runs across most of the card, so the drawing
+   sits behind it and its lines drop to the faint range used behind text. */
+@container svc-art (max-width: 44rem) {
+  .svc-art-svg {
+    --art-line: color-mix(in srgb, var(--card-fill), var(--color-ink) calc(var(--art-k-line) * 0.6));
+    --art-guide: color-mix(in srgb, var(--card-fill), var(--color-ink) calc(var(--art-k-guide) * 0.6));
+  }
+}
+
+/* On a phone the open card is tall and narrow: a wider box, still pinned
+   right, keeps the drawing big enough to read instead of a sliver. */
+@container svc-art (max-width: 30rem) {
+  .svc-art-svg {
+    left: auto;
+    width: 170%;
+  }
+}
+
+/* The drawing's parts, by role: flat shapes and the holes cut in them. */
+.svc-art-svg .art-shape {
+  fill: var(--art-shape);
+}
+
+.svc-art-svg .art-shape-deep {
+  fill: var(--art-deep);
+}
+
+.svc-art-svg .art-shape-round {
+  fill: var(--art-shape);
+  stroke: var(--art-shape);
+  stroke-linejoin: round;
+}
+
+.svc-art-svg .art-cut {
+  fill: var(--card-fill);
+}
+
+/* Thick rounded strokes that draw a shape (their width is set on each). */
+.svc-art-svg :is(.art-stroke, .art-stroke-deep, .art-cut-stroke) {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.svc-art-svg .art-stroke {
+  stroke: var(--art-shape);
+}
+
+.svc-art-svg .art-stroke-deep {
+  stroke: var(--art-deep);
+}
+
+.svc-art-svg .art-cut-stroke {
+  stroke: var(--card-fill);
+}
+
+/* Thin ink drawings: the lines, shapes that hide what's behind them, solid
+   points, and the fainter guide lines. */
+.svc-art-svg .art-line {
+  fill: none;
+  stroke: var(--art-line);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.svc-art-svg .art-line-filled {
+  fill: var(--card-fill);
+  stroke: var(--art-line);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+}
+
+.svc-art-svg .art-point {
+  fill: var(--art-line);
+}
+
+.svc-art-svg .art-guide {
+  fill: none;
+  stroke: var(--art-guide);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}

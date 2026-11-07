@@ -14,6 +14,7 @@ import './services.css'
 import { servicesLandingData as services, type ServiceLandingData } from '../../pages/services/servicesLandingData'
 import { CARD_THEMES } from '../../components/card-art/cardArt'
 import { circleSticker } from '../../components/sticker/sticker'
+import { serviceArt } from './serviceArt'
 
 // Two-digit service number ("01").
 const pad = (n: number) => String(n).padStart(2, '0')
@@ -32,8 +33,9 @@ const closeIcon = `
     <path d="M6 6l12 12M18 6L6 18" />
   </svg>`
 
-// One card: a clipped, rounded layer (art, the pill's trigger with its
-// vertical title, the open card's body) plus the corner link, which sits
+// One card: a clipped, rounded layer (its fill with the service's drawing
+// from serviceArt.ts, the pill's trigger with its vertical title, the open
+// card's body) plus the corner link, which sits
 // outside the clip (see .svc-socket in services.css). Only one half is live
 // at a time — the other is inert, so it's out of the tab order and the
 // accessibility tree.
@@ -42,7 +44,7 @@ const renderCard = (s: ServiceLandingData, i: number) => {
   return `
           <li class="svc-card card-theme-${CARD_THEMES[i % CARD_THEMES.length]}${open ? ' is-active' : ''}">
             <div class="svc-clip">
-              <div class="svc-art card-art" aria-hidden="true"></div>
+              <div class="svc-art card-art" aria-hidden="true">${serviceArt(s.slug)}</div>
               <button type="button" class="svc-trigger" aria-expanded="${open}" aria-controls="svc-body-${i}"${open ? ' inert' : ''}>
                 <span class="svc-label-n" aria-hidden="true">${pad(i + 1)}</span>
                 <span class="svc-label-t">${s.navTitle}</span>
