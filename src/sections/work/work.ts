@@ -1,8 +1,8 @@
 // Work section ("Selected work"): the project showcase, one screen tall. On
 // large screens a 20 / 80 split — a stack of project cards on the left, and
 // on the right a stage with a browser window showing the selected project's
-// homepage hero and a phone beside it. Selecting a project lifts its card,
-// slides both screens over to it, and swaps the hero text. Below 1024px it
+// homepage and a phone beside it. Selecting a project lifts its card,
+// slides both screens over to it, and swaps the address. Below 1024px it
 // stacks: the cards become a sideways-scrolling strip of pills above a
 // full-width preview. To change the projects, edit the `projects` array.
 // Styles live in work.css.
@@ -10,38 +10,54 @@ import './work.css'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { CARD_THEMES } from '../../components/card-art/cardArt'
+import handsolvedDesktop from '../../assets/work/handsolved-desktop.webp'
+import handsolvedPhone from '../../assets/work/handsolved-phone.webp'
+import fixwizardDesktop from '../../assets/work/fixwizard-desktop.webp'
+import fixwizardPhone from '../../assets/work/fixwizard-phone.webp'
+import havenDesktop from '../../assets/work/haven-desktop.webp'
+import havenPhone from '../../assets/work/haven-phone.webp'
+import fureverDesktop from '../../assets/work/furever-desktop.webp'
+import fureverPhone from '../../assets/work/furever-phone.webp'
 
-// One entry per project: its card (name, tag) and its preview — the site's
-// address, and its homepage hero's title and description. The preview
-// copy is placeholder text until the real sites go in.
+// One entry per project: its card (name, tag), the site's address, its
+// headline (the tagline on the hero's card stack, hero.ts), and screenshots
+// of its homepage (1440px desktop, 390px phone) with a line describing them.
 export const projects = [
   {
-    name: 'Northfield Studio',
-    tag: 'Architecture · 2025',
-    url: 'northfieldstudio.com',
-    title: 'Spaces shaped around the way people live',
-    description: 'A calm, image-led homepage for a studio whose houses, libraries and schools speak for themselves.',
+    name: 'HandSolved',
+    tag: 'Poker app · 2026',
+    url: 'handsolved.com',
+    title: 'Every hand you play, solved.',
+    desktop: handsolvedDesktop,
+    phone: handsolvedPhone,
+    alt: 'HandSolved homepage: "Every hand you play, solved." beside a preflop chart and the app on a phone.',
   },
   {
-    name: 'Marlow & Co.',
-    tag: 'Hospitality · 2025',
-    url: 'marlowandco.com',
-    title: 'Small plates, long tables, late nights',
-    description: 'Menus, rooms and bookings for a family of local restaurants, one tap away on any phone.',
+    name: 'The Fix Wizard',
+    tag: 'Chimney & handyman · 2026',
+    url: 'thefixwizard.com',
+    title: 'Chimney and handyman services near you',
+    desktop: fixwizardDesktop,
+    phone: fixwizardPhone,
+    alt: 'The Fix Wizard homepage: "Chimney & Handyman Services Near You" with free quote and service area buttons.',
   },
   {
-    name: 'Petra Fintech',
-    tag: 'SaaS · 2024',
-    url: 'petra.finance',
-    title: 'Treasury tools for teams that move fast',
-    description: 'A clear product story with live numbers, built to turn free trials into whole finance teams.',
+    name: 'Haven Locksmith',
+    tag: 'Locksmith · 2026',
+    url: 'havenlocksmith.com',
+    title: 'Locked out? Help is closer than you think.',
+    desktop: havenDesktop,
+    phone: havenPhone,
+    alt: 'Haven Locksmith homepage: "Locked out? Help is closer than you think." beside a drawing of a lock cylinder.',
   },
   {
-    name: 'Kiln Ceramics',
-    tag: 'E-commerce · 2024',
-    url: 'kilnceramics.shop',
-    title: 'Handmade pieces, fired in small batches',
-    description: 'A quiet storefront that lets the glaze and the craft do the selling, from first look to checkout.',
+    name: 'Furever Home',
+    tag: 'Animal shelter · 2026',
+    url: 'bg-guy.github.io/animal-shelter-2',
+    title: 'Every paw deserves a home to run home to.',
+    desktop: fureverDesktop,
+    phone: fureverPhone,
+    alt: 'Furever Home homepage: "Every paw deserves a home to run home to." beside a card for Buddy, a dog up for adoption.',
   },
 ]
 type Project = (typeof projects)[number]
@@ -61,21 +77,23 @@ const renderCard = (p: Project, i: number) => `
               <span class="pj-card-tag">${p.tag}</span>
             </button>`
 
-// One project's frame on the browser screen: its fill behind a sketch
-// of the site's top bar. The hero text isn't part of the frame — it sits
-// above the frames (.pj-copy), so it can swap on its own.
-const renderFrame = (_: Project, i: number) => `
-                  <div class="pj-frame card-theme-${themeOf(i)}">
+// One project's frame on the browser screen: its fill behind the desktop
+// screenshot, or the phone one when the browser is phone-sized itself.
+// Only the selected frame is shown to screen readers.
+const renderFrame = (p: Project, i: number) => `
+                  <div class="pj-frame card-theme-${themeOf(i)}"${i === 0 ? '' : ' aria-hidden="true"'}>
                     <span class="pj-art card-art"></span>
-                    <span class="pj-site-bar"><i></i><i></i><i></i><i></i></span>
+                    <picture>
+                      <source media="(max-width: 639px)" srcset="${p.phone}">
+                      <img class="pj-shot" src="${p.desktop}" alt="${p.alt}" width="1800" height="1125" loading="lazy" decoding="async">
+                    </picture>
                   </div>`
 
-// One project's frame on the phone: its fill behind a sketch of the
-// hero (heading, text and a button) — a stand-in until real screenshots.
-const renderPhoneFrame = (_: Project, i: number) => `
+// One project's frame on the phone: its fill behind the phone screenshot.
+const renderPhoneFrame = (p: Project, i: number) => `
                   <div class="pj-frame card-theme-${themeOf(i)}">
                     <span class="pj-art card-art"></span>
-                    <span class="pj-sketch"><i></i><i></i><i></i><i></i><i></i></span>
+                    <img class="pj-shot" src="${p.phone}" alt="" width="780" height="1688" loading="lazy" decoding="async">
                   </div>`
 
 // Markup: heading with the project count, then the cards (a tab list) and
@@ -101,12 +119,8 @@ export const renderWork = () => `
                 <span class="pj-address"><span class="pj-mask"><span id="pj-url" class="pj-url">${projects[0].url}</span></span></span>
               </div>
               <div class="pj-screen">
-                <div class="pj-track" aria-hidden="true">
+                <div id="pj-track" class="pj-track">
                   ${projects.map(renderFrame).join('')}
-                </div>
-                <div class="pj-copy">
-                  <div class="pj-mask"><h3 id="pj-title" class="pj-title">${projects[0].title}</h3></div>
-                  <div class="pj-mask"><p id="pj-description" class="pj-description">${projects[0].description}</p></div>
                 </div>
               </div>
             </div>
@@ -130,28 +144,23 @@ export function initWork() {
   const list = document.querySelector<HTMLElement>('#work .pj-list')
   const stage = document.getElementById('pj-stage')
   const url = document.getElementById('pj-url')
-  const title = document.getElementById('pj-title')
-  const description = document.getElementById('pj-description')
-  if (!list || !stage || !url || !title || !description) return
+  const track = document.getElementById('pj-track')
+  if (!list || !stage || !url || !track) return
 
   const tabs = Array.from(list.querySelectorAll<HTMLButtonElement>('[role="tab"]'))
-  const text = [url, title, description]
+  const frames = Array.from(track.children)
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
   let active = 0
-  let shown = reduceMotion // whether the text has made its first entrance
+  let shown = reduceMotion // whether the address has made its first entrance
   let textMotion: gsap.core.Timeline | null = null
 
-  // The hero text slides inside overflow-hidden masks, by transform only.
+  // The address slides inside an overflow-hidden mask, by transform only.
   // It waits below its mask until the showcase scrolls into view, then
-  // slides up — the description just after the title.
-  const slideIn = () =>
-    gsap
-      .timeline()
-      .to([url, title], { yPercent: 0, duration: 0.7, ease: 'power3.out' })
-      .to(description, { yPercent: 0, duration: 0.7, ease: 'power3.out' }, 0.14)
+  // slides up.
+  const slideIn = () => gsap.timeline().to(url, { yPercent: 0, duration: 0.7, ease: 'power3.out' })
 
   if (!reduceMotion) {
-    gsap.set(text, { yPercent: 110 })
+    gsap.set(url, { yPercent: 110 })
     ScrollTrigger.create({
       trigger: stage,
       start: 'top 75%',
@@ -164,21 +173,18 @@ export function initWork() {
     })
   }
 
-  // Swaps the hero text to project `i`: the current text slides up and out
-  // of its masks, then the new text slides up into its place. A new swap
-  // takes over from wherever the last one had got to.
+  // Swaps the address to project `i`: the current one slides up and out of
+  // its mask, then the new one slides up into its place. A new swap takes
+  // over from wherever the last one had got to.
   function showText(i: number) {
-    const p = projects[i]
     const write = () => {
-      url!.textContent = p.url
-      title!.textContent = p.title
-      description!.textContent = p.description
+      url!.textContent = projects[i].url
     }
     textMotion?.kill()
     if (reduceMotion) return write()
     textMotion = gsap.timeline()
-    if (shown) textMotion.to(text, { yPercent: -110, duration: 0.3, ease: 'power2.in', stagger: 0.04 })
-    textMotion.add(write).set(text, { yPercent: 110 }).add(slideIn())
+    if (shown) textMotion.to(url, { yPercent: -110, duration: 0.3, ease: 'power2.in' })
+    textMotion.add(write).set(url, { yPercent: 110 }).add(slideIn())
     shown = true
   }
 
@@ -194,13 +200,15 @@ export function initWork() {
   }
 
   // Selects project `i`: its card lifts (CSS, from aria-selected), both
-  // screens slide to its frame (CSS, from --pj-index) and its text swaps in.
+  // screens slide to its frame (CSS, from --pj-index) and its address swaps in.
   function select(i: number) {
     if (i === active) return
     tabs[active].setAttribute('aria-selected', 'false')
     tabs[active].tabIndex = -1
     tabs[i].setAttribute('aria-selected', 'true')
     tabs[i].tabIndex = 0
+    frames[active].setAttribute('aria-hidden', 'true')
+    frames[i].removeAttribute('aria-hidden')
     stage!.style.setProperty('--pj-index', String(i))
     stage!.setAttribute('aria-labelledby', tabs[i].id)
     active = i

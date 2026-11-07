@@ -300,6 +300,11 @@
   font-weight: 700;
 }
 
+/* The address slides inside this overflow-hidden mask (work.ts). */
+.pj-mask {
+  overflow: hidden;
+}
+
 .pj-url {
   display: block;
   white-space: nowrap;
@@ -342,85 +347,15 @@
   right: -10%;
 }
 
-/* A sketch of the site's top bar: a logo dot and three links. */
-.pj-site-bar {
+/* The screenshot over the frame's fill: it fills the screen, cropped from
+   the top left so the site's logo and headline always show. */
+.pj-shot {
   position: absolute;
-  top: 7%;
-  right: 7%;
-  left: 7%;
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-}
-
-.pj-site-bar i {
-  width: 2.25rem;
-  height: 0.65rem;
-  border: 2px solid var(--color-ink);
-  border-radius: 999px;
-  background: var(--color-surface);
-}
-
-.pj-site-bar i:first-child {
-  width: 1.3rem;
-  height: 1.3rem;
-  margin-right: auto;
-  background: var(--color-ink);
-}
-
-/* Large screens: the phone reaches up beside the bar, so the links stop
-   short of it. */
-@media (min-width: 1024px) {
-  .pj-site-bar {
-    right: 18%;
-  }
-}
-
-/* The hero text, layered over the frames so it stays put while they
-   slide. Each line moves inside its own overflow-hidden mask, by
-   transform only (work.ts), and is clamped to a few lines so it always
-   fits. */
-.pj-copy {
-  position: absolute;
-  top: 22%;
-  left: 7%;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  width: 86%;
-  color: var(--color-ink);
-}
-
-@media (min-width: 640px) {
-  .pj-copy {
-    width: min(30rem, 58%);
-  }
-}
-
-.pj-mask {
-  overflow: hidden;
-}
-
-.pj-title {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-  overflow: hidden;
-  padding-bottom: 0.08em;
-  font-family: var(--font-display);
-  font-size: clamp(1.75rem, 3.6vw, 3.25rem);
-  font-weight: 800;
-  line-height: 0.95;
-}
-
-.pj-description {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-  overflow: hidden;
-  font-size: clamp(0.875rem, 1.2vw, 1rem);
-  font-weight: 500;
-  line-height: 1.5;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: left top;
 }
 
 /* The phone: a cream body in the heavy ink line on a hard shadow, a screen
@@ -474,51 +409,6 @@
   border-radius: 999px;
   background: var(--color-ink);
   transform: translateX(-50%);
-}
-
-/* A sketch of the hero on the phone: two heading lines, two of text and
-   a button. */
-.pj-sketch {
-  position: absolute;
-  top: 20%;
-  right: 10%;
-  left: 10%;
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-}
-
-.pj-sketch i {
-  height: 0.55rem;
-  border: 2px solid var(--color-ink);
-  border-radius: 999px;
-  background: var(--color-surface);
-}
-
-.pj-sketch i:nth-child(1),
-.pj-sketch i:nth-child(2) {
-  height: 0.9rem;
-  background: var(--color-ink);
-}
-
-.pj-sketch i:nth-child(1) {
-  width: 90%;
-}
-
-.pj-sketch i:nth-child(2) {
-  width: 65%;
-  margin-bottom: 0.4rem;
-}
-
-.pj-sketch i:nth-child(4) {
-  width: 75%;
-}
-
-.pj-sketch i:nth-child(5) {
-  width: 55%;
-  height: 1.5rem;
-  margin-top: 0.6rem;
-  background: var(--color-lemon);
 }
 
 @media (prefers-reduced-motion: reduce) {
