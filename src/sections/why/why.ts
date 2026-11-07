@@ -1,33 +1,49 @@
 // "Why us" section: five numbered reasons a business owner will be glad they
 // hired us, each answering a worry before it's raised (cost, time, tech,
 // results). Every claim is something we actually do, with no invented
-// numbers. Styles live in why.css.
+// numbers. Each card carries one flat corner shape. Styles live in why.css.
 import './why.css'
 
+// Each reason's corner shape is drawn in a 400 x 300 box that why.css pins
+// to the card's top-right corner, the one spot beside the big number with no
+// text. The user picked these from three versions per card.
 const REASONS = [
   {
     title: 'Built to win customers',
     copy: 'Every page is planned around one job: turning a visitor into a call, a booking or a sale. Pretty is the bonus, not the goal.',
+    corner: '<circle cx="400" cy="0" r="130"/>',
   },
   {
     title: 'Everything under one roof',
     copy: 'Strategy, copy, design, SEO and the build itself. One team and one point of contact, not five freelancers to manage.',
+    corner: '<polygon points="250,0 400,0 400,150"/>',
   },
   {
     title: 'Fast and easy to find',
     copy: 'Built to Google’s own Core Web Vitals and SEO guidelines, and checked with Google’s tools before launch, so it ranks and loads quickly.',
+    corner: '<circle cx="400" cy="70" r="84"/>',
   },
   {
     title: 'You run your business, we handle the tech',
     copy: 'Hosting, updates, backups and fixes can all be ours to worry about, so your website never becomes your second job.',
+    corner: '<polygon points="290,20 390,-80 490,20 390,120" class="why-art-round"/>',
   },
   {
     title: 'One clear price, and you own it all',
     copy: 'A fixed quote before we start, with no hidden fees or lock-in. The domain, the code and the content are yours from day one.',
+    corner: '<circle cx="320" cy="0" r="74"/>',
   },
 ]
 
-const FILLS = ['var(--color-lemon)', 'var(--color-mint)', 'var(--color-lilac)', 'var(--color-coral)', 'var(--color-surface)']
+// The cards' flat fills, and how much ink each corner shape mixes into its
+// card's fill to sit a shade deeper (less on cream, so all five read alike).
+const FILLS = [
+  { fill: 'var(--color-lemon)', ink: '7%' },
+  { fill: 'var(--color-mint)', ink: '8%' },
+  { fill: 'var(--color-lilac)', ink: '8%' },
+  { fill: 'var(--color-coral)', ink: '8%' },
+  { fill: 'var(--color-surface)', ink: '5%' },
+]
 
 export const renderWhy = () => `
     <section id="why" class="px-6 sm:px-10 py-24 sm:py-32">
@@ -40,7 +56,8 @@ export const renderWhy = () => `
         <ol class="why-list">
           ${REASONS.map(
             (r, i) => `
-          <li class="why-item nb-card reveal" style="--nb-card-bg: ${FILLS[i]}">
+          <li class="why-item nb-card reveal" style="--nb-card-bg: ${FILLS[i].fill}; --why-ink: ${FILLS[i].ink}">
+            <svg class="why-art" viewBox="0 0 400 300" preserveAspectRatio="xMaxYMin meet" aria-hidden="true">${r.corner}</svg>
             <span class="why-num" aria-hidden="true">${String(i + 1).padStart(2, '0')}</span>
             <h3 class="why-title">${r.title}</h3>
             <p class="why-copy">${r.copy}</p>
