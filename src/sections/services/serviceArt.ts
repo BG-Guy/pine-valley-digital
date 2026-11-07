@@ -6,7 +6,7 @@ import './serviceArt.css'
 // Each drawing is in the open card's units on a wide screen (880 x 500) and
 // keeps to the right half, where the card has no text. Class names set the
 // colour: art-shape* is the card's fill a shade deeper, art-line* is thin
-// ink. E-commerce has no drawing yet.
+// ink.
 const ART: Record<string, string> = {
   // A browser window: its three dots, the edge of the address bar and one
   // picture block, cut out of the shape.
@@ -48,6 +48,12 @@ const ART: Record<string, string> = {
   'care-maintenance': `
     <rect x="640" y="70" width="120" height="300" rx="26" class="art-shape"/>
     <rect x="550" y="160" width="300" height="120" rx="26" class="art-shape"/>`,
+  // A shopping bag: its handle and the two holes it hangs from.
+  'ecommerce': `
+    <path d="M632 176 V138 A68 68 0 0 1 768 138 V176" class="art-stroke" stroke-width="24"/>
+    <rect x="560" y="150" width="280" height="240" rx="24" class="art-shape"/>
+    <circle cx="632" cy="188" r="10" class="art-cut"/>
+    <circle cx="768" cy="188" r="10" class="art-cut"/>`,
   // A calendar page: its rings, the header line, a dot for each day and one
   // booked day, circled and ticked.
   'booking-payments': `
