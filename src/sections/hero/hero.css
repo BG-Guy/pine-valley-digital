@@ -49,8 +49,7 @@
   padding: 0.08em 0.2em 0.2em 0.06em;
 }
 
-/* Room on the right for the box's shadow, so the comma after it stays
-   clear of the ink. */
+/* Room on the right for the box's shadow. */
 .hero-mark {
   position: relative;
   margin-inline: 0.04em 0.16em;

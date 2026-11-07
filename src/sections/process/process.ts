@@ -4,10 +4,10 @@
 import { renderTickets } from '../../components/tickets/tickets'
 
 const processSteps = [
-  { title: 'Discover', copy: 'Goals, audience, and constraints — a short, focused kickoff so we build the right thing.' },
-  { title: 'Design', copy: 'Wireframes to high-fidelity screens, reviewed together at every stage.' },
-  { title: 'Build', copy: 'Hand-coded, tested across devices, optimized before it ever ships.' },
-  { title: 'Launch', copy: 'Deployed, measured, and handed off with everything you need to run it.' },
+  { title: 'Discover', copy: 'A free 20-minute call about your business, your customers and what the site has to do. You leave with a fixed quote and a launch date.' },
+  { title: 'Design', copy: 'We plan each page, then design it in full. You see every stage and ask for changes before we build.' },
+  { title: 'Build', copy: 'We code the site by hand and test it on phones, tablets and desktops, checking the speed with Google’s tools.' },
+  { title: 'Launch', copy: 'We put it live, check every form and call button, and give you the domain, the code and every login.' },
 ]
 
 // Markup: eyebrow and heading, then the tickets (each one a process-step,

@@ -22,7 +22,7 @@ export const renderContact = () => `
           <div class="contact-intro">
             <p class="nb-pill" style="--nb-pill-bg: var(--color-surface)">Free 20-minute call</p>
             <h2 id="contact-heading" class="contact-title font-display font-extrabold">Ready to win more <span class="nb-mark">customers?</span></h2>
-            <p class="contact-reply">Tell us about your business and we&rsquo;ll set up a free call: no pitch, no obligation, just an honest plan and a fixed quote. Usually replies within one business day.</p>
+            <p class="contact-reply">Tell us about your business and we&rsquo;ll set up a free call. You&rsquo;ll get an honest plan and a fixed quote, with no obligation to go ahead. We usually reply within one business day.</p>
             <p class="contact-direct">Rather write it yourself? <a class="contact-email" href="mailto:${EMAIL}">${EMAIL}</a></p>
           </div>
           <form id="contact-form" class="contact-form" aria-labelledby="contact-heading">

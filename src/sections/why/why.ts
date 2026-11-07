@@ -10,17 +10,17 @@ import './why.css'
 const REASONS = [
   {
     title: 'Built to win customers',
-    copy: 'Every page is planned around one job: turning a visitor into a call, a booking or a sale. Pretty is the bonus, not the goal.',
+    copy: 'Every page is planned around one job: turning a visitor into a call, a booking or a sale. The design is there to make that easy.',
     corner: '<circle cx="400" cy="0" r="130"/>',
   },
   {
     title: 'Everything under one roof',
-    copy: 'Strategy, copy, design, SEO and the build itself. One team and one point of contact, not five freelancers to manage.',
+    copy: 'Strategy, copy, design, SEO and the build itself. One team and one person to call, from the first sketch to launch day.',
     corner: '<polygon points="250,0 400,0 400,150"/>',
   },
   {
     title: 'Fast and easy to find',
-    copy: 'Built to Google’s own Core Web Vitals and SEO guidelines, and checked with Google’s tools before launch, so it ranks and loads quickly.',
+    copy: 'Built to Google’s own Core Web Vitals and SEO guidelines, and tested with Google’s tools before launch, so pages load quickly and Google can read every one.',
     corner: '<circle cx="400" cy="70" r="84"/>',
   },
   {

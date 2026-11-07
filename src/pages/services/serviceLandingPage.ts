@@ -1,5 +1,4 @@
-// Service landing page template (Thrive & Scale framework — see
-// ~/.claude/skills/seo-landing-page-copywriter). One shared template, one
+// Service landing page template. One shared template, one
 // data object per service (servicesLandingData.ts) — every services/*.html
 // page renders through this, in the site's neo-brutalist theme (global.css).
 // Styles live in serviceLandingPage.css.
@@ -16,7 +15,7 @@ import ctaBannerImg from '../../assets/cta-banner-before-you-reach-out.webp'
 // Shared across every service — a single, honest guarantee reads as more
 // credible than a different one invented per page.
 const GUARANTEE =
-  "If the first round of work isn't right, we revise it until it is — at no extra cost. If it's still not working for you, you don't pay for that stage. No multi-month lock-in, no cancellation fee."
+  'If the first round of work isn’t right, we revise it at no extra cost until it is. If it still isn’t working for you, you don’t pay for that stage. You can stop at any point without a cancellation fee.'
 
 const EMAIL = 'hello@pinevalleydigital.com'
 
@@ -51,25 +50,25 @@ const renderHero = (d: ServiceLandingData) => `
 ${renderTape()}
 `
 
-// Section 2 — Market Reality & Proof: a couple of real, sourced stats (never
-// invented), each on a flat colour card, and the "strategic shift"
-// paragraph.
+// Section 2 — Why it matters: up to a few real, sourced stats (never
+// invented), each on a flat colour card, then the paragraph on why this
+// matters to the owner. A page with no stats shows just the paragraph.
 const renderProof = (d: ServiceLandingData) => `
     <section class="px-6 sm:px-10 py-20 sm:py-24">
       <div class="mx-auto max-w-6xl">
-        <div class="svc-stats reveal">
+        ${d.stats.length ? `<div class="svc-stats reveal">
           ${d.stats
             .map(
               (s, i) => `
           <div class="svc-stat nb-card" style="--nb-card-bg: ${STAT_FILLS[i % STAT_FILLS.length]}">
             <div class="svc-stat-value">${s.value}</div>
             <p class="svc-stat-label">${s.label}</p>
-            ${s.source ? `<p class="svc-stat-source">${s.source}</p>` : ''}
+            <p class="svc-stat-source">${s.source}</p>
           </div>`,
             )
             .join('')}
-        </div>
-        <p class="svc-shift reveal">${d.strategicShift}</p>
+        </div>` : ''}
+        <p class="svc-shift reveal">${d.whyItMatters}</p>
       </div>
     </section>
 `
@@ -82,7 +81,7 @@ const renderOffering = (d: ServiceLandingData) => `
       <div class="mx-auto max-w-6xl">
         <div class="reveal mb-14 max-w-2xl grid gap-5">
           <p class="nb-pill" style="--nb-pill-bg: var(--color-lilac)">What you get</p>
-          <h2 class="font-display font-extrabold text-4xl sm:text-5xl">What this <span class="nb-mark nb-mark-mint">actually includes</span></h2>
+          <h2 class="font-display font-extrabold text-4xl sm:text-5xl">What&rsquo;s <span class="nb-mark nb-mark-mint">included</span></h2>
           <p class="svc-lead">${d.whatWeDo}</p>
         </div>
         ${renderTickets(d.journey)}
@@ -90,14 +89,13 @@ const renderOffering = (d: ServiceLandingData) => `
     </section>
 `
 
-// Section 4 — Validation & Diagnostic: "signs you need this" as a live
-// self-check checklist (see setupDiagnostic) on an ink panel, plus a
-// reasoned, non-invented line of social proof.
+// Section 4 — Diagnostic: "signs you need this" as a live self-check
+// checklist (see setupDiagnostic) on an ink panel, ending on its score.
 const renderDiagnostic = (d: ServiceLandingData) => `
     <section class="px-6 sm:px-10 py-20 sm:py-24">
       <div class="svc-diag nb-card reveal mx-auto max-w-4xl">
-        <h2 class="font-display font-extrabold text-4xl sm:text-5xl">Is this <span class="nb-mark">actually</span> a problem for you?</h2>
-        <p class="svc-diag-intro">${d.diagnosticIntro}</p>
+        <h2 class="font-display font-extrabold text-4xl sm:text-5xl">Sound <span class="nb-mark">familiar?</span></h2>
+        <p class="svc-diag-intro">Tick the ones that sound like you.</p>
         <ul id="svc-diagnostic" class="svc-diag-list">
           ${d.signs
             .map(
@@ -112,7 +110,6 @@ const renderDiagnostic = (d: ServiceLandingData) => `
             .join('')}
         </ul>
         <p id="svc-diagnostic-result" class="svc-diag-result" aria-live="polite"></p>
-        <p class="svc-diag-proof">${d.socialProof}</p>
       </div>
     </section>
 `
@@ -231,9 +228,9 @@ function setupDiagnostic(d: ServiceLandingData) {
   const total = d.signs.length
   const messageFor = (checked: number) => {
     if (checked === 0) return ''
-    if (checked === 1) return `1 of ${total} — worth keeping an eye on.`
-    if (checked < total) return `${checked} of ${total} — this is probably costing you more than you think.`
-    return `${total} of ${total} — this one’s overdue.`
+    if (checked === 1) return `1 of ${total}. Worth keeping an eye on.`
+    if (checked < total) return `${checked} of ${total}. Worth a closer look.`
+    return `All ${total}. This is where we’d start.`
   }
 
   list.addEventListener('change', () => {

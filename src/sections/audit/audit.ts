@@ -178,7 +178,7 @@ export function initAudit() {
         ${
           issues.length
             ? `<div class="audit-issues"><p class="audit-issues-title">Top things to fix</p><ol>${issues.map((i) => `<li><span class="audit-tag">${i.cat}</span>${plain(i.title)}</li>`).join('')}</ol></div>`
-            : `<p class="audit-issues-title">Nothing big to fix. Nice work! The free report can still find quick wins.</p>`
+            : `<p class="audit-issues-title">Nothing big to fix. The free report can still find a few quick wins.</p>`
         }
         <a href="#audit-request" class="nb-press nb-btn nb-lemon audit-next"><span class="nb-face">Get the free fix plan ${ARROW}</span></a>`
       results.hidden = false

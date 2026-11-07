@@ -10,7 +10,7 @@ const QUESTIONS = [
   },
   {
     q: 'How much does it cost?',
-    a: 'Every project gets a fixed quote after a free 20-minute call, based on what your site actually needs. The price we agree is the price you pay: no hidden fees, no surprise invoices.',
+    a: 'Every project gets a fixed quote after a free 20-minute call, based on what your site needs. The price we agree is the price you pay.',
   },
   {
     q: 'Will it work on phones?',
@@ -44,7 +44,7 @@ export const renderFaq = () => `
         <div class="faq-head reveal">
           <p class="nb-pill" style="--nb-pill-bg: var(--color-lilac)">FAQ</p>
           <h2 class="font-display font-extrabold text-4xl sm:text-5xl">Questions, <span class="nb-mark nb-mark-mint">answered</span></h2>
-          <p class="faq-lead">Still wondering about something? Ask us on a free call. There’s no pitch, just straight answers.</p>
+          <p class="faq-lead">Still wondering about something? Ask us on a free call and we’ll give you a straight answer.</p>
           <a href="#contact" class="nb-press nb-btn nb-lemon"><span class="nb-face">Book a free call</span></a>
         </div>
         <div class="faq-list reveal">

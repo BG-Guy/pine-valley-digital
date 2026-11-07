@@ -241,12 +241,6 @@
   color: var(--color-lemon);
 }
 
-.svc-diag-proof {
-  padding-top: 1.25rem;
-  border-top: 3px dashed color-mix(in srgb, var(--color-paper) 35%, transparent);
-  color: color-mix(in srgb, var(--color-paper) 85%, var(--color-ink));
-}
-
 /* ── Call to action ─────────────────────────────────────────────────── */
 
 .svc-faq {
