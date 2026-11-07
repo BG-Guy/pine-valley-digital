@@ -12,7 +12,7 @@ export interface ServiceLandingData {
   headline: string
   headlineAccent: string // the word/phrase within the headline shown in the accent color
   subhead: string
-  teasers: [string, string, string]
+  teasers: [string, string, string] // the ticked points on the home page's open service card
   stats: { value: string; label: string; source: string }[]
   whyItMatters: string // the paragraph under the stats: why this matters to the owner
   whatWeDo: string

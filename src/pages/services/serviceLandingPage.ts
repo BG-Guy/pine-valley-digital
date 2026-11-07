@@ -25,9 +25,8 @@ const ARROW = `<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true
 const STAT_FILLS = ['var(--color-lilac)', 'var(--color-mint)', 'var(--color-lemon)']
 
 // Section 1 — Hero: the eyebrow as a mono pill, the outcome-first headline
-// (its accent phrase on a lemon highlight box), an objection-neutralizing
-// subhead, the three teasers as ticked cards and the call to action, with
-// a reply-time sticker. The tape (components/tape) runs across its bottom
+// (its accent phrase on a lemon highlight box), the subhead and the call to
+// action, with a reply-time sticker. The tape (components/tape) runs across its bottom
 // edge.
 const renderHero = (d: ServiceLandingData) => `
     <section class="svc-hero relative px-6 sm:px-10 pt-36 pb-24 sm:pt-44 sm:pb-28">
@@ -38,9 +37,6 @@ const renderHero = (d: ServiceLandingData) => `
           ${d.headline.replace(d.headlineAccent, `<span class="nb-mark">${d.headlineAccent}</span>`)}
         </h1>
         <p class="svc-hero-sub reveal">${d.subhead}</p>
-        <ul class="svc-hero-teasers reveal">
-          ${d.teasers.map((t) => `<li>${t}</li>`).join('')}
-        </ul>
         <div class="svc-hero-cta reveal">
           <a href="#svc-cta" class="nb-press nb-btn-lg nb-lemon"><span class="nb-face">Book a free call ${ARROW}</span></a>
           <a href="/#audit" class="nb-press nb-btn"><span class="nb-face">Free website check</span></a>
