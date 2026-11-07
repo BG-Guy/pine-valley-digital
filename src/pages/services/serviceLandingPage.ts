@@ -11,6 +11,7 @@ import { circleSticker } from '../../components/sticker/sticker'
 import { renderFlowBands, initFlowBands } from '../../components/flow-bands/flowBands'
 import { clicky } from '../../components/mascots/mascots'
 import { groupOf, servicesIn, serviceHref } from './serviceGroups'
+import ctaBannerImg from '../../assets/cta-banner-before-you-reach-out.webp'
 
 // Shared across every service — a single, honest guarantee reads as more
 // credible than a different one invented per page.
@@ -148,14 +149,15 @@ const renderFreeCheck = (d: ServiceLandingData) => {
 }
 
 // Section 5 — Conclusion, Risk Reversal & Conversion: the objections as
-// cards, the shared guarantee on a lemon card, and the closing form on a
-// lilac panel with flowing bands in its corner and Clicky pointing at the
-// send button (a lightweight mailto form — this site has no backend, so
-// "submit" composes an email rather than posting to a hidden service).
+// cards on a framed panel over the banner image, the shared guarantee on a
+// lemon card, and the closing form on a lilac panel with flowing bands in
+// its corner and Clicky pointing at the send button (a lightweight mailto
+// form — this site has no backend, so "submit" composes an email rather
+// than posting to a hidden service).
 const renderCta = (d: ServiceLandingData) => `
     <section id="svc-cta" class="px-6 sm:px-10 py-20 sm:py-24">
       <div class="mx-auto max-w-6xl grid gap-14">
-        <div class="reveal">
+        <div class="nb-card reveal p-6 sm:p-10" style="background: var(--color-paper) url('${ctaBannerImg}') center / cover no-repeat">
           <h2 class="font-display font-extrabold text-3xl sm:text-4xl mb-8">Before you reach out</h2>
           <dl class="svc-faq">
             ${d.objections
