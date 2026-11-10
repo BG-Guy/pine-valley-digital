@@ -42,23 +42,24 @@
   white-space: normal;
 }
 
-/* The illustration: a white card in the ink frame (the drawings have white
-   backgrounds), with the reply sticker stuck on its top-right corner. */
+/* The illustration, cut out of its background so it sits straight on the
+   graph paper, no taller than the copy beside it, with the reply sticker on
+   its top-right corner. */
 .svc-hero-media {
   position: relative;
   max-width: 34rem;
 }
 
 .svc-hero-figure {
-  --nb-card-bg: #fff;
   margin: 0;
-  overflow: hidden;
 }
 
 .svc-hero-figure img {
   display: block;
   width: 100%;
   height: auto;
+  max-height: 30rem;
+  object-fit: contain;
 }
 
 .svc-hero-sub {

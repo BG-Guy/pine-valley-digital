@@ -28,8 +28,8 @@ const STAT_FILLS = ['var(--color-lilac)', 'var(--color-mint)', 'var(--color-lemo
 // Section 1 — Hero, in two columns: on the left the eyebrow as a mono pill,
 // the outcome-first headline (its accent phrase on a lemon highlight box),
 // the subhead and the call to action; on the right the service's
-// illustration in an ink-framed card, with the reply-time sticker on its
-// corner. Below 1024px the picture drops under the buttons. The tape
+// illustration (cut out, straight on the graph paper), with the reply-time
+// sticker on its corner. Below 1024px the picture drops under the buttons. The tape
 // (components/tape) runs across its bottom edge.
 const renderHero = (d: ServiceLandingData) => {
   const img = SERVICE_HERO_IMAGES[d.slug]
@@ -48,7 +48,7 @@ const renderHero = (d: ServiceLandingData) => {
           </div>
         </div>
         <div class="svc-hero-media reveal">
-          ${img ? `<figure class="svc-hero-figure nb-card"><img src="${img.src}" width="${img.width}" height="${img.height}" alt="" fetchpriority="high" decoding="async" /></figure>` : ''}
+          ${img ? `<figure class="svc-hero-figure"><img src="${img.src}" width="${img.width}" height="${img.height}" alt="" fetchpriority="high" decoding="async" /></figure>` : ''}
           ${circleSticker(['Usually', '1 day', 'to reply'], { className: 'svc-hero-sticker', label: 'Usually replies within one business day' })}
         </div>
       </div>
