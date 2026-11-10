@@ -11,6 +11,7 @@ import { renderFlowBands, initFlowBands } from '../../components/flow-bands/flow
 import { clicky } from '../../components/mascots/mascots'
 import { groupOf, servicesIn, serviceHref } from './serviceGroups'
 import ctaBannerImg from '../../assets/cta-banner-before-you-reach-out.webp'
+import { SERVICE_HERO_IMAGES } from './serviceHeroImages'
 
 // Shared across every service — a single, honest guarantee reads as more
 // credible than a different one invented per page.
@@ -24,27 +25,37 @@ const ARROW = `<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true
 // The stat cards' fills, in order.
 const STAT_FILLS = ['var(--color-lilac)', 'var(--color-mint)', 'var(--color-lemon)']
 
-// Section 1 — Hero: the eyebrow as a mono pill, the outcome-first headline
-// (its accent phrase on a lemon highlight box), the subhead and the call to
-// action, with a reply-time sticker. The tape (components/tape) runs across its bottom
-// edge.
-const renderHero = (d: ServiceLandingData) => `
+// Section 1 — Hero, in two columns: on the left the eyebrow as a mono pill,
+// the outcome-first headline (its accent phrase on a lemon highlight box),
+// the subhead and the call to action; on the right the service's
+// illustration in an ink-framed card, with the reply-time sticker on its
+// corner. Below 1024px the picture drops under the buttons. The tape
+// (components/tape) runs across its bottom edge.
+const renderHero = (d: ServiceLandingData) => {
+  const img = SERVICE_HERO_IMAGES[d.slug]
+  return `
     <section class="svc-hero relative px-6 sm:px-10 pt-36 pb-24 sm:pt-44 sm:pb-28">
-      <div class="relative mx-auto max-w-6xl">
-        ${circleSticker(['Usually', '1 day', 'to reply'], { className: 'svc-hero-sticker', label: 'Usually replies within one business day' })}
-        <p class="reveal"><span class="nb-pill">${d.eyebrow}</span></p>
-        <h1 class="svc-hero-title reveal font-display font-extrabold">
-          ${d.headline.replace(d.headlineAccent, `<span class="nb-mark">${d.headlineAccent}</span>`)}
-        </h1>
-        <p class="svc-hero-sub reveal">${d.subhead}</p>
-        <div class="svc-hero-cta reveal">
-          <a href="#svc-cta" class="nb-press nb-btn-lg nb-lemon"><span class="nb-face">Book a free call ${ARROW}</span></a>
-          <a href="/#audit" class="nb-press nb-btn"><span class="nb-face">Free website check</span></a>
+      <div class="svc-hero-grid mx-auto max-w-6xl">
+        <div class="svc-hero-copy">
+          <p class="reveal"><span class="nb-pill">${d.eyebrow}</span></p>
+          <h1 class="svc-hero-title reveal font-display font-extrabold">
+            ${d.headline.replace(new RegExp(`${d.headlineAccent}([.,!?]?)`), (_, end) => `<span class="svc-nowrap"><span class="nb-mark">${d.headlineAccent}</span>${end}</span>`)}
+          </h1>
+          <p class="svc-hero-sub reveal">${d.subhead}</p>
+          <div class="svc-hero-cta reveal">
+            <a href="#svc-cta" class="nb-press nb-btn-lg nb-lemon"><span class="nb-face">Book a free call ${ARROW}</span></a>
+            <a href="/#audit" class="nb-press nb-btn"><span class="nb-face">Free website check</span></a>
+          </div>
+        </div>
+        <div class="svc-hero-media reveal">
+          ${img ? `<figure class="svc-hero-figure nb-card"><img src="${img.src}" width="${img.width}" height="${img.height}" alt="" fetchpriority="high" decoding="async" /></figure>` : ''}
+          ${circleSticker(['Usually', '1 day', 'to reply'], { className: 'svc-hero-sticker', label: 'Usually replies within one business day' })}
         </div>
       </div>
     </section>
 ${renderTape()}
 `
+}
 
 // Section 2 — Why it matters: up to a few real, sourced stats (never
 // invented), each on a flat colour card, then the paragraph on why this
