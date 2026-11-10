@@ -5,7 +5,7 @@ import tailwindcss from '@tailwindcss/vite'
 
 // Multi-page site: every top-level .html file, plus every services/*.html
 // file, is its own build entry. Scanned at build time instead of listed by
-// hand — the services/ folder holds 14+ near-identical pages (see
+// hand — the services/ folder holds a dozen near-identical pages (see
 // src/pages/services/), so a manual list here would be one more place to
 // forget to update when a service is added.
 const root = import.meta.dirname

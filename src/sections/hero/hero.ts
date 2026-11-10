@@ -2,7 +2,7 @@
 // "fast" stuck on a lemon highlight box, with Zap the lightning bolt on its
 // corner, winking when you point at either), the intro, the two
 // buttons and a line of promises; on the right a fanned stack of
-// project cards that shuffles when clicked, with a "14 services" sticker.
+// project cards that shuffles when clicked, with a services-count sticker.
 // Styles live in hero.css.
 import './hero.css'
 import { projects } from '../work/work'

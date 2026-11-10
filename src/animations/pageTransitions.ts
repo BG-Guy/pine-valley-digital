@@ -10,7 +10,7 @@
 import { coverForNavigation, uncoverPage } from '../components/preloader/preloader'
 import { servicesLandingData } from '../pages/services/servicesLandingData'
 
-// The name shown on the preloader's card while navigating TO that page. The 14
+// The name shown on the preloader's card while navigating TO that page. The
 // service pages are added automatically from servicesLandingData.ts (their
 // single source of truth) — add an entry here only for a genuinely new
 // top-level page (not a service).

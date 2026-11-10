@@ -1,9 +1,9 @@
-// Entry point shared by every services/*.html page. Each of those 14 files
+// Entry point shared by every services/*.html page. Each of those 12 files
 // only differs in its own <head> (title, description) and one
 // <meta name="pvd-service" content="<slug>"> tag — this script reads that
 // tag, looks the slug up in servicesLandingData.ts, and renders the one
 // shared template (serviceLandingPage.ts). One script referenced identically
-// from every page, so Vite/Rollup compile it once instead of 14 times.
+// from every page, so Vite/Rollup compile it once instead of 12 times.
 import '../../global.css'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'

@@ -8,7 +8,7 @@
 // trackpad moves the row sideways (bouncing at the ends) until a fresh
 // scroll takes the page on; on touch screens the row drags and flings. The
 // list itself lives in pages/services/servicesLandingData.ts, shared with
-// the 14 service landing pages — edit services there, not here. Styles live
+// the 12 service landing pages — edit services there, not here. Styles live
 // in services.css.
 import './services.css'
 import { servicesLandingData as services, type ServiceLandingData } from '../../pages/services/servicesLandingData'

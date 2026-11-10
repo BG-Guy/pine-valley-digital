@@ -44,10 +44,6 @@ const ART: Record<string, string> = {
   'local-seo': `
     <path d="M700 470 L580.3 272.6 A140 140 0 1 1 819.7 272.6Z" class="art-shape"/>
     <circle cx="700" cy="200" r="52" class="art-cut"/>`,
-  // A first-aid plus.
-  'care-maintenance': `
-    <rect x="640" y="70" width="120" height="300" rx="26" class="art-shape"/>
-    <rect x="550" y="160" width="300" height="120" rx="26" class="art-shape"/>`,
   // A shopping bag: its handle and the two holes it hangs from.
   'ecommerce': `
     <path d="M632 176 V138 A68 68 0 0 1 768 138 V176" class="art-stroke" stroke-width="24"/>
@@ -95,13 +91,6 @@ const ART: Record<string, string> = {
   'redesign-migration': `
     <rect x="520" y="90" width="210" height="210" rx="24" class="art-shape"/>
     <rect x="650" y="180" width="210" height="210" rx="24" class="art-shape-deep"/>`,
-  // The access figure, arms out, cut out of a circle.
-  'accessibility': `
-    <circle cx="700" cy="230" r="190" class="art-shape"/>
-    <circle cx="700" cy="138" r="28" class="art-cut"/>
-    <path d="M604 196 H796" class="art-cut-stroke" stroke-width="28"/>
-    <path d="M700 196 V298" class="art-cut-stroke" stroke-width="32"/>
-    <path d="M700 298 L656 384 M700 298 L744 384" class="art-cut-stroke" stroke-width="30"/>`,
   // A chat: the assistant typing, the customer's reply, a short answer and a
   // sparkle.
   'ai-assistants': `

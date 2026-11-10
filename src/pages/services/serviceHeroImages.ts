@@ -1,7 +1,7 @@
 // The illustration on the right of each service page's hero (used by
 // serviceLandingPage.ts). Compressed copies with the white background cut
 // out live in assets/service-heroes.
-// Four services have no drawing of their own yet, so they borrow the
+// Two services have no drawing of their own yet, so they borrow the
 // closest one; give them their own file here when there is one.
 import webDesign from '../../assets/service-heroes/web-design-hero.webp'
 import webDev from '../../assets/service-heroes/web-dev-hero.webp'
@@ -50,6 +50,4 @@ export const SERVICE_HERO_IMAGES: Record<string, HeroImage> = {
   // Borrowed until they get their own drawing.
   'local-seo': IMG.seo,
   'ai-assistants': IMG.automation,
-  'care-maintenance': IMG.webDev,
-  'accessibility': IMG.webDesign,
 }

@@ -47,7 +47,7 @@ src/
     mascots/  sticker-roll/  flow-bands/  sunrise/  drawing/  cta-cursor/
   sections/        one folder per page section
     hero/  services/  work/  process/  contact/
-  pages/           the other pages: lab/, services/ (the 14 service landing pages)
+  pages/           the other pages: lab/, services/ (the 12 service landing pages)
   animations/      page-wide motion: page load, page transitions, scroll reveals
 ```
 

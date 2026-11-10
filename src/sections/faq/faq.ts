@@ -22,7 +22,7 @@ const QUESTIONS = [
   },
   {
     q: 'Who looks after it once it’s live?',
-    a: 'You can, and we’ll show you how. Or our Care & Maintenance plan handles hosting, updates, backups, security and small edits for you. It’s optional and never a lock-in.',
+    a: 'You can, and we’ll show you how. You get every login, and simple edits like prices, photos and opening hours take a few minutes.',
   },
   {
     q: 'Do I own my website?',

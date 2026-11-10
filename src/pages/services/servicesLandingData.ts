@@ -1,4 +1,4 @@
-// Content for the 14 per-service landing pages, written for small, local
+// Content for the 12 per-service landing pages, written for small, local
 // business owners. One object per service; `slug` decides the page's URL
 // (services/<slug>.html) and its data-service attribute (see main.ts).
 // Stats are only real, sourced figures (a page with none skips the stat
@@ -60,7 +60,7 @@ export const servicesLandingData: ServiceLandingData[] = [
     objections: [
       { q: 'How long does a new design take?', a: 'Most sites take 3 to 6 weeks from the first call to launch. You get a date before we start.' },
       { q: 'Can you work with what I already have?', a: 'Yes. We keep your domain, your logo and any content that still works, and redesign the rest.' },
-      { q: 'What happens after launch?', a: 'The site and the files are yours. If you’d like us to keep it updated, that’s our Care & Maintenance plan, and it’s optional.' },
+      { q: 'What happens after launch?', a: 'The site and the files are yours, with every login, and we show you how to make simple edits yourself.' },
     ],
     ctaHeadline: 'Let’s see what your site could look like.',
     ctaSub: 'Tell us a little about your business, and send your current site if you have one.',
@@ -271,45 +271,6 @@ export const servicesLandingData: ServiceLandingData[] = [
     ctaSub: 'Send us your business name and we’ll take a look.',
   },
   {
-    slug: 'care-maintenance',
-    navTitle: 'Care & Maintenance',
-    shortCopy: 'Monthly updates, backups, security checks and small edits, with a developer on call long after launch.',
-    eyebrow: 'Care & Maintenance',
-    headline: 'Stop finding out your site’s broken from a customer.',
-    headlineAccent: 'from a customer',
-    subhead:
-      'We handle updates, backups and security every month and make your small edits, so problems get caught before your customers run into them.',
-    teasers: [
-      'Backups on a schedule, tested so we know they restore',
-      'Uptime and security checks running in the background',
-      'Small text and photo edits without a new quote each time',
-    ],
-    stats: [],
-    whyItMatters:
-      'Websites break quietly. A form stops sending, a security certificate expires, an update clashes with something else. Without someone checking, you find out when a customer mentions it, or when the calls stop.',
-    whatWeDo:
-      'Monthly updates, scheduled backups, uptime and security monitoring, and small edits, all handled by a developer who knows your site.',
-    journey: [
-      { title: 'Baseline', copy: 'A full check of where your site stands today.' },
-      { title: 'Automate backups', copy: 'Scheduled backups, tested so we know they restore.' },
-      { title: 'Monitor', copy: 'Uptime and security checks running in the background.' },
-      { title: 'Respond', copy: 'Small edits and fixes turned around quickly, without a new project each time.' },
-    ],
-    signs: [
-      'You don’t know when your site was last backed up',
-      'Small edits sit in your inbox for weeks because there’s no one to ask',
-      'You’ve had a security warning you didn’t understand',
-      'Nobody would notice the site was down until a customer said something',
-    ],
-    objections: [
-      { q: 'Is this a long contract?', a: 'No. It’s month to month, and you can leave any time.' },
-      { q: 'What counts as a small edit?', a: 'Text and photo changes, small fixes and minor updates. Anything bigger gets a quote first.' },
-      { q: 'What if you didn’t build my site?', a: 'That’s fine. We look after sites other people built too.' },
-    ],
-    ctaHeadline: 'Want someone keeping an eye on your site?',
-    ctaSub: 'Tell us what it’s built on and we’ll tell you if we can help.',
-  },
-  {
     slug: 'ecommerce',
     navTitle: 'E-commerce',
     shortCopy: 'Shopify and WooCommerce stores with clear product pages, a short checkout, and payments and shipping set up and tested.',
@@ -505,47 +466,6 @@ export const servicesLandingData: ServiceLandingData[] = [
     ],
     ctaHeadline: 'Ready to leave your current platform?',
     ctaSub: 'Tell us what you’re on now and we’ll plan the move.',
-  },
-  {
-    slug: 'accessibility',
-    navTitle: 'Accessibility',
-    shortCopy: 'WCAG audits and fixes for keyboard use, contrast and screen readers, so more people can use your site.',
-    eyebrow: 'Accessibility',
-    headline: 'Let every visitor use your site, including with a keyboard or screen reader.',
-    headlineAccent: 'every visitor',
-    subhead:
-      'We test your site the way people with disabilities use it, with a keyboard, a screen reader and enlarged text, then fix whatever gets in their way.',
-    teasers: [
-      'Hands-on testing alongside the automated scans',
-      'Fixes for keyboard use, contrast, alt text and screen readers',
-      'A retest with real assistive technology when we’re done',
-    ],
-    stats: [
-      { value: '1 in 4', label: 'adults in the United States lives with a disability', source: 'CDC, 2018' },
-    ],
-    whyItMatters:
-      'Some of your customers get around with a keyboard, use a screen reader or zoom text to twice its size. If your menu or contact form doesn’t work for them, they can’t hire you. In the US, an inaccessible site can also draw an ADA demand letter.',
-    whatWeDo:
-      'A WCAG audit with hands-on keyboard and screen-reader testing, a prioritized list of fixes, the fixes themselves, and a retest to confirm them.',
-    journey: [
-      { title: 'Audit', copy: 'A hands-on WCAG review alongside the automated scans.' },
-      { title: 'Prioritize', copy: 'The problems that block people get fixed first.' },
-      { title: 'Fix', copy: 'Keyboard use, contrast, alt text and screen-reader support, fixed and tested.' },
-      { title: 'Verify', copy: 'Retested with real assistive technology.' },
-    ],
-    signs: [
-      'You’ve only ever had an automated scan, never a full WCAG audit',
-      'Your site can’t be used with a keyboard alone',
-      'You’re not sure a screen reader can use your site at all',
-      'You’ve received an accessibility demand letter, or worry about one',
-    ],
-    objections: [
-      { q: 'Doesn’t an automated scan cover this?', a: 'No. Automated tools catch only some of the problems. A proper audit includes testing by hand with a keyboard and a screen reader.' },
-      { q: 'How big a job is this?', a: 'It depends on what we find. Some sites need a handful of fixes, others more. You get a fixed quote after the audit.' },
-      { q: 'Does this guarantee I won’t be sued?', a: 'No one can guarantee that. A documented WCAG audit and fixes put you in a much stronger position if a complaint ever comes.' },
-    ],
-    ctaHeadline: 'Want to know how accessible your site is?',
-    ctaSub: 'Send us your site address and we’ll tell you what we find.',
   },
   {
     slug: 'ai-assistants',
