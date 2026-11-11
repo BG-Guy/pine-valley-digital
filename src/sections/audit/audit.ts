@@ -72,6 +72,7 @@ export const renderAudit = () => `
           <form id="audit-request" class="audit-request nb-card">
             <label class="nb-field"><span class="nb-label">Name</span><input class="nb-input" name="name" autocomplete="name" required /></label>
             <label class="nb-field"><span class="nb-label">Email</span><input class="nb-input" type="email" name="email" autocomplete="email" required /></label>
+            <label class="nb-field"><span class="nb-label">Phone <span class="nb-optional">(optional)</span></span><input class="nb-input" type="tel" name="phone" autocomplete="tel" maxlength="40" /></label>
             <label class="nb-field"><span class="nb-label">Website</span><input class="nb-input" name="site" inputmode="url" placeholder="yourbusiness.com" required /></label>
             <label class="nb-field"><span class="nb-label">What should it do better? <span class="nb-optional">(optional)</span></span><input class="nb-input" name="goal" placeholder="More calls, more bookings, rank locally…" /></label>
             ${leadHoneypot()}
@@ -211,6 +212,7 @@ export function initAudit() {
       return {
         name: String(data.get('name') ?? '').trim(),
         email: String(data.get('email') ?? '').trim(),
+        phone: String(data.get('phone') ?? '').trim(),
         message: [`Website: ${site}`, goal && `What it should do better: ${goal}`, lastScores && `Quick check scores (mobile): ${lastScores}`]
           .filter(Boolean)
           .join('\n\n'),

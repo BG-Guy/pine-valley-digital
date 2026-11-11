@@ -1,7 +1,7 @@
 // Lead forms: sends the site's forms (homepage contact, service pages, free
 // report) straight into the Pine Valley CRM on Render, its public
-// POST /api/leads/submit route, which takes name, email, message and source
-// and needs no key. The CRM only accepts browser posts from
+// POST /api/leads/submit route, which takes name, email, phone, message and
+// source and needs no key. The CRM only accepts browser posts from
 // pinevalleydigital.com, so to test locally run the CRM with your dev origin
 // in ALLOWED_ORIGINS and point VITE_CRM_URL at it. Styles live in leadForm.css.
 import './leadForm.css'
@@ -13,6 +13,8 @@ const EMAIL = 'hello@pinevalleydigital.com'
 export interface Lead {
   name: string
   email: string
+  // Optional; the CRM checks it looks like a phone number.
+  phone: string
   message: string
   // Where the lead came from, shown in the CRM (e.g. "Service page: Web design").
   source: string

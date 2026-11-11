@@ -1,7 +1,7 @@
 // Contact section: the closing ask, as a lilac form panel — the headline
 // with its highlight box, the reply time and the email address on the
 // left, over the flowing bands in the panel's corner (components/flow-bands);
-// name, email, what they need and an optional note on the right, with
+// name, email, phone, what they need and an optional note on the right, with
 // Clicky pointing at the send button. Sending puts the answers straight
 // into the CRM as a new lead (components/lead-form), like the service pages'
 // form. Styles live in contact.css.
@@ -30,6 +30,7 @@ export const renderContact = () => `
             <div class="contact-row">
               <label class="nb-field"><span class="nb-label">Name</span><input class="nb-input" name="name" autocomplete="name" required /></label>
               <label class="nb-field"><span class="nb-label">Email</span><input class="nb-input" type="email" name="email" autocomplete="email" required /></label>
+              <label class="nb-field"><span class="nb-label">Phone <span class="nb-optional">(optional)</span></span><input class="nb-input" type="tel" name="phone" autocomplete="tel" maxlength="40" /></label>
             </div>
             <fieldset class="contact-topics">
               <legend class="nb-label">What do you need?</legend>
@@ -66,6 +67,7 @@ export function initContact() {
       return {
         name: String(data.get('name') ?? '').trim(),
         email: String(data.get('email') ?? '').trim(),
+        phone: String(data.get('phone') ?? '').trim(),
         message: [topics.length ? `Looking for: ${topics.join(', ')}` : '', message].filter(Boolean).join('\n\n'),
         source: 'Homepage contact form',
       }

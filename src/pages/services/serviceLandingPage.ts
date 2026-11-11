@@ -189,6 +189,7 @@ const renderCta = (d: ServiceLandingData) => `
           <form id="svc-form" class="svc-form">
             <label class="nb-field"><span class="nb-label">Your name</span><input required name="name" type="text" autocomplete="name" class="nb-input" /></label>
             <label class="nb-field"><span class="nb-label">Email</span><input required name="email" type="email" autocomplete="email" class="nb-input" /></label>
+            <label class="nb-field"><span class="nb-label">Phone <span class="nb-optional">(optional)</span></span><input class="nb-input" type="tel" name="phone" autocomplete="tel" maxlength="40" /></label>
             <label class="nb-field svc-form-wide"><span class="nb-label">What do you need?</span><textarea name="message" rows="3" placeholder="What are you hoping to fix or build?" class="nb-input"></textarea></label>
             ${leadHoneypot()}
             <div class="svc-form-send svc-form-wide">
@@ -258,6 +259,7 @@ function setupForm(d: ServiceLandingData) {
     (data) => ({
       name: String(data.get('name') ?? '').trim(),
       email: String(data.get('email') ?? '').trim(),
+      phone: String(data.get('phone') ?? '').trim(),
       message: String(data.get('message') ?? '').trim(),
       source: `Service page: ${d.navTitle}`,
     }),
