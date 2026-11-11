@@ -341,12 +341,6 @@
   gap: 1rem 1.5rem;
 }
 
-/* On its own line under the button, leaving Clicky room beside it. */
-.svc-form-note {
-  flex-basis: 100%;
-  font-size: 0.9rem;
-}
-
 /* Free check band: a lemon card with the offer on the left and the button
    on the right; under it, the other services in this one's group. */
 .svc-free {

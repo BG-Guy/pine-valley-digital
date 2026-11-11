@@ -3,16 +3,16 @@
 // Insights (Lighthouse, mobile): performance, accessibility, best practices
 // and SEO, three speed metrics, and the handful of issues costing them the
 // most. Under that, the bigger free offer: a hand-reviewed report with a fix
-// plan, requested through the visitor's email app like the contact form
-// (this static site has no backend). If Google's checker is busy or can't
+// plan, requested through a form that puts the lead straight into the CRM
+// like the contact form (components/lead-form). If Google's checker is busy or can't
 // reach the site, the visitor gets a link to the same test on Google's own
 // PageSpeed site, and the request form still works. Google's API needs a
 // free key for in-page results (keyless calls share a quota that's usually
 // used up): set VITE_PSI_KEY when building. Styles live in audit.css.
 import './audit.css'
 import { clicky } from '../../components/mascots/mascots'
+import { initLeadForm, leadHoneypot } from '../../components/lead-form/leadForm'
 
-const EMAIL = 'hello@pinevalleydigital.com'
 const API = 'https://www.googleapis.com/pagespeedonline/v5/runPagespeed'
 const KEY = import.meta.env.VITE_PSI_KEY as string | undefined
 const googleReport = (url: string) => `https://pagespeed.web.dev/analysis?url=${encodeURIComponent(url)}&form_factor=mobile`
@@ -74,8 +74,9 @@ export const renderAudit = () => `
             <label class="nb-field"><span class="nb-label">Email</span><input class="nb-input" type="email" name="email" autocomplete="email" required /></label>
             <label class="nb-field"><span class="nb-label">Website</span><input class="nb-input" name="site" inputmode="url" placeholder="yourbusiness.com" required /></label>
             <label class="nb-field"><span class="nb-label">What should it do better? <span class="nb-optional">(optional)</span></span><input class="nb-input" name="goal" placeholder="More calls, more bookings, rank locally…" /></label>
+            ${leadHoneypot()}
             <span class="clicky-at"><button type="submit" class="nb-press nb-btn-lg nb-lemon"><span class="nb-face">Get my free report ${ARROW}</span></button>${clicky()}</span>
-            <p class="audit-note">Opens your email app with this filled in, addressed to ${EMAIL}.</p>
+            <p id="audit-request-status" class="lead-status" role="status" aria-live="polite"></p>
           </form>
         </div>
       </div>
@@ -137,7 +138,8 @@ export function initAudit() {
   const status = document.getElementById('audit-status')
   const results = document.getElementById('audit-results')
   const request = document.getElementById('audit-request') as HTMLFormElement | null
-  if (!form || !status || !results || !request) return
+  const requestStatus = document.getElementById('audit-request-status')
+  if (!form || !status || !results || !request || !requestStatus) return
 
   let lastScores = ''
   let busy = false
@@ -198,19 +200,23 @@ export function initAudit() {
     }
   })
 
-  request.addEventListener('submit', (e) => {
-    e.preventDefault()
-    const data = new FormData(request)
-    const name = String(data.get('name') ?? '').trim()
-    const email = String(data.get('email') ?? '').trim()
-    const site = String(data.get('site') ?? '').trim()
-    const goal = String(data.get('goal') ?? '').trim()
-    const subject = encodeURIComponent(`Free website report request: ${site}`)
-    const body = encodeURIComponent(
-      [`Website: ${site}`, goal && `What it should do better: ${goal}`, lastScores && `Quick check scores (mobile): ${lastScores}`, `— ${name} (${email})`]
-        .filter(Boolean)
-        .join('\n\n'),
-    )
-    window.location.href = `mailto:${EMAIL}?subject=${subject}&body=${body}`
-  })
+  // The report request goes to the CRM, with the quick check's scores when
+  // they ran, so the review can start from them.
+  initLeadForm(
+    request,
+    requestStatus,
+    (data) => {
+      const site = String(data.get('site') ?? '').trim()
+      const goal = String(data.get('goal') ?? '').trim()
+      return {
+        name: String(data.get('name') ?? '').trim(),
+        email: String(data.get('email') ?? '').trim(),
+        message: [`Website: ${site}`, goal && `What it should do better: ${goal}`, lastScores && `Quick check scores (mobile): ${lastScores}`]
+          .filter(Boolean)
+          .join('\n\n'),
+        source: 'Free website report',
+      }
+    },
+    'Thanks, that’s with us. Your report will be in your inbox within two business days.',
+  )
 }

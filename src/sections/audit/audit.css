@@ -301,11 +301,6 @@
   justify-self: start;
 }
 
-.audit-note {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .audit-form.is-busy + .audit-status::before {
     animation: none;

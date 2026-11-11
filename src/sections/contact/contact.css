@@ -144,26 +144,6 @@
   margin-top: 0.5rem;
 }
 
-/* On its own line under the button, leaving Clicky room beside it. */
-.contact-note {
-  flex-basis: 100%;
-  font-size: 0.9rem;
-}
-
-.contact-status:empty {
-  display: none;
-}
-
-.contact-status {
-  justify-self: start;
-  padding: 0.55rem 0.85rem;
-  border: 3px solid var(--color-ink);
-  border-radius: var(--nb-r1);
-  background: var(--color-mint);
-  font-weight: 700;
-  rotate: -1deg;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .contact-chip span {
     transition-duration: 0.01ms;

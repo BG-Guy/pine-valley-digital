@@ -1,0 +1,30 @@
+/* Lead forms (see leadForm.ts): the hidden bot field and the status line
+   under each form, a tilted mint tag that turns coral on an error. */
+
+/* Off screen rather than display:none, so bots still fill it in. */
+.lead-honeypot {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.lead-status:empty {
+  display: none;
+}
+
+.lead-status {
+  justify-self: start;
+  max-width: 100%;
+  padding: 0.55rem 0.85rem;
+  border: 3px solid var(--color-ink);
+  border-radius: var(--nb-r1);
+  background: var(--color-mint);
+  font-weight: 700;
+  rotate: -1deg;
+}
+
+.lead-status.is-error {
+  background: var(--color-coral);
+}

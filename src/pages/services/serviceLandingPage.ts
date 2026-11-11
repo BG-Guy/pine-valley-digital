@@ -9,6 +9,7 @@ import { renderTickets } from '../../components/tickets/tickets'
 import { circleSticker } from '../../components/sticker/sticker'
 import { renderFlowBands, initFlowBands } from '../../components/flow-bands/flowBands'
 import { clicky } from '../../components/mascots/mascots'
+import { initLeadForm, leadHoneypot } from '../../components/lead-form/leadForm'
 import { groupOf, servicesIn, serviceHref } from './serviceGroups'
 import ctaBannerImg from '../../assets/cta-banner-before-you-reach-out.webp'
 import { SERVICE_HERO_IMAGES } from './serviceHeroImages'
@@ -17,8 +18,6 @@ import { SERVICE_HERO_IMAGES } from './serviceHeroImages'
 // credible than a different one invented per page.
 const GUARANTEE =
   'If the first round of work isn’t right, we revise it at no extra cost until it is. If it still isn’t working for you, you don’t pay for that stage. You can stop at any point without a cancellation fee.'
-
-const EMAIL = 'hello@pinevalleydigital.com'
 
 const ARROW = `<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg>`
 
@@ -155,9 +154,8 @@ const renderFreeCheck = (d: ServiceLandingData) => {
 // Section 5 — Conclusion, Risk Reversal & Conversion: the objections as
 // cards on a framed panel over the banner image, the shared guarantee on a
 // lemon card, and the closing form on a lilac panel with flowing bands in
-// its corner and Clicky pointing at the send button (a lightweight mailto
-// form — this site has no backend, so "submit" composes an email rather
-// than posting to a hidden service).
+// its corner and Clicky pointing at the send button (sending puts the lead
+// straight into the CRM, see components/lead-form).
 const renderCta = (d: ServiceLandingData) => `
     <section id="svc-cta" class="px-6 sm:px-10 py-20 sm:py-24">
       <div class="mx-auto max-w-6xl grid gap-14">
@@ -192,10 +190,11 @@ const renderCta = (d: ServiceLandingData) => `
             <label class="nb-field"><span class="nb-label">Your name</span><input required name="name" type="text" autocomplete="name" class="nb-input" /></label>
             <label class="nb-field"><span class="nb-label">Email</span><input required name="email" type="email" autocomplete="email" class="nb-input" /></label>
             <label class="nb-field svc-form-wide"><span class="nb-label">What do you need?</span><textarea name="message" rows="3" placeholder="What are you hoping to fix or build?" class="nb-input"></textarea></label>
+            ${leadHoneypot()}
             <div class="svc-form-send svc-form-wide">
               <span class="clicky-at"><button type="submit" class="nb-press nb-btn-lg nb-lemon"><span class="nb-face">Book my free call ${ARROW}</span></button>${clicky()}</span>
-              <p class="svc-form-note">Opens your email app, addressed to ${EMAIL}.</p>
             </div>
+            <p id="svc-form-status" class="svc-form-wide lead-status" role="status" aria-live="polite"></p>
           </form>
         </div>
       </div>
@@ -216,7 +215,7 @@ ${renderCta(d)}
 `
 
 // Wires up the tape under the hero, the diagnostic checklist, and the
-// mailto-based contact form with its flowing bands. Call after the markup
+// contact form with its flowing bands. Call after the markup
 // is in the DOM.
 export function initServiceLandingContent(d: ServiceLandingData) {
   initTape()
@@ -246,21 +245,22 @@ function setupDiagnostic(d: ServiceLandingData) {
   })
 }
 
-// Builds a mailto: link from the field values instead of posting to a
-// backend this static site doesn't have — an honest, no-dependency way to
-// let the "form" actually reach someone.
+// Sends the form to the CRM as a new lead, tagged with this service so
+// it's clear in the CRM which page it came from.
 function setupForm(d: ServiceLandingData) {
   const form = document.getElementById('svc-form') as HTMLFormElement | null
-  if (!form) return
+  const status = document.getElementById('svc-form-status')
+  if (!form || !status) return
 
-  form.addEventListener('submit', (e) => {
-    e.preventDefault()
-    const data = new FormData(form)
-    const name = String(data.get('name') ?? '')
-    const email = String(data.get('email') ?? '')
-    const message = String(data.get('message') ?? '')
-    const subject = encodeURIComponent(`${d.navTitle} — enquiry from ${name || 'your site'}`)
-    const body = encodeURIComponent(`${message}\n\n— ${name}${email ? ` (${email})` : ''}`)
-    window.location.href = `mailto:${EMAIL}?subject=${subject}&body=${body}`
-  })
+  initLeadForm(
+    form,
+    status,
+    (data) => ({
+      name: String(data.get('name') ?? '').trim(),
+      email: String(data.get('email') ?? '').trim(),
+      message: String(data.get('message') ?? '').trim(),
+      source: `Service page: ${d.navTitle}`,
+    }),
+    'Thanks, that’s with us. We’ll reply within one business day to set up your call.',
+  )
 }
