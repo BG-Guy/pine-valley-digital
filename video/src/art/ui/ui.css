@@ -1,0 +1,261 @@
+/* Interface parts the new films share: a phone's status bar, the lead's
+   card, the technician list, the route map, time slots, the paid invoice
+   and a notification toast. Each is about 400 canvas pixels wide, so the
+   same parts fit a phone screen or a column of the CRM window. Colours and
+   lines come from theme.ts through custom properties on the film's root. */
+
+/* ── Status bar ──────────────────────────────────────────────────────── */
+
+/* The time on the left, signal and battery on the right, either side of
+   the handset's camera cut-out. */
+.ui-status {
+  position: absolute;
+  top: 18px;
+  left: 34px;
+  right: 30px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font: 700 22px/1 var(--font-mono);
+}
+
+.ui-status-icons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ── Lead card ───────────────────────────────────────────────────────── */
+
+/* Who it is and what they need; then the status pill and the booked slot;
+   then four progress steps. */
+.ui-lead {
+  position: relative;
+  padding: 20px 22px 22px;
+  border: var(--line-heavy) solid var(--ink);
+  border-radius: var(--r-card);
+  background: var(--surface);
+  box-shadow: var(--drop-mid) var(--drop-mid) 0 var(--ink);
+}
+
+.ui-lead-who {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.ui-lead-name {
+  font-size: 52px;
+  white-space: nowrap;
+}
+
+.ui-lead-need {
+  margin-top: 6px;
+  font-weight: 600;
+  font-size: 20px;
+  white-space: nowrap;
+}
+
+.ui-lead-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 18px;
+}
+
+.ui-lead-status {
+  padding: 10px 18px;
+  font-size: 21px;
+  transform-origin: 0 50%;
+}
+
+.ui-lead-when {
+  width: 136px;
+  border: var(--line-mid) solid var(--ink);
+  border-radius: 18px;
+  background: var(--surface);
+  text-align: center;
+}
+
+.ui-lead-when-day {
+  padding: 5px 0;
+  border-bottom: var(--line-mid) solid var(--ink);
+  border-radius: 12px 12px 0 0;
+  background: var(--coral);
+  font-size: 18px;
+}
+
+.ui-lead-when-time {
+  padding: 9px 0 7px;
+  font-size: 44px;
+}
+
+.ui-lead-steps {
+  display: flex;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.ui-lead-steps i {
+  flex: 1;
+  height: 16px;
+  border: var(--line-thin) solid var(--ink);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.ui-lead-steps i.is-on {
+  background: var(--mint);
+}
+
+/* ── Technicians ─────────────────────────────────────────────────────── */
+
+/* Three rows: a face, a name and a note. Techs who can't take the job sit
+   back in the paper colour. */
+.ui-techs {
+  display: grid;
+  gap: 12px;
+}
+
+.ui-tech {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  height: 84px;
+  padding: 0 18px 0 12px;
+  border: var(--line-mid) solid var(--ink);
+  border-radius: 24px;
+  background: var(--surface);
+}
+
+.ui-tech.is-away {
+  background: var(--paper);
+  color: color-mix(in srgb, var(--ink) 58%, var(--paper));
+}
+
+.ui-tech-name {
+  font-size: 42px;
+}
+
+.ui-tech-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  font-size: 18px;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+/* ── Route map ───────────────────────────────────────────────────────── */
+
+/* A small street map with the van's route on it and a time-to-arrive chip
+   in its corner. */
+.ui-map {
+  position: relative;
+  height: 220px;
+  overflow: hidden;
+  border: var(--line-heavy) solid var(--ink);
+  border-radius: var(--r-card);
+  background: var(--paper);
+  box-shadow: var(--drop-mid) var(--drop-mid) 0 var(--ink);
+}
+
+.ui-map svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.ui-map-eta {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 8px 14px;
+  font-size: 19px;
+  box-shadow: 5px 5px 0 var(--ink);
+}
+
+/* ── Time slots ──────────────────────────────────────────────────────── */
+
+.ui-slots {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.ui-slot {
+  display: grid;
+  place-items: center;
+  height: 64px;
+  border: var(--line-mid) solid var(--ink);
+  border-radius: 20px;
+  background: var(--surface);
+  font: 700 24px/1 var(--font-mono);
+}
+
+/* ── Paid invoice ────────────────────────────────────────────────────── */
+
+/* A short invoice: two lines, a total, and a "Paid" starburst stamped on
+   its corner. */
+.ui-receipt {
+  position: relative;
+  padding: 16px 22px 18px;
+  border: var(--line-heavy) solid var(--ink);
+  border-radius: var(--r-card);
+  background: var(--surface);
+  box-shadow: var(--drop-mid) var(--drop-mid) 0 var(--ink);
+}
+
+.ui-receipt-id {
+  font-size: 18px;
+}
+
+.ui-receipt-line {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 3px dashed color-mix(in srgb, var(--ink) 35%, var(--surface));
+  font-weight: 600;
+  font-size: 23px;
+}
+
+.ui-receipt-total {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+  font-size: 46px;
+}
+
+.ui-receipt-paid {
+  position: absolute;
+  top: -96px;
+  right: -12px;
+}
+
+/* ── Toast ───────────────────────────────────────────────────────────── */
+
+/* A lemon notification with a ringing bell. */
+.ui-toast {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 18px 32px 18px 24px;
+  border: var(--line-heavy) solid var(--ink);
+  border-radius: var(--r-card);
+  background: var(--lemon);
+  box-shadow: var(--drop-mid) var(--drop-mid) 0 var(--ink);
+}
+
+.ui-toast-title {
+  font-size: 56px;
+  white-space: nowrap;
+}
+
+.ui-toast-note {
+  margin-top: 6px;
+  font-size: 20px;
+  white-space: nowrap;
+}

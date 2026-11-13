@@ -17,6 +17,9 @@ export const track = (frame: number, points: [number, number][]) =>
     { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' },
   )
 
+// Slow out of 0, quick through the middle, slow into 1.
+export const easeInOut = (t: number) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2)
+
 // Stamp in: nothing before `start`, then a quick overshoot and settle. Use
 // the result as a scale.
 export const pop = (frame: number, start: number) => (frame < start ? 0 : keyed(frame, start, [0.55, 1.14, 0.96, 1]))

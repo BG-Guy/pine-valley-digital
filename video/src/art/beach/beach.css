@@ -1,0 +1,52 @@
+/* The beach's styles. The scene itself is drawn in SVG; only the "Job
+   done" bubble from the owner's phone is HTML. Sizes are canvas pixels. */
+
+/* The bubble: a lemon card with a tail pointing down at the phone. */
+.done-bubble {
+  position: absolute;
+  top: 244px;
+  left: 548px;
+  transform-origin: 0 100%;
+}
+
+.done-bubble-tail {
+  position: absolute;
+  bottom: -62px;
+  left: 20px;
+  overflow: visible;
+}
+
+.done-bubble-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px 34px 22px 24px;
+  border: var(--line-heavy) solid var(--ink);
+  border-radius: var(--r-card);
+  background: var(--lemon);
+  box-shadow: var(--drop-mid) var(--drop-mid) 0 var(--ink);
+}
+
+/* The tick, the headline and the amount. */
+.done-bubble-check {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
+  border: var(--line-mid) solid var(--ink);
+  border-radius: 50%;
+  background: var(--mint);
+}
+
+.done-bubble-title {
+  font-size: 68px;
+  white-space: nowrap;
+}
+
+.done-bubble-note {
+  margin-top: 6px;
+  font-size: 24px;
+  white-space: nowrap;
+}

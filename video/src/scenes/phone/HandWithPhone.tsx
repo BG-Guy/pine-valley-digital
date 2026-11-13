@@ -18,7 +18,13 @@ const layer = { position: 'absolute', left: 0, top: 0, overflow: 'visible' } as 
 // little finger).
 const FINGERS = [500, 584, 668, 752]
 
-export const HandWithPhone: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+type HandWithPhoneProps = {
+  children: React.ReactNode
+  // The sleeve cuff's colour: it tells whose hand this is.
+  sleeve?: string
+}
+
+export const HandWithPhone: React.FC<HandWithPhoneProps> = ({ children, sleeve = color.mint }) => (
   <div
     style={{
       position: 'relative',
@@ -28,11 +34,11 @@ export const HandWithPhone: React.FC<{ children: React.ReactNode }> = ({ childre
     }}
   >
     {/* Behind the handset: the wrist, the palm cupping the lower half, and
-        a mint sleeve cuff. */}
+        a sleeve cuff. */}
     <svg style={layer} width={PHONE.width} height={PHONE.height}>
       <rect x={136} y={900} width={208} height={90} {...skin} />
       <rect x={-44} y={470} width={568} height={478} rx={120} {...skin} />
-      <rect x={106} y={944} width={268} height={62} rx={16} {...skin} fill={color.mint} />
+      <rect x={106} y={944} width={268} height={62} rx={16} {...skin} fill={sleeve} />
     </svg>
 
     {/* The handset and its screen. */}

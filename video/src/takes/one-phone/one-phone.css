@@ -1,0 +1,124 @@
+/* The One phone version's styles: the lock screen and the three screens of
+   the CRM app on the owner's phone. The parts inside them come from
+   art/ui. Sizes are canvas pixels. */
+
+/* ── Lock screen ─────────────────────────────────────────────────────── */
+
+/* A lemon wallpaper with a valley and a pine at its foot, the time, and
+   the notification that drops in. */
+.lock {
+  background: var(--lemon);
+  text-align: center;
+}
+
+.lock-time {
+  margin-top: 34px;
+  font-size: 156px;
+}
+
+.lock-date {
+  margin-top: 8px;
+  font-size: 22px;
+}
+
+.lock-valley {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.lock-note {
+  position: absolute;
+  top: 348px;
+  right: 22px;
+  left: 22px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 18px;
+  border: var(--line-mid) solid var(--ink);
+  border-radius: 28px;
+  background: var(--surface);
+  text-align: left;
+}
+
+.lock-app {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 62px;
+  height: 62px;
+  border: var(--line-thin) solid var(--ink);
+  border-radius: 20px;
+  background: var(--lilac);
+}
+
+.lock-note-app {
+  font-size: 17px;
+}
+
+.lock-note-text {
+  margin-top: 4px;
+  font-weight: 700;
+  font-size: 24px;
+  white-space: nowrap;
+}
+
+.lock-note-sub {
+  margin-top: 2px;
+  font-weight: 600;
+  font-size: 19px;
+  white-space: nowrap;
+}
+
+/* ── App screens ─────────────────────────────────────────────────────── */
+
+/* Each screen: a header with a back arrow and a title, then its parts
+   stacked with small labels between them. */
+.app-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  height: 56px;
+  margin-bottom: 16px;
+}
+
+.app-back {
+  display: grid;
+  place-items: center;
+  width: 50px;
+  height: 50px;
+  border: var(--line-thin) solid var(--ink);
+  border-radius: 50%;
+  background: var(--surface);
+  box-shadow: 4px 4px 0 var(--ink);
+}
+
+.app-title {
+  font-size: 48px;
+}
+
+.app-label {
+  margin: 18px 0 10px;
+  font-size: 20px;
+}
+
+.app-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  height: 92px;
+  margin-top: 22px;
+  border: var(--line-mid) solid var(--ink);
+  border-radius: 28px;
+  background: var(--lemon);
+  font-size: 50px;
+}
+
+/* The job the tech is being picked for, as one line. */
+.app-job {
+  --pill-bg: var(--surface);
+  font-size: 20px;
+}

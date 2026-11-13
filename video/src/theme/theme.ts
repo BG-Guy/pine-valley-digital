@@ -24,6 +24,11 @@ export const color = {
   sandDeep: '#efd08c',
   khaki: '#dfb86c',
   hair: '#3a2a20',
+  // A shade deeper of each fill, for flat shading.
+  lemonDeep: '#f3c62f',
+  lilacDeep: '#a98bee',
+  mintDeep: '#58cc99',
+  coralDeep: '#e85f41',
 }
 
 // The heavy ink line and the hard shadow, with lighter versions for small
