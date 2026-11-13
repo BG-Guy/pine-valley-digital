@@ -2,18 +2,10 @@
 // poses and timing without playing the video. Not part of the film.
 //   npx remotion still ContactSheet out/sheet.png --props='{"from":0,"step":4}'
 import { AbsoluteFill, Freeze } from 'remotion'
-import { LeadJourney } from '../lead-journey/LeadJourney'
-import { TakeOnePhone } from '../takes/one-phone/TakeOnePhone'
-import { TakeScroll } from '../takes/scroll/TakeScroll'
-import { TakeSticker } from '../takes/sticker/TakeSticker'
+import { LeadJourney } from '../films/lead-journey/LeadJourney'
 import { color, font, SIZE } from '../theme/theme'
 
-// The films a sheet can be made from.
-const FILMS = { live: LeadJourney, scroll: TakeScroll, phone: TakeOnePhone, sticker: TakeSticker }
-
 export type ContactSheetProps = {
-  // Which film to take the frames from.
-  film: keyof typeof FILMS
   // First frame shown, and how many frames apart the cells are.
   from: number
   step: number
@@ -27,8 +19,7 @@ export type ContactSheetProps = {
   pick?: number[]
 }
 
-export const ContactSheet: React.FC<ContactSheetProps> = ({ film, from, step, columns, rows, cell, plain = false, pick }) => {
-  const Film = FILMS[film]
+export const ContactSheet: React.FC<ContactSheetProps> = ({ from, step, columns, rows, cell, plain = false, pick }) => {
   const frames = pick ?? Array.from({ length: columns * rows }, (_, i) => from + i * step)
 
   return (
@@ -50,7 +41,7 @@ export const ContactSheet: React.FC<ContactSheetProps> = ({ film, from, step, co
         >
           <div style={{ position: 'relative', width: SIZE, height: SIZE, transform: `scale(${cell / SIZE})`, transformOrigin: '0 0' }}>
             <Freeze frame={f}>
-              <Film />
+              <LeadJourney />
             </Freeze>
           </div>
           {!plain && (

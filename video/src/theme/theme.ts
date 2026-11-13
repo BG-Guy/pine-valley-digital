@@ -28,7 +28,6 @@ export const color = {
   lemonDeep: '#f3c62f',
   lilacDeep: '#a98bee',
   mintDeep: '#58cc99',
-  coralDeep: '#e85f41',
 }
 
 // The heavy ink line and the hard shadow, with lighter versions for small
@@ -41,10 +40,6 @@ export const radius = { tag: 20, card: 36, panel: 56 }
 
 // Graph-paper squares (the site's 28px, doubled).
 export const GRID = 56
-
-// The strip of paper between two stations. A station's closing edge sits in
-// it, so that line only shows while the camera scrolls past.
-export const GUTTER = 48
 
 // Type: poster headings in condensed Bricolage capitals, Space Mono labels,
 // Work Sans for running text.

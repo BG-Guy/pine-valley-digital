@@ -1,8 +1,8 @@
-// The One phone version: the whole job happens on the owner's own phone.
-// It buzzes on the beach, he takes it out, and the camera pushes into it.
-// The lead arrives as a notification, then the CRM app books it, assigns
-// it and shows it done and paid. The camera pulls back out to the beach,
-// and he pockets the phone.
+// The film: a lead becoming a booked, finished job, all on the owner's own
+// phone. It buzzes on the beach, he takes it out, and the camera pushes
+// into it. The lead arrives as a notification, then the CRM app books it,
+// assigns it and shows it done and paid. The camera pulls back out to the
+// beach, he pockets the phone, and the loop is back where it began.
 import { AbsoluteFill, useCurrentFrame } from 'remotion'
 import { BeachScene } from '../../art/beach/BeachScene'
 import { Cursor } from '../../components/cursor/Cursor'
@@ -44,7 +44,7 @@ const PHONE_SPOT = '494px 605px'
 const PUSH_IN = [1.35, 2.2, 4.2, 8]
 const PULL_OUT = [6, 3, 1.6, 1.12]
 
-export const TakeOnePhone: React.FC = () => {
+export const LeadJourney: React.FC = () => {
   const frame = useCurrentFrame()
   const pointer = pointerAt(frame, HOME, MOVES, CLICKS)
 
@@ -57,7 +57,7 @@ export const TakeOnePhone: React.FC = () => {
 
   return (
     <AbsoluteFill className="film" style={cssVars}>
-      <GraphPaper offsetY={0} />
+      <GraphPaper />
 
       {beachOn && (
         <AbsoluteFill style={{ scale: String(zoom), transformOrigin: PHONE_SPOT }}>

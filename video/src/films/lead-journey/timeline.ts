@@ -1,4 +1,4 @@
-// The One phone version's timing: every beat of its story, in order, and
+// The film's timing: every beat of its story, in order, and
 // the frame it starts on. To retime a beat, change its length here and
 // everything after it moves along. Lengths are in frames, at 12 a second.
 import { beachTiming } from '../../art/beach/beachTiming'

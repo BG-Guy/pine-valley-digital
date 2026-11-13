@@ -2,11 +2,11 @@
 // It pops in when the camera reaches it, buzzes as the lead arrives, plays
 // the CRM app's screens one after another, and shrinks away when the
 // camera pulls back.
-import './one-phone.css'
+import './lead-journey.css'
 import { useCurrentFrame } from 'remotion'
 import { Confetti } from '../../art/effects/Confetti'
 import { Sparkle } from '../../art/effects/Sparkle'
-import { HandWithPhone, PHONE } from '../../scenes/phone/HandWithPhone'
+import { HandWithPhone, PHONE } from '../../art/phone/HandWithPhone'
 import { color, SIZE } from '../../theme/theme'
 import { keyed } from '../../timeline/motion'
 import { AssignScreen } from './AssignScreen'

@@ -30,8 +30,3 @@ export const popOut = (frame: number, start: number) => (frame < start ? 1 : key
 // How far a pressed thing has sunk into its shadow (0 to 1) around a click
 // that lands on `at`: slammed flat for two frames, then springing back.
 export const press = (frame: number, at: number) => (frame < at ? 0 : keyed(frame, at, [1, 1, 0.35, 0]))
-
-// How much of a text has been typed, for a beat that starts on `start` and
-// types `perFrame` characters a frame.
-export const typed = (text: string, frame: number, start: number, perFrame = 2) =>
-  text.slice(0, Math.max(0, Math.round((frame - start + 1) * perFrame)))

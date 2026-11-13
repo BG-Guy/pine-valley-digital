@@ -1,7 +1,6 @@
-/* Interface parts the new films share: a phone's status bar, the lead's
-   card, the technician list, the route map, time slots, the paid invoice
-   and a notification toast. Each is about 400 canvas pixels wide, so the
-   same parts fit a phone screen or a column of the CRM window. Colours and
+/* The CRM app's parts: a phone's status bar, the lead's card, the
+   technician list, the route map, time slots and the paid invoice. Each is
+   about 400 canvas pixels wide, to fit the phone's screen. Colours and
    lines come from theme.ts through custom properties on the film's root. */
 
 /* ── Status bar ──────────────────────────────────────────────────────── */
@@ -232,30 +231,4 @@
   position: absolute;
   top: -96px;
   right: -12px;
-}
-
-/* ── Toast ───────────────────────────────────────────────────────────── */
-
-/* A lemon notification with a ringing bell. */
-.ui-toast {
-  position: absolute;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  padding: 18px 32px 18px 24px;
-  border: var(--line-heavy) solid var(--ink);
-  border-radius: var(--r-card);
-  background: var(--lemon);
-  box-shadow: var(--drop-mid) var(--drop-mid) 0 var(--ink);
-}
-
-.ui-toast-title {
-  font-size: 56px;
-  white-space: nowrap;
-}
-
-.ui-toast-note {
-  margin-top: 6px;
-  font-size: 20px;
-  white-space: nowrap;
 }

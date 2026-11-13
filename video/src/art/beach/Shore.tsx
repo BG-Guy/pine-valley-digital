@@ -2,16 +2,15 @@
 // horizon and sparkles on the swell, a line of foam that laps in and out
 // over wet sand, and the dry sand below with its shells, starfish and
 // footprints. `clock` is the beach's clock. SVG only.
-import { color, GUTTER, line, SIZE } from '../../theme/theme'
+import { color, line, SIZE } from '../../theme/theme'
 import { Sparkle } from '../effects/Sparkle'
 
 // Where the water starts and where it meets the sand.
 const HORIZON = 500
 const SHORE = 664
 
-// The sand runs on past the frame's bottom edge and ends on an ink line in
-// the gutter under this station.
-const SAND_END = SIZE + GUTTER / 2
+// The sand runs on a little past the frame's bottom edge.
+const SAND_END = SIZE + 20
 
 // The foam's four places as it laps in and back out.
 const LAP = [0, 30, 60, 30]
@@ -114,9 +113,6 @@ export const Shore: React.FC<{ clock: number }> = ({ clock }) => {
         <path d="M676,1050 q22,-38 44,0 Z" fill={color.surface} />
         <path d="M698,1048 v-18 M688,1048 l-3,-12 M708,1048 l3,-12" fill="none" strokeWidth={line.thin} />
       </g>
-
-      {/* The sand's closing edge, out of the frame until the camera moves. */}
-      <line x1={-10} y1={SAND_END} x2={SIZE + 10} y2={SAND_END} stroke={color.ink} strokeWidth={line.heavy} />
     </g>
   )
 }

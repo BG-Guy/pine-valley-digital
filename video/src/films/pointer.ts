@@ -1,4 +1,4 @@
-// The mouse pointer's path in the new films: where it is at each frame,
+// The mouse pointer's path in a film: where it is at each frame,
 // given the moves it makes, and whether it's clicking.
 type Point = [number, number]
 

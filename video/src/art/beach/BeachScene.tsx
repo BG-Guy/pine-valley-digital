@@ -1,4 +1,4 @@
-// The beach: the payoff, and where every film's loop begins and ends. The
+// The beach: the payoff, and where the film's loop begins and ends. The
 // owner lies back in a deck chair under an umbrella while his family plays
 // by the water. His phone tells him the job is done; he pockets it and
 // settles back. Later it buzzes and he takes it out again.

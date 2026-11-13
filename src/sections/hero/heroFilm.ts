@@ -1,6 +1,6 @@
 // The hero's film: a short looping animation of a lead becoming a booked,
-// finished job (a search, a booking, the CRM, a technician, done, and the
-// owner on the beach). It is made with Remotion in /video (see
+// finished job (it arrives on the owner's phone at the beach, and his CRM
+// app books it, assigns it and shows it paid). It is made with Remotion in /video (see
 // video/README.md) and played here as a muted video in an ink-framed card.
 // It starts once the hero's load-in has landed, plays only while it's on
 // screen, and stops with the tape's pause button. With reduced motion it
@@ -11,7 +11,7 @@ import posterUrl from '../../assets/hero-film/lead-journey-poster.webp'
 
 // What the film shows, for people who can't see it.
 const STORY =
-  'Animation: a customer searches for a plumber, opens the top result and books a visit. The booking lands in the CRM, goes to a technician for that day and is marked done and paid, while the business owner relaxes on the beach with his family.'
+  'Animation: a business owner relaxing on the beach with his family gets a new lead on his phone. In his CRM app the visit is booked, a technician is assigned and drives over, and the job is marked done and paid. He puts the phone back in his pocket.'
 
 // Markup: the card is announced as one image, with the story as its name.
 // The video inside is hidden from screen readers and can't take focus. It

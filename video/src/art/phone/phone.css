@@ -1,0 +1,41 @@
+/* The hand-held phone's styles (see HandWithPhone.tsx): the handset, its
+   screen, and the frame each page on the screen fills. Sizes are canvas
+   pixels. */
+
+/* The handset: an ink slab with the screen set into it, and the pill-shaped
+   camera cut-out at the top. */
+.phone {
+  position: absolute;
+  inset: 0;
+  border-radius: 72px;
+  background: var(--ink);
+}
+
+.phone-screen {
+  position: absolute;
+  inset: 18px;
+  overflow: hidden;
+  border-radius: 56px;
+  background: var(--surface);
+}
+
+.phone-island {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  z-index: 2;
+  width: 124px;
+  height: 34px;
+  margin-left: -62px;
+  border-radius: 17px;
+  background: var(--ink);
+}
+
+/* One page on the screen. Pages slide past each other when a tap moves
+   the app on. */
+.phone-page {
+  position: absolute;
+  inset: 0;
+  padding: 78px 22px 0;
+  background: var(--surface);
+}
