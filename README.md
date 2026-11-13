@@ -25,8 +25,10 @@ the send buttons) that now and then roll across the bottom of the screen as
 you scroll (`components/sticker-roll`); tilted stripes that sweep across for
 page loads and page transitions (`components/preloader`); flowing bands in
 the contact panels' corner (`components/flow-bands`); and a valley sunrise
-along the bottom of the footer (`components/sunrise`). All of it stops for
-reduced motion, and the ambient parts with the tape's pause button. The color
+along the bottom of the footer (`components/sunrise`). The homepage hero
+plays a short looping film of a lead becoming a booked, finished job, drawn
+in the same theme (`sections/hero/heroFilm.ts`, made in `video/`). All of it
+stops for reduced motion, and the ambient parts with the tape's pause button. The color
 theme started out shared with [portfolio-2025](https://github.com/bg-guy/portfolio-2025), which
 also hosts this content as a page (`/web-agency`) alongside the personal
 portfolio.
@@ -49,11 +51,13 @@ src/
     hero/  services/  work/  process/  contact/
   pages/           the other pages: lab/, services/ (the 12 service landing pages)
   animations/      page-wide motion: page load, page transitions, scroll reveals
+video/             the hero's film, a separate Remotion project (see video/README.md)
 ```
 
 - **Add or edit a service:** `servicesLandingData` in `src/pages/services/servicesLandingData.ts` (feeds both the "What we do" row and the landing pages).
 - **Change what the tape lists:** `ITEMS` in `src/components/tape/tape.ts`.
 - **Add or edit a project in the showcase:** the `projects` array in `src/sections/work/work.ts`.
+- **Change the hero's film:** it is rendered from `video/` (its own project, made with Remotion) into `src/assets/hero-film/`, and played by `src/sections/hero/heroFilm.ts`. Edit the scenes in `video/src`, then run `npm run render` there. See `video/README.md`.
 - **Add or edit a nav link:** `MENU_LINKS` in `src/components/navbar/mobileMenu.ts` for the mobile menu, and the desktop links in `src/components/navbar/navbar.ts` (a link to another page gets the menu's little diagonal arrow on its own, from its href).
 - **Add a section:** make `src/sections/<name>/<name>.ts` (+ `.css` if it needs one), export a `render…` function, and add it to the template in `main.ts`.
 

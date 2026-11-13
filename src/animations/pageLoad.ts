@@ -1,6 +1,7 @@
 // Page load: the first-visit sequence — the preloader's stripes sweep off,
-// and the navbar, hero lines and the hero's card stack animate in
-// underneath them. Once the headline has landed, Zap pops onto "fast".
+// and the navbar, hero lines and the hero's film animate in underneath
+// them. Once the headline has landed, Zap pops onto "fast" and the film
+// starts playing (sections/hero/heroFilm.ts watches for .is-landed).
 import { gsap } from 'gsap'
 import { playPreloader } from '../components/preloader/preloader'
 
@@ -14,7 +15,7 @@ export function initPageLoad() {
   const heroLines = gsap.utils.toArray<HTMLElement>('.hero-line > span')
   const heroEyebrow = document.querySelector('.hero-eyebrow span')
   const heroSub = document.querySelector('.hero-sub')
-  const heroStack = document.querySelector('.hero-stack')
+  const heroStage = document.querySelector('.hero-stage')
   const preloader = document.querySelector<HTMLElement>('#preloader')
   const landed = () => hero?.classList.add('is-landed')
 
@@ -28,11 +29,11 @@ export function initPageLoad() {
   }
 
   // Start the hero pieces hidden (lines below their mask, sub-copy faded,
-  // the card stack dropped and tipped).
+  // the film dropped and tipped).
   gsap.set(heroLines, { yPercent: 110 })
   gsap.set(heroEyebrow, { yPercent: 110 })
   gsap.set(heroSub, { autoAlpha: 0, y: 16 })
-  if (heroStack) gsap.set(heroStack, { autoAlpha: 0, y: 70, rotation: 6 })
+  if (heroStage) gsap.set(heroStage, { autoAlpha: 0, y: 70, rotation: 6 })
 
   // The page's own intro, played as the stripes sweep off.
   const revealPage = gsap.timeline({ paused: true, defaults: { ease: 'power4.out' }, onComplete: landed })
@@ -41,7 +42,7 @@ export function initPageLoad() {
     .to(heroEyebrow, { yPercent: 0, duration: 0.7 }, '<')
     .to(heroLines, { yPercent: 0, duration: 0.9, stagger: 0.08 }, '<+=0.1')
     .to(heroSub, { autoAlpha: 1, y: 0, duration: 0.6 }, '-=0.5')
-    .to(heroStack, { autoAlpha: 1, y: 0, rotation: 0, duration: 0.9, ease: 'back.out(1.5)' }, '<-=0.35')
+    .to(heroStage, { autoAlpha: 1, y: 0, rotation: 0, duration: 0.9, ease: 'back.out(1.5)' }, '<-=0.35')
 
   if (preloader) {
     playPreloader(() => revealPage.play())

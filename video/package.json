@@ -1,0 +1,26 @@
+{
+  "name": "pine-valley-hero-film",
+  "private": true,
+  "version": "0.0.0",
+  "description": "The homepage hero's looping film, made with Remotion. Separate from the site's build.",
+  "scripts": {
+    "studio": "remotion studio",
+    "typecheck": "tsc --noEmit",
+    "sheet": "remotion still ContactSheet out/sheet.png",
+    "render": "npm run render:film && npm run render:poster",
+    "render:film": "remotion render LeadJourney ../src/assets/hero-film/lead-journey.mp4 --codec=h264 --crf=28 --x264-preset=veryslow",
+    "render:poster": "remotion still LeadJourney ../src/assets/hero-film/lead-journey-poster.webp --frame=0"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.543",
+    "@remotion/fonts": "4.0.543",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "remotion": "4.0.543"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "typescript": "~6.0.2"
+  }
+}

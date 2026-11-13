@@ -1,0 +1,20 @@
+/* The hero's film (see heroFilm.ts): the square card the video plays in.
+   The ink line, corners and hard shadow come from .nb-card. */
+
+/* The card, in the film's own paper colour so it matches before the still
+   has loaded. */
+.hero-film {
+  --nb-card-bg: var(--color-paper);
+  aspect-ratio: 1;
+  overflow: hidden;
+}
+
+/* The video fills the card. It carries the card's inner corners itself,
+   since Safari doesn't always clip a playing video to its parent's. */
+.hero-film-video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: calc(var(--nb-r3) - var(--nb-line));
+  object-fit: cover;
+}

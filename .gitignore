@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# The hero film's scratch renders (video/README.md)
+video/out
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

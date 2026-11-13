@@ -4,6 +4,10 @@
 @import "tailwindcss";
 @import "./components/press/press.css";
 
+/* The hero film's project (/video) is built on its own; keep its files out
+   of Tailwind's scan for class names. */
+@source not "../video";
+
 /*
  * Neo-brutalist theme (from the Neo-Brutalist Section kit in the
  * web-component-library, tuned to this brand):

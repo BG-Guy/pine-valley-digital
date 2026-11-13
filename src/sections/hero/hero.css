@@ -1,6 +1,6 @@
 /* Hero styles (see hero.ts): the split layout, the headline with its
-   highlight box, the buttons, the card stack and its sticker, and the
-   "fast" glitch. */
+   highlight box, the buttons, the film's stage and its sticker, and the
+   "fast" glitch. The film's own card is styled in heroFilm.css. */
 
 .hero {
   position: relative;
@@ -134,155 +134,34 @@
   font-size: 0.7rem;
 }
 
-/* ── Card stack ─────────────────────────────────────────────────────── */
+/* ── Film stage ─────────────────────────────────────────────────────── */
 
-/* A fan of three press cards (components/press). Each card's place in the
-   fan comes from its data-pos (0 = front): a shift and a tilt, springing
-   between places with the theme's pop when the stack shuffles. */
-.hero-stack {
-  --card-w: min(19rem, 72vw);
-  --card-h: clamp(18rem, 24vw, 23rem);
+/* The hero's right side: the film (heroFilm.ts) and, over its corner, the
+   services-count sticker. The stage is as wide as the film, so the
+   sticker's place is measured from the film's own edges. */
+.hero-stage {
   position: relative;
-  height: calc(var(--card-h) + 4rem);
+  width: min(100%, 31rem);
+  margin-inline: auto;
 }
 
-.hero-card {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: var(--card-w);
-  height: var(--card-h);
-  margin: calc(var(--card-h) / -2) 0 0 calc(var(--card-w) / -2);
-  border-radius: var(--nb-r3);
-  transition: transform 0.6s var(--ease-pop);
-}
-
-.hero-card[data-pos="0"] {
-  z-index: 3;
-  transform: translate(-14%, -2%) rotate(-6deg);
-}
-
-.hero-card[data-pos="1"] {
-  z-index: 2;
-  transform: translate(6%, 3%) rotate(3deg);
-}
-
-.hero-card[data-pos="2"] {
-  z-index: 1;
-  transform: translate(26%, 8%) rotate(11deg);
-}
-
-/* Phones: narrower cards in a tighter fan, so the stack stays on screen. */
-@media (max-width: 639px) {
-  .hero-stack {
-    --card-w: 60vw;
-  }
-
-  .hero-card[data-pos="0"] {
-    transform: translate(-12%, -2%) rotate(-6deg);
-  }
-
-  .hero-card[data-pos="1"] {
-    transform: translate(4%, 3%) rotate(3deg);
-  }
-
-  .hero-card[data-pos="2"] {
-    transform: translate(18%, 7%) rotate(9deg);
-  }
-}
-
-.hero-card-face {
-  height: 100%;
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: space-between;
-  gap: 0.75rem;
-  padding: 1.25rem;
-  text-align: left;
-}
-
-.hero-card-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-}
-
-.hero-card-tag {
-  padding: 0.3rem 0.55rem;
-  border: 3px solid var(--color-ink);
-  border-radius: var(--nb-r1);
-  background: var(--color-surface);
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.hero-card-n {
-  font-family: var(--font-mono);
-  font-size: 0.85rem;
-  font-weight: 700;
-}
-
-.hero-card-name {
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-stretch: 75%;
-  font-size: clamp(2.25rem, 1.6rem + 2vw, 3.25rem);
-  line-height: 0.88;
-  letter-spacing: -0.01em;
-  text-transform: uppercase;
-}
-
-.hero-card-foot {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 0.75rem;
-}
-
-.hero-card-title {
-  font-size: 0.95rem;
-  font-weight: 600;
-  line-height: 1.35;
-}
-
-.hero-card-go {
-  display: grid;
-  flex: none;
-  place-items: center;
-  width: 2.75rem;
-  height: 2.75rem;
-  border-radius: 50%;
-  background: var(--color-ink);
-  color: var(--color-surface);
-  transition: rotate 0.32s var(--ease-pop);
-}
-
-@media (hover: hover) {
-  .hero-card:hover .hero-card-go {
-    rotate: -45deg;
-  }
-}
-
-/* The services-count sticker, slapped on the stack's top-right corner. */
+/* The sticker, slapped on the film's top-left corner. It sits mostly off
+   the card, so it never covers what the film is showing. */
 .hero-sticker {
   position: absolute;
-  top: 0;
-  right: 4%;
-  z-index: 4;
+  top: -3.25rem;
+  left: -1.5rem;
+  z-index: 1;
   width: 6.5rem;
   height: 6.5rem;
-  rotate: 12deg;
+  rotate: -12deg;
   pointer-events: none;
 }
 
 @media (min-width: 1024px) {
   .hero-sticker {
-    top: -1.5rem;
-    right: -1rem;
+    top: -3.5rem;
+    left: -3.5rem;
     width: 7.5rem;
     height: 7.5rem;
   }
@@ -363,8 +242,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero-card,
-  .hero-card-go,
   .hero-zap {
     transition-duration: 0.01ms;
   }

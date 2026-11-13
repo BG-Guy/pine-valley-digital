@@ -1,43 +1,24 @@
 // Hero section, split in two: on the left the headline (its glitching
 // "fast" stuck on a lemon highlight box, with Zap the lightning bolt on its
 // corner, winking when you point at either), the intro, the two
-// buttons and a line of promises; on the right a fanned stack of
-// project cards that shuffles when clicked, with a services-count sticker.
-// Styles live in hero.css.
+// buttons and a line of promises; on the right the film, a looping
+// animation of a lead becoming a booked, finished job (heroFilm.ts), with a
+// services-count sticker on its corner. Styles live in hero.css.
 import './hero.css'
-import { projects } from '../work/work'
 import { servicesLandingData } from '../../pages/services/servicesLandingData'
 import { burstSticker } from '../../components/sticker/sticker'
 import { zap } from '../../components/mascots/mascots'
-
-const pad = (n: number) => String(n).padStart(2, '0')
+import { renderHeroFilm, initHeroFilm } from './heroFilm'
 
 // The trust line under the buttons: promises we keep on every project.
 const TRUST = ['Fixed quote, no hidden fees', 'Live in 3 to 6 weeks', 'You own everything']
 
 const ARROW = `<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg>`
 
-// The stack's three cards, in the theme's fills, front to back.
-const STACK = projects.slice(0, 3)
-const FILLS = ['var(--color-lilac)', 'var(--color-mint)', 'var(--color-lemon)']
-
-// One card: its tag and number, the project's name and its tagline. The
-// whole card is the button that shuffles the stack (data-pos is its place
-// in the fan, 0 = front).
-const renderCard = (p: (typeof projects)[number], i: number) => `
-            <button type="button" class="hero-card nb-press" data-pos="${i}" style="--nb-face: ${FILLS[i]}"
-                    aria-label="${p.name}, ${p.tag}. Show the next project">
-              <span class="nb-face hero-card-face">
-                <span class="hero-card-top"><span class="hero-card-tag">${p.tag}</span><span class="hero-card-n">${pad(i + 1)}</span></span>
-                <span class="hero-card-name">${p.name}</span>
-                <span class="hero-card-foot"><span class="hero-card-title">${p.title}</span><span class="hero-card-go">${ARROW}</span></span>
-              </span>
-            </button>`
-
 // Markup: eyebrow, three-line headline (with the four glitch slices for
-// "fast"), intro copy and buttons; then the card stack. Each headline line
-// and the eyebrow sit in a mask that the load-in (animations/pageLoad.ts)
-// slides them up through.
+// "fast"), intro copy and buttons; then the film and its sticker. Each
+// headline line and the eyebrow sit in a mask that the load-in
+// (animations/pageLoad.ts) slides them up through.
 export const renderHero = () => `
     <section id="hero" class="hero px-6 sm:px-10 pt-36 pb-28 sm:pt-44 sm:pb-32">
       <div class="hero-grid mx-auto max-w-7xl">
@@ -68,19 +49,18 @@ export const renderHero = () => `
             </ul>
           </div>
         </div>
-        <div class="hero-stack" data-hero-stack>
-          ${STACK.map(renderCard).join('')}
+        <div class="hero-stage">${renderHeroFilm()}
           ${burstSticker(['Services', String(servicesLandingData.length)], { className: 'hero-sticker', label: `${servicesLandingData.length} services` })}
         </div>
       </div>
     </section>
 `
 
-// Starts the hero's glitch and card stack. Call after the markup is in the
+// Starts the hero's glitch and its film. Call after the markup is in the
 // DOM.
 export function initHero() {
   setupHeroGlitch()
-  setupHeroStack()
+  initHeroFilm()
 }
 
 // Fires the "fast" glitch burst on a slow interval (the CSS does the tearing;
@@ -99,20 +79,4 @@ function setupHeroGlitch() {
   // present, not a tic.
   setTimeout(fire, 3000)
   setInterval(fire, 6000)
-}
-
-// Clicking any card in the stack sends the front card to the back and
-// brings the next one forward (hero.css springs each card to its new
-// place in the fan).
-function setupHeroStack() {
-  const stack = document.querySelector<HTMLElement>('[data-hero-stack]')
-  if (!stack) return
-  const cards = Array.from(stack.querySelectorAll<HTMLElement>('.hero-card'))
-  stack.addEventListener('click', (e) => {
-    if (!(e.target as Element).closest('.hero-card')) return
-    cards.forEach((card) => {
-      const pos = Number(card.dataset.pos)
-      card.dataset.pos = String((pos + cards.length - 1) % cards.length)
-    })
-  })
 }

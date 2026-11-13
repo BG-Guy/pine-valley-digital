@@ -1,0 +1,62 @@
+/* Shared building blocks for the film's interface parts: the recipes from
+   the site's components/press/press.css, at canvas scale. Colours, lines
+   and fonts come from theme.ts through custom properties on the film's
+   root. */
+
+/* Base: running text in Work Sans, and border-box sizing so cards measure
+   the way the site's do. */
+.film {
+  font-family: var(--font-body);
+  color: var(--ink);
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+.film *,
+.film *::before,
+.film *::after {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+/* Poster headings: condensed Bricolage capitals. */
+.display {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-stretch: 75%;
+  line-height: 0.9;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+/* Mono labels. */
+.mono {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Pill label. Set --pill-bg to recolour it. */
+.nb-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 22px;
+  border: var(--line-mid) solid var(--ink);
+  border-radius: 999px;
+  background: var(--pill-bg, var(--lemon));
+  box-shadow: var(--drop-small) var(--drop-small) 0 var(--ink);
+  font: 700 26px/1.1 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* An ink-lined panel on the heavy shadow. Set --card-bg to recolour it. */
+.nb-card {
+  border: var(--line-heavy) solid var(--ink);
+  border-radius: var(--r-card);
+  background: var(--card-bg, var(--surface));
+  box-shadow: var(--drop-heavy) var(--drop-heavy) 0 var(--ink);
+}
