@@ -1,6 +1,8 @@
 // Hero section, split in two: on the left the headline (its glitching
-// "fast" stuck on a lemon highlight box, with Zap the lightning bolt on its
-// corner, winking when you point at either), the intro, the two
+// "paid" stuck on a lemon highlight box, and Zap the lightning bolt perched
+// on the closing full stop, winking when you point at the headline; the
+// glitch's classes are still named hero-fast after the word it first sat
+// on), the intro, the two
 // buttons and a line of promises; on the right the film, a looping
 // animation of a lead becoming a booked, finished job (heroFilm.ts), with a
 // services-count sticker on its corner. Styles live in hero.css.
@@ -24,21 +26,21 @@ export const renderHero = () => `
       <div class="hero-grid mx-auto max-w-7xl">
         <div class="hero-copy">
           <p class="hero-eyebrow"><span class="nb-pill">Web design &amp; development studio</span></p>
-          <h1 class="hero-title font-display font-extrabold">
-            <span class="hero-line"><span class="block">We build <span class="nb-mark hero-mark wink-on-hover"><span class="hero-fast">
-              <span class="hero-fast-base">fast</span>
-              <span class="hero-fast-slice s1" aria-hidden="true">fast</span>
-              <span class="hero-fast-slice s2" aria-hidden="true">fast</span>
-              <span class="hero-fast-slice s3" aria-hidden="true">fast</span>
-              <span class="hero-fast-slice s4" aria-hidden="true">fast</span>
-            </span>${zap('hero-zap')}</span></span></span>
-            <span class="hero-line"><span class="block">websites that</span></span>
-            <span class="hero-line"><span class="block">bring in work<span class="hero-dot">.</span></span></span>
+          <h1 class="hero-title font-display font-extrabold wink-on-hover">
+            <span class="hero-line"><span class="block">From first look</span></span>
+            <span class="hero-line"><span class="block">to <span class="nb-mark hero-mark"><span class="hero-fast">
+              <span class="hero-fast-base">paid</span>
+              <span class="hero-fast-slice s1" aria-hidden="true">paid</span>
+              <span class="hero-fast-slice s2" aria-hidden="true">paid</span>
+              <span class="hero-fast-slice s3" aria-hidden="true">paid</span>
+              <span class="hero-fast-slice s4" aria-hidden="true">paid</span>
+            </span></span> job,</span></span>
+            <span class="hero-line"><span class="block">we build it all<span class="hero-dot">.${zap('hero-zap')}</span></span></span>
           </h1>
           <div class="hero-sub">
             <p class="hero-lead">
-              We design and build websites for small businesses that want more calls, bookings
-              and sales. Then we keep them fast, easy to find on Google and up to date.
+              We design how your business looks, build where customers find you, and set up the
+              tools that book, assign and invoice the work.
             </p>
             <div class="hero-ctas">
               <a href="#contact" class="nb-press nb-btn-lg nb-lemon"><span class="nb-face">Book a free call ${ARROW}</span></a>

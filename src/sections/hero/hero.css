@@ -55,14 +55,15 @@
   margin-inline: 0.04em 0.16em;
 }
 
-/* Zap, stuck on the box's top corner. It waits for the headline to land
-   (pageLoad.ts adds .is-landed then), since the lines' masks would cut it
-   off while they slide up, and then pops on. Pointing at Zap or the box
+/* Zap, perched on the headline's closing full stop, where the space above
+   and to the right is clear at every width. It waits for the headline to
+   land (pageLoad.ts adds .is-landed then), since the lines' masks would cut
+   it off while they slide up, and then pops on. Pointing at the headline
    makes it wink (.wink-on-hover, components/mascots). */
 .hero-zap {
   position: absolute;
-  top: -0.52em;
-  right: -0.48em;
+  top: -0.5em;
+  right: -0.82em;
   width: 0.84em;
   rotate: 14deg;
   scale: 0;
@@ -78,8 +79,9 @@
   scale: 1;
 }
 
-/* The full stop, in the brand's purple. */
+/* The full stop, in the brand's purple, holding Zap. */
 .hero-dot {
+  position: relative;
   color: var(--color-accent);
 }
 
